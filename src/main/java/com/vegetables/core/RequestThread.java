@@ -3,12 +3,14 @@ package com.vegetables.core;
 import com.vegetables.entity.RequestContent;
 import com.vegetables.entity.ResponseContent;
 import com.vegetables.util.BufferUtils;
-import com.vegetables.util.HtmlHelper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+/**
+ * 请求解析及响应
+ */
 public class RequestThread extends Thread {
     private final SocketChannel socketChannel;
 

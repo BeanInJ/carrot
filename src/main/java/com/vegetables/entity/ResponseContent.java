@@ -1,10 +1,20 @@
 package com.vegetables.entity;
 
+/**
+ * 响应体内容
+ */
 public class ResponseContent {
     private String version;
     private String code;
     private String msg;
     private Object data;
+
+    public ResponseContent() {
+        this.setVersion("HTTP/1.1");
+        this.setCode("200");
+        this.setMsg("OK");
+        this.setData("");
+    }
 
     public String getVersion() {
         return version;
@@ -36,13 +46,6 @@ public class ResponseContent {
 
     public void setData(Object data) {
         this.data = data;
-    }
-
-    public ResponseContent() {
-        this.setVersion("HTTP/1.1");
-        this.setCode("200");
-        this.setMsg("OK");
-        this.setData("");
     }
 
     @Override

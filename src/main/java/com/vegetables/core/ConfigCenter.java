@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Map;
 
+/**
+ * 配置中心
+ */
 public class ConfigCenter {
     // 默认端口 app.port
     public static final int DEFAULT_APP_PORT = 8080;

@@ -11,6 +11,9 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 
+/**
+ * 启动服务端
+ */
 public class ChannelSwitch implements Runnable {
     // 日志
     private static final Logger log = Logger.getLogger("ChannelSwitch");

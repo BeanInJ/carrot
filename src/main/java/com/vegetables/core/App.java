@@ -1,10 +1,12 @@
 package com.vegetables.core;
 
-import java.io.IOException;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 
+/**
+ * 启动入口
+ */
 public class App {
     private final static ConfigCenter configCenter = ConfigCenter.load();
 

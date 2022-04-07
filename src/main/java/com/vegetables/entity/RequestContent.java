@@ -3,6 +3,9 @@ package com.vegetables.entity;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 请求体内容
+ */
 public class RequestContent {
     private String url;
     private String method;
