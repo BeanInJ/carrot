@@ -74,6 +74,9 @@ public class RequestContent {
     }
 
     public static RequestContent init(String content) {
+        // 这里有多线程抢资源问题，需要优化
+        System.out.println("线程id："+Thread.currentThread().getId());
+
         RequestContent httpContent = new RequestContent();
         String[] strings = content.split("\r\n\r\n");
         String[] headerAndRequestLine = strings[0].split("\r\n");
