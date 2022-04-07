@@ -73,8 +73,7 @@ public class ChannelSwitch implements Runnable {
                     }
                 }
 
-                Thread.sleep(100);
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
