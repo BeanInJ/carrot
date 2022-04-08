@@ -24,14 +24,14 @@ public class CarrotLogFormatter extends Formatter {
         Date now = new Date();
         String dateStr = sdf.format(now);
 
-        String className = arg0.getSourceClassName()+"."+arg0.getSourceMethodName();
+        StringBuilder className = new StringBuilder(arg0.getSourceClassName() + "." + arg0.getSourceMethodName());
         int length = className.length();
         if(length>25){
-            className = "..." + className.substring(length-30,length);
+            className = new StringBuilder("..." + className.substring(length - 30, length));
         }else{
             int num = 28-length;
             for(int i=0;i<num;i++){
-                className = className + " ";
+                className.append(" ");
             }
         }
 
@@ -58,7 +58,7 @@ public class CarrotLogFormatter extends Formatter {
     @Override
 
     public String getTail(Handler h) {
-        return "Carrot Log End:\r\n";
+        return "Carrot Log End.\r\n";
 
     }
 
