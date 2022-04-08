@@ -1,4 +1,4 @@
-package com.vegetables.exception;
+package com.vegetables.system.exception;
 
 public class CarrotException extends Exception{
     private static final long serialVersionUID = 1L;

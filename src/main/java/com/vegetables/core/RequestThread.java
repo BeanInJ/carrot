@@ -11,13 +11,14 @@ import java.nio.channels.SocketChannel;
 /**
  * 请求解析及响应
  */
-public class RequestThread extends Thread {
+public class RequestThread implements Runnable {
     private final SocketChannel socketChannel;
 
     public RequestThread(SocketChannel socketChannel) {
         this.socketChannel = socketChannel;
     }
 
+    @Override
     public void run() {
         try {
             request(this.socketChannel);
@@ -31,6 +32,10 @@ public class RequestThread extends Thread {
 
         // 接收到的内容
         socketChannel.read(buffer);
+        if(buffer.position() == 0) {
+            return;
+        }
+
         String string = BufferUtils.getString(buffer);
         RequestContent request = new RequestContent(string);
         ResponseContent response = new ResponseContent();

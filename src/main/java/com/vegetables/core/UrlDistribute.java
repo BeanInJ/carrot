@@ -1,8 +1,8 @@
 package com.vegetables.core;
 
 import com.vegetables.annotation.Controller;
-import com.vegetables.config.Dict;
-import com.vegetables.exception.CarrotException;
+import com.vegetables.dict.Msg;
+import com.vegetables.system.exception.CarrotException;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -14,8 +14,7 @@ import java.util.logging.Logger;
  * 将路由映射到对应的方法上
  */
 public class UrlDistribute {
-    // 日志
-    private static final Logger log = Logger.getLogger("url-方法 映射器");
+    private static final Logger log = Logger.getGlobal();
     private static final Map<String, Object[]> urlMap = new HashMap<>();
 
     public UrlDistribute(List<Class<?>> classes) {
@@ -69,7 +68,7 @@ public class UrlDistribute {
     public Object invoke(String url, Object... params) throws CarrotException {
         Object[] objects = getMethod(url);
         if (objects == null) {
-            log.info(Dict.MSG_ERROR_NOT_FIND_URL + url);
+            log.info(Msg.ERROR_NOT_FIND_URL + url);
             return null;
         }
         Object clazz = objects[0];

@@ -1,12 +1,13 @@
 package com.vegetables.core;
 
+import com.vegetables.dict.Msg;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
@@ -15,24 +16,23 @@ import java.util.logging.Logger;
  * 启动服务端
  */
 public class AppSwitch implements Runnable {
-    // 日志
-    private static final Logger log = Logger.getLogger("ChannelSwitch");
+    private static final Logger log = Logger.getGlobal();
 
     // 端口
     private final int port;
     // channel队列保存
-    private final Queue<SocketChannel> channelQueue = new ArrayBlockingQueue<>(1024);
+    private final ArrayBlockingQueue<SocketChannel> channelQueue = new ArrayBlockingQueue<>(1024);
 
     public AppSwitch(int port) {
         this.port = port;
     }
 
-    public Queue<SocketChannel> get() {
+    public ArrayBlockingQueue<SocketChannel> get() {
         return channelQueue;
     }
 
     // 启动
-    public static Queue<SocketChannel> open(int port) {
+    public static ArrayBlockingQueue<SocketChannel> open(int port) {
         AppSwitch channelSwitch = new AppSwitch(port);
         Thread thread = new Thread(channelSwitch);
         thread.start();
@@ -55,7 +55,7 @@ public class AppSwitch implements Runnable {
 
             channel.register(selector, SelectionKey.OP_ACCEPT);
 
-            log.info(" 已启动Http端口， " + this.port);
+            log.info(Msg.OPEN_SERVER + this.port);
         } catch (IOException e) {
             e.printStackTrace();
         }

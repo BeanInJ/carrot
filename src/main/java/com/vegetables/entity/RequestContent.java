@@ -1,7 +1,9 @@
 package com.vegetables.entity;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 请求体内容
@@ -74,6 +76,7 @@ public class RequestContent {
     }
 
     public RequestContent(String content) {
+
         String[] strings = content.split("\r\n\r\n");
         String[] headerAndRequestLine = strings[0].split("\r\n");
         String[] requestLine = headerAndRequestLine[0].split(" ");

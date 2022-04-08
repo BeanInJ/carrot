@@ -1,62 +1,47 @@
 package com.vegetables.core;
 
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Logger;
 
 /**
  * 启动入口
  */
 public class App {
-    private static ConfigCenter configCenter;
-    private static List<Class<?>> controllerClass;
-    private static UrlDistribute urlMap;
-    private Queue<SocketChannel> channelQueue;
+    private static final Logger log = Logger.getGlobal();
+
+    private ArrayBlockingQueue<SocketChannel> channelQueue;
 
     public static void start(){
         App app = new App();
         app.hotPan();
         app.oiling();
+        app.friedPan();
+
     }
 
-    // 热锅:启动http服务端
+    // 1、热锅:加载系统资源
     private void hotPan(){
-        // 加载配置中心
-        configCenter = ConfigCenter.load();
-        // 加载controller
-        controllerClass = ControllerScanner.load();
-        // 加载url映射器
-        urlMap = UrlDistribute.load(controllerClass);
+        AppLoader.load();
+        log.info("系统资源加载完成");
+    }
 
-        System.out.println();
-
-        int port = configCenter.getAppPort();
+    // 2、上油:开启服务器
+    private void oiling(){
+        int port = AppLoader.getConfigCenter().getAppPort();
         this.channelQueue = AppSwitch.open(port);
+        log.info("Socket已启动");
     }
 
-    // 上油:解析前拦截
-    private void oiling() {
-
-        // noinspection InfiniteLoopStatement
-        while (true) {
-            SocketChannel socketChannel = channelQueue.poll();
-            while (socketChannel != null) {
-                RequestThread requestThread = new RequestThread(socketChannel);
-                requestThread.start();
-                socketChannel = channelQueue.poll();
-            }
-        }
-
-    }
-
-    // 炝锅:解析http请求
-    public static void friedPan(Selector selector){
+    // 3、炝锅:开启线程池处理请求
+    private void friedPan(){
+        log.info("线程池已启动");
+        AppCpu.start(this.channelQueue);
 
     }
 
     // 加辣椒:解析后拦截
-    public static void addPepper() {
+    private void addPepper() {
         System.out.println("加辣椒");
     }
 
