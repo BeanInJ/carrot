@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 /**
  * 启动服务端
  */
-public class ChannelSwitch implements Runnable {
+public class AppSwitch implements Runnable {
     // 日志
     private static final Logger log = Logger.getLogger("ChannelSwitch");
 
@@ -23,7 +23,7 @@ public class ChannelSwitch implements Runnable {
     // channel队列保存
     private final Queue<SocketChannel> channelQueue = new ArrayBlockingQueue<>(1024);
 
-    public ChannelSwitch(int port) {
+    public AppSwitch(int port) {
         this.port = port;
     }
 
@@ -33,7 +33,7 @@ public class ChannelSwitch implements Runnable {
 
     // 启动
     public static Queue<SocketChannel> open(int port) {
-        ChannelSwitch channelSwitch = new ChannelSwitch(port);
+        AppSwitch channelSwitch = new AppSwitch(port);
         Thread thread = new Thread(channelSwitch);
         thread.start();
         return channelSwitch.get();

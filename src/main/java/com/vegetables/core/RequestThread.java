@@ -32,9 +32,9 @@ public class RequestThread extends Thread {
         // 接收到的内容
         socketChannel.read(buffer);
         String string = BufferUtils.getString(buffer);
-        System.out.println(string);
-        System.out.println("------------------");
-        RequestContent httpContent = RequestContent.init(string);
+        RequestContent request = new RequestContent(string);
+        ResponseContent response = new ResponseContent();
+        System.out.println(request.toString());
 
         // 返回内容
         response(socketChannel);

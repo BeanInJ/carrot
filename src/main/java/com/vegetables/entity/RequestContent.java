@@ -73,25 +73,21 @@ public class RequestContent {
                 '}';
     }
 
-    public static RequestContent init(String content) {
-        // 这里有多线程抢资源问题，需要优化
-        System.out.println("线程id："+Thread.currentThread().getId());
-
-        RequestContent httpContent = new RequestContent();
+    public RequestContent(String content) {
         String[] strings = content.split("\r\n\r\n");
         String[] headerAndRequestLine = strings[0].split("\r\n");
         String[] requestLine = headerAndRequestLine[0].split(" ");
 
         // 获取请求方法
-        httpContent.setMethod(requestLine[0]);
+        setMethod(requestLine[0]);
         // 获取接口
-        httpContent.setUrl(requestLine[1]);
+        setUrl(requestLine[1]);
         // 获取版本
-        httpContent.setVersion(requestLine[2]);
+        setVersion(requestLine[2]);
 
         if(strings.length > 1){
             // body
-            httpContent.setBody(strings[1]);
+            setBody(strings[1]);
         }
 
         Map<String, String> header = new HashMap<>();
@@ -100,7 +96,6 @@ public class RequestContent {
             String value = headerAndRequestLine[i].split(":")[1].trim();
             header.put(key, value);
         }
-        httpContent.setHeaders(header);
-        return httpContent;
+        setHeaders(header);
     }
 }

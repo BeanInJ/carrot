@@ -2,31 +2,42 @@ package com.vegetables.core;
 
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.List;
 import java.util.Queue;
 
 /**
  * 启动入口
  */
 public class App {
-    private final static ConfigCenter configCenter = ConfigCenter.load();
-
+    private static ConfigCenter configCenter;
+    private static List<Class<?>> controllerClass;
+    private static UrlDistribute urlMap;
     private Queue<SocketChannel> channelQueue;
 
     public static void start(){
         App app = new App();
         app.hotPan();
         app.oiling();
-
     }
 
     // 热锅:启动http服务端
     private void hotPan(){
+        // 加载配置中心
+        configCenter = ConfigCenter.load();
+        // 加载controller
+        controllerClass = ControllerScanner.load();
+        // 加载url映射器
+        urlMap = UrlDistribute.load(controllerClass);
+
+        System.out.println();
+
         int port = configCenter.getAppPort();
-        this.channelQueue = ChannelSwitch.open(port);
+        this.channelQueue = AppSwitch.open(port);
     }
 
     // 上油:解析前拦截
     private void oiling() {
+
         // noinspection InfiniteLoopStatement
         while (true) {
             SocketChannel socketChannel = channelQueue.poll();

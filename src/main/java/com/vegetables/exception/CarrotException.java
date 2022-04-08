@@ -34,4 +34,10 @@ public class CarrotException extends Exception{
     public void setCode(String code) {
         this.code = code;
     }
+
+//    int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
+//    int lineNumber1 = Thread.currentThread().getStackTrace()[1].getLineNumber();
+//                System.out.println("第" + lineNumber + "行：" + baseUrl);
+//                System.out.println("第" + lineNumber1 + "行：" + baseUrl);
+//                throw new CarrotException("\n\tat "+clazz.getName()+ ".<CarrotException>(CarrotException.java:1) @Controller 包含非法路径 ：" + baseUrl);
 }

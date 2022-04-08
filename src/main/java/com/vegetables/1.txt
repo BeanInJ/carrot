@@ -1,0 +1,16 @@
+系统：
+1、加载配置文件
+2、扫描包（扫描Controller）
+3、路由准备（url-method）
+4、打开http服务器接收请求
+5、拦截request：方法、路由（可以拒绝非url注册表中的路由，也可以修改url或者请求内容、检查token）
+6、到Controller中执行方法，可以从request中获取数据，并返回Response
+7、拦截Response
+8、返回给客户端
+
+
+5中拦截request可以按顺序拦截：
+用户自定义url拦截（修改url等）
+系统拦截url（未注册url拦截等）
+拦截方法（匹配GET、POST）
+用户自定义拦截（拦截token、cookie等）
