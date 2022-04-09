@@ -11,13 +11,56 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * 将路由映射到对应的方法上
+ * 静态资源类：将路由映射到对应的方法上
  */
 public class UrlDistribute {
     private static final Logger log = Logger.getGlobal();
     private static final Map<String, Object[]> urlMap = new HashMap<>();
 
-    public UrlDistribute(List<Class<?>> classes) {
+    private UrlDistribute() {}
+
+    // 纠正url
+    private static String correctUrl(String url){
+
+        if(!url.startsWith("/")){
+            url = "/" + url;
+        }
+
+        if(url.endsWith("/")){
+            url = url.substring(0, url.length() - 1);
+        }
+
+        return url;
+    }
+
+    // 获取url对应的方法
+    private Object[] getMethod(String url){
+        return urlMap.get(url);
+    }
+
+    // 执行方法
+    public Object invoke(String url, Object... params) throws CarrotException {
+        Object[] objects = getMethod(url);
+
+        // 未注册URL
+        if (objects == null) {
+            log.info(Msg.ERROR_NOT_FIND_URL + url);
+            return null;
+        }
+
+        Object clazz = objects[0];
+        Method method = (Method) objects[1];
+
+        try {
+            return method.invoke(clazz, params);
+        } catch (Exception e) {
+            throw new CarrotException(method.getName()+ " 方法执行异常","500");
+        }
+    }
+
+    // 加载
+    protected static void load(){
+        List<Class<?>> classes = ControllerScanner.getClasses();
         for (Class<?> clazz : classes) {
             // 获取类名上的url
             Controller controllerInClass = clazz.getAnnotation(Controller.class);
@@ -43,46 +86,5 @@ public class UrlDistribute {
                 }
             }
         }
-    }
-
-    // 纠正url
-    private String correctUrl(String url){
-
-        if(!url.startsWith("/")){
-            url = "/" + url;
-        }
-
-        if(url.endsWith("/")){
-            url = url.substring(0, url.length() - 1);
-        }
-
-        return url;
-    }
-
-    // 获取url对应的方法
-    private Object[] getMethod(String url){
-        return urlMap.get(url);
-    }
-
-    // 执行方法
-    public Object invoke(String url, Object... params) throws CarrotException {
-        Object[] objects = getMethod(url);
-        if (objects == null) {
-            log.info(Msg.ERROR_NOT_FIND_URL + url);
-            return null;
-        }
-        Object clazz = objects[0];
-        Method method = (Method) objects[1];
-
-        try {
-            return method.invoke(clazz, params);
-        } catch (Exception e) {
-            throw new CarrotException(method.getName()+ " 方法执行异常","500");
-        }
-    }
-
-    // 加载
-    public static UrlDistribute load(List<Class<?>> scannerClass){
-        return new UrlDistribute(scannerClass);
     }
 }

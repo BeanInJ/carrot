@@ -1,5 +1,6 @@
 package com.vegetables.annotation;
 
 public @interface ConfigValue {
-    String key();
+    // 入值为参数名
+    String value();
 }

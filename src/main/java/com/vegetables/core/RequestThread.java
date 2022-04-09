@@ -32,14 +32,21 @@ public class RequestThread implements Runnable {
 
         // 接收到的内容
         socketChannel.read(buffer);
-        if(buffer.position() == 0) {
-            return;
-        }
-
+        if(buffer.position() == 0) return;
         String string = BufferUtils.getString(buffer);
         RequestContent request = new RequestContent(string);
+
+        // 检查拦截器中是否有拦截
+
+        // 在url映射器中查找对应的方法
+        // 如果没有找到，则返回404
+        // 如果找到，则执行方法，并返回结果
+        // 如果方法执行失败，则返回500
+        // 如果方法执行成功，则返回20
+
+
         ResponseContent response = new ResponseContent();
-        System.out.println(request.toString());
+        System.out.println(request);
 
         // 返回内容
         response(socketChannel);
