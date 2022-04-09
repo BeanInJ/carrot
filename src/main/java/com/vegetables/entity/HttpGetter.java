@@ -1,14 +1,12 @@
 package com.vegetables.entity;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 请求体内容
  */
-public class RequestContent {
+public class HttpGetter {
     private String url;
     private String method;
     private String version;
@@ -31,10 +29,10 @@ public class RequestContent {
         this.version = version;
     }
 
-    public RequestContent() {
+    public HttpGetter() {
     }
 
-    public RequestContent(String url, String method, String body) {
+    public HttpGetter(String url, String method, String body) {
         this.url = url;
         this.method = method;
         this.body = body;
@@ -75,7 +73,7 @@ public class RequestContent {
                 '}';
     }
 
-    public RequestContent(String content) {
+    public HttpGetter(String content) {
 
         String[] strings = content.split("\r\n\r\n");
         String[] headerAndRequestLine = strings[0].split("\r\n");

@@ -1,0 +1,8 @@
+Carrot Log Began:
+2022-04-09 19:45:09.991 [INFO] ...UrlMethod.lambda$urlMapPrint$0 : url: /?  映射方法: CarrotController.question()
+2022-04-09 19:45:09.992 [INFO] ...UrlMethod.lambda$urlMapPrint$0 : url: /carrot  映射方法: CarrotController.getCarrot()
+2022-04-09 19:45:09.992 [INFO] ...UrlMethod.lambda$urlMapPrint$0 : url: /  映射方法: CarrotController.nullUrl()
+2022-04-09 19:45:09.993 [INFO] ...com.vegetables.core.App.hotPan : 系统资源加载完成
+2022-04-09 19:45:09.994 [INFO] ...com.vegetables.core.App.oiling : Socket已启动
+2022-04-09 19:45:09.994 [INFO] ...m.vegetables.core.App.friedPan : 线程池已启动
+2022-04-09 19:45:10.004 [INFO] ....vegetables.core.AppSwitch.run : 已开放端口 8081, 尝试访问 http://localhost:8081

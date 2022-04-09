@@ -1,11 +1,5 @@
 package com.vegetables.util;
 
-import com.vegetables.entity.RequestContent;
-import com.vegetables.entity.ResponseContent;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class HtmlHelper {
     public static String getHtml() {
         String responseFirstLine = "HTTP/1.1 200 OK\r\n";

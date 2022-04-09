@@ -52,14 +52,11 @@ public class CarrotLogFormatter extends Formatter {
     @Override
     public String getHead(Handler h) {
         return "Carrot Log Began:\r\n";
-
     }
 
     @Override
-
     public String getTail(Handler h) {
         return "Carrot Log End.\r\n";
-
     }
 
 }

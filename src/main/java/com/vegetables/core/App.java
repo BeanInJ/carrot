@@ -17,7 +17,6 @@ public class App {
         app.hotPan();
         app.oiling();
         app.friedPan();
-        log.info("系统启动完成");
 
     }
 
@@ -29,7 +28,7 @@ public class App {
 
     // 2、上油:开启服务器
     private void oiling(){
-        int port = ConfigCenter.getAppPort();
+        int port = InnerConfig.getAppPort();
         this.channelQueue = AppSwitch.open(port);
         log.info("Socket已启动");
     }

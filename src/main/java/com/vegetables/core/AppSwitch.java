@@ -1,6 +1,6 @@
 package com.vegetables.core;
 
-import com.vegetables.dict.Msg;
+import com.vegetables.system.dict.Msg;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -13,7 +13,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 
 /**
- * 启动服务端
+ * 打开ServerSocketChannel通道
  */
 public class AppSwitch implements Runnable {
     private static final Logger log = Logger.getGlobal();
@@ -55,7 +55,7 @@ public class AppSwitch implements Runnable {
 
             channel.register(selector, SelectionKey.OP_ACCEPT);
 
-            log.info(Msg.OPEN_SERVER + this.port);
+            log.info( Msg.OPEN_SERVER + this.port + ", 尝试访问 http://localhost:"+this.port);
         } catch (IOException e) {
             e.printStackTrace();
         }
