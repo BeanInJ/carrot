@@ -3,8 +3,12 @@ package com.vegetables.system.baseServer;
 import com.vegetables.annotation.Controller;
 import com.vegetables.core.InnerConfig;
 
+/**
+ * 获取系统初始化的一些信息
+ */
 @Controller
 public class CarrotController {
+
 
     @Controller("/")
     public String nullUrl() {
@@ -23,7 +27,7 @@ public class CarrotController {
             carrotVersion = "1.0.0";
         }
 
-        return "server name is " + carrotName + ", version is " + carrotVersion;
+        return "服务注册名：" + carrotName + ", 系统版本：" + carrotVersion;
     }
 
     @Controller("/?")

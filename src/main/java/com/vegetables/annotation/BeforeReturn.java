@@ -10,5 +10,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeforeReturn {
     // 入值为拦截器的优先级
-    int value();
+    int value() default 1;
 }

@@ -9,6 +9,10 @@ public class HttpSetter {
     private String msg;
     private Object data;
 
+    private String carrot;
+    private String contentType;
+    private String characterEncoding;
+
     /**
      * 是否放行到Controller
      */
@@ -23,6 +27,30 @@ public class HttpSetter {
         this.setCode("200");
         this.setMsg("OK");
         this.setData("");
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getCharacterEncoding() {
+        return characterEncoding;
+    }
+
+    public void setCharacterEncoding(String characterEncoding) {
+        this.characterEncoding = characterEncoding;
+    }
+
+    public String getCarrot() {
+        return carrot;
+    }
+
+    public void setCarrot(String carrot) {
+        this.carrot = carrot;
     }
 
     public boolean isGoToController() {
@@ -79,13 +107,25 @@ public class HttpSetter {
             this.setData("找不到该请求");
         }
 
-        String responseFirstLine = this.getVersion() + " "
-                + this.getCode() + " "
-                + this.getMsg() + "\r\n";
+        StringBuilder stringBuffer =new StringBuilder();
+        stringBuffer.append(this.getVersion()).append(" ");
+        stringBuffer.append(this.getCode()).append(" ");
+        stringBuffer.append(this.getMsg()).append("\r\n");
 
-        String responseHeader = "Content-Type:" + "html" + "\r\n\r\n";
-        String header = responseFirstLine + responseHeader;
-        String body = this.getData().toString();
-        return header + body;
+        if(this.carrot != null){
+            stringBuffer.append("Carrot:").append(this.carrot).append("\r\n");
+        }
+        if (this.contentType != null){
+            stringBuffer.append("Content-Type:").append(this.contentType).append("\r\n");
+        }
+        if(this.characterEncoding != null){
+            stringBuffer.append("Character-Encoding:").append(this.characterEncoding).append("\r\n");
+        }
+
+        stringBuffer.append("\r\n");
+
+        stringBuffer.append(this.getData().toString());
+
+        return stringBuffer.toString();
     }
 }

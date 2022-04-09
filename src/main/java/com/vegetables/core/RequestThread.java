@@ -52,21 +52,23 @@ public class RequestThread implements Runnable {
             if(response.isReturnNow()){
                 response(socketChannel,response);
                 return;
-            }else if(response.isGoToController()){
+            }
+        }
 
-                // 拦截过后，跳转到控制器
-                try {
-                    Object o = InnerUrlMethod.HttpToController(request, response);
-                    boolean isEmpty = o == null || o.toString().length() == 0;
-                    if(!isEmpty){
-                        response = new HttpSetter();
-                        response.setData(o);
-                    }
-                } catch (Exception e) {
-                    // 异常拦截可在此处写
-                    e.printStackTrace();
-                    response.setData(e);
+        if(response.isGoToController()){
+
+            // 拦截过后，跳转到控制器
+            try {
+                Object o = InnerUrlMethod.HttpToController(request, response);
+                boolean isEmpty = o == null || o.toString().length() == 0;
+                if(!isEmpty){
+                    response = new HttpSetter();
+                    response.setData(o);
                 }
+            } catch (Exception e) {
+                // 异常拦截可在此处写
+                e.printStackTrace();
+                response.setData(e);
             }
         }
 

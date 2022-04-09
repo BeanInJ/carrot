@@ -6,7 +6,7 @@ import com.vegetables.entity.HttpSetter;
 import com.vegetables.system.notch.BeforeEnterFunction;
 
 /**
- * 拦截
+ * 拦截 /?
  */
 @BeforeEnter(0)
 public class UrlIntercept implements BeforeEnterFunction {
