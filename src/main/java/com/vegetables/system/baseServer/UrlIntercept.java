@@ -22,6 +22,7 @@ public class UrlIntercept implements BeforeEnterFunction {
             httpSetter.setReturnNow(true);
             return httpSetter;
         }
+
         return null;
     }
 }

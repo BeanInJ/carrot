@@ -9,6 +9,8 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeforeEnter {
-    // 入值为拦截器的优先级
+    /**
+     * 拦截器优先级
+     */
     int value() default 1;
 }

@@ -103,9 +103,6 @@ public class HttpSetter {
 
     @Override
     public String toString() {
-        if(this.code.equals("404")){
-            this.setData("找不到该请求");
-        }
 
         StringBuilder stringBuffer =new StringBuilder();
         stringBuffer.append(this.getVersion()).append(" ");
@@ -124,8 +121,9 @@ public class HttpSetter {
 
         stringBuffer.append("\r\n");
 
-        stringBuffer.append(this.getData().toString());
-
+        if(this.data != null) {
+            stringBuffer.append(this.getData().toString());
+        }
         return stringBuffer.toString();
     }
 }

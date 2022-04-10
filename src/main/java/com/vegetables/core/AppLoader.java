@@ -12,7 +12,7 @@ import java.util.Map;
 public class AppLoader {
     private AppLoader() {}
 
-    public static void load(){
+    public static void load(Class<?> main){
         // 加载配置中心
         InnerConfig.load();
 
@@ -20,7 +20,7 @@ public class AppLoader {
         LogConfig.load();
 
         // 加载controller
-        InnerScanner.load();
+        InnerScanner.load(main);
 
         // 加载url映射器
         InnerUrlMethod.load();

@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,8 +20,9 @@ public class InnerConfig implements YouCanChange {
     private static final int DEFAULT_APP_PORT = 8080;
     // 默认配置文件路径
     private static final String DEFAULT_CONFIG_FILE_PATH = "config.yml";
+
     // 所有配置内容
-    private static Map<String,Object> config;
+    private static final Map<String,Object> config = new HashMap<>();
 
     public static Map<String, Object> getConfig() {
         return config;
@@ -39,8 +41,9 @@ public class InnerConfig implements YouCanChange {
         try{
             File file = new File(DEFAULT_CONFIG_FILE_PATH);
             FileReader fileReader = new FileReader(file);
-            config = yaml.load(fileReader);
-        } catch (Exception ignored) {}
+            config.putAll(yaml.load(fileReader));
+        } catch (Exception ignored) {
+        }
     }
 
     // 获取端口号
@@ -52,4 +55,11 @@ public class InnerConfig implements YouCanChange {
         return (int)port;
     }
 
+    public static String getMainPackage(){
+        return (String) config.get("app.package");
+    }
+
+    public static void setMainPackage(String mainPackage){
+        config.put("app.package",mainPackage);
+    }
 }
