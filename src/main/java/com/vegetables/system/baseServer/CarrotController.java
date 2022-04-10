@@ -15,7 +15,7 @@ public class CarrotController {
         return getCarrot();
     }
 
-    @Controller("/carrot")
+    @Controller(value = "/carrot", isCover = true)
     public String getCarrot() {
         String carrotName = (String) InnerConfig.getConfig().get("carrot.name");
         if(carrotName == null) {

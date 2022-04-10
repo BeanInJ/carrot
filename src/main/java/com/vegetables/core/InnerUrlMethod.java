@@ -109,17 +109,25 @@ public class InnerUrlMethod implements YouCanChange {
                         url = baseUrl + url;
                     }
 
-                    // 已存在并且不能覆盖的url，无法进行注册
-                    if(urlMap.containsKey(url) && !controllerInMethod.isCover()) {
-                        log.info("url: " + url +
-                                Msg.ERROR_URL_DUPLICATE +
-                                clazz.getName()+ "." + method.getName());
-
-                        continue;
+                    // 不能放入map条件：map中已有，并且不能覆盖
+                    if(urlMap.containsKey(url)){
+                        if (controllerInMethod.isCover()){
+                            // 覆盖
+                            Object oldClass = urlMap.get(url)[0];
+                            Method oldMethod = (Method) urlMap.get(url)[1];
+                            log.info("url: " + url +
+                                    Msg.ERROR_URL_DUPLICATE +
+                                    oldClass.getClass().getName()+ "." + oldMethod.getName());
+                        }else {
+                            // 不能覆盖
+                            log.info("url: " + url +
+                                    Msg.ERROR_URL_DUPLICATE +
+                                    clazz.getName()+ "." + method.getName());
+                            continue;
+                        }
                     }
 
                     urlMap.put(url, new Object[]{newClazz, method});
-
                 }
             }
         }

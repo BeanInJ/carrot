@@ -1,3 +1,5 @@
 /target/
 /.idea/
 /Carrot.iml
+/Carrot.log
+/Carrot.log.lck
