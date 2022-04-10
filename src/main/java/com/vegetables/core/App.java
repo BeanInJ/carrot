@@ -12,17 +12,17 @@ public class App {
 
     private ArrayBlockingQueue<SocketChannel> channelQueue;
 
-    public static void start(){
+    public static void start(Class<?> main){
         App app = new App();
-        app.hotPan();
+        app.hotPan(main);
         app.oiling();
         app.friedPan();
 
     }
 
     // 1、热锅:加载系统资源
-    private void hotPan(){
-        AppLoader.load();
+    private void hotPan(Class<?> main){
+        AppLoader.load(main);
         log.info("系统资源加载完成");
     }
 
@@ -66,8 +66,7 @@ public class App {
     }
 
     public static void main(String[] args){
-        start();
+        start(App.class);
     }
-
 
 }

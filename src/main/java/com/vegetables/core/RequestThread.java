@@ -40,24 +40,26 @@ public class RequestThread implements Runnable {
         HttpGetter request = new HttpGetter(string);
         HttpSetter response = null;
 
-        // 请求处理前拦截
+        // 请求前拦截器加载
         List<Class<?>> beforeEnters = InnerScanner.getBeforeEnters();
         for (Class<?> beforeEnter:beforeEnters){
             response = beforeEnter(request,beforeEnter);
         }
 
+        // 拦截后如果没有返回响应，则new一个响应体，并进行请求处理
         if(response == null){
             response = new HttpSetter();
         }else {
+            // 如果拦截器要求立即返回给前端，则直接返回
             if(response.isReturnNow()){
                 response(socketChannel,response);
                 return;
             }
         }
 
+        // 如果拦截器不跳过控制器，则进入控制器
         if(response.isGoToController()){
-
-            // 拦截过后，跳转到控制器
+            // 跳转到控制器（跳转到控制器前，HttpSetter是已经初始化了的，但是控制器有权重新初始化）
             try {
                 Object o = InnerUrlMethod.HttpToController(request, response);
                 boolean isEmpty = o == null || o.toString().length() == 0;

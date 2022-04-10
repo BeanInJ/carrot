@@ -50,10 +50,7 @@ public class InnerUrlMethod implements YouCanChange {
 
         // 未注册URL
         if (objects == null) {
-            if(httpSetter == null){
-                httpSetter = new HttpSetter();
-                httpSetter.setCode("404");
-            }
+            httpSetter.setCode("404");
             log.info(Msg.ERROR_NOT_FIND_URL + url);
             return null;
         }
@@ -97,6 +94,7 @@ public class InnerUrlMethod implements YouCanChange {
                 newClazz = clazz.newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
+                continue;
             }
             String baseUrl = correctUrl(controllerInClass.value());
 
@@ -109,7 +107,18 @@ public class InnerUrlMethod implements YouCanChange {
                     if (!baseUrl.equals("/")) {
                         url = baseUrl + url;
                     }
+
+                    // 已存在并且不能覆盖的url，无法进行注册
+                    if(urlMap.containsKey(url) && !controllerInMethod.isCover()) {
+                        log.info("url: " + url +
+                                Msg.ERROR_URL_DUPLICATE +
+                                clazz.getName()+ "." + method.getName());
+
+                        continue;
+                    }
+
                     urlMap.put(url, new Object[]{newClazz, method});
+
                 }
             }
         }
