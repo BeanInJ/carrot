@@ -89,7 +89,7 @@ public class InnerUrlMethod implements YouCanChange {
             // 获取类名上的url
             Controller controllerInClass = clazz.getAnnotation(Controller.class);
             // 创建对象
-            Object newClazz = null;
+            Object newClazz;
             try {
                 newClazz = clazz.newInstance();
             } catch (Exception e) {

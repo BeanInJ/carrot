@@ -10,7 +10,7 @@ import com.vegetables.core.InnerConfig;
 public class CarrotController {
 
 
-    @Controller("/")
+    @Controller()
     public String nullUrl() {
         return getCarrot();
     }
@@ -32,17 +32,17 @@ public class CarrotController {
 
     @Controller("/carrot")
     public String getCarrotTest() {
-        return "重复的URL，已被拦截";
+        return "重复的URL，已被拦截.";
     }
 
     @Controller("/version")
     public String getCarrotVersionTest() {
-        return "重复的URL，已被强制覆盖";
+        return "重复的URL，已被强制覆盖。";
     }
 
     @Controller("/version")
     public String getCarrotVersionTest1() {
-        return "重复的URL，已被强制覆盖";
+        return "重复的URL，已被强制覆盖 ";
     }
 
     @Controller(value = "/version", isCover = true)
