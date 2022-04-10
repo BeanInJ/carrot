@@ -16,23 +16,23 @@ public class InnerScanner implements YouCanChange {
     /**
      * 扫描得到的Controller
      */
-    private static List<Class<?>> controllers;
+    private static Set<Class<?>> controllers;
 
     /**
      * 扫描得到的”请求之前“的拦截器
      */
-    private static List<Class<?>> beforeEnters;
+    private static Set<Class<?>> beforeEnters;
 
     /**
      * 扫描得到的”响应之前“的拦截器
      */
-    private static List<Class<?>> beforeReturns;
+    private static Set<Class<?>> beforeReturns;
 
     public static void load(Class<?> main) {
 
-        controllers = new LinkedList<>();
-        beforeEnters = new LinkedList<>();
-        beforeReturns = new LinkedList<>();
+        controllers = new HashSet<>();
+        beforeEnters = new HashSet<>();
+        beforeReturns = new HashSet<>();
 
         try {
             scannerAnnotation("com.vegetables.system.baseServer");
@@ -49,6 +49,7 @@ public class InnerScanner implements YouCanChange {
                 InnerConfig.setMainPackage(outPackage);
             }
 
+        System.out.println("outPackage:"+outPackage);
             try {
                 scannerAnnotation(outPackage);
             } catch (Exception e) {
@@ -58,15 +59,15 @@ public class InnerScanner implements YouCanChange {
 
     }
 
-    public static List<Class<?>> getControllers() {
+    public static Set<Class<?>> getControllers() {
         return controllers;
     }
 
-    public static List<Class<?>> getBeforeEnters() {
+    public static Set<Class<?>> getBeforeEnters() {
         return beforeEnters;
     }
 
-    public static List<Class<?>> getBeforeReturns() {
+    public static Set<Class<?>> getBeforeReturns() {
         return beforeReturns;
     }
 

@@ -84,7 +84,7 @@ public class InnerUrlMethod implements YouCanChange {
 
     // 加载
     protected static void load() {
-        List<Class<?>> classes = InnerScanner.getControllers();
+        Set<Class<?>> classes = InnerScanner.getControllers();
         for (Class<?> clazz : classes) {
             // 获取类名上的url
             Controller controllerInClass = clazz.getAnnotation(Controller.class);
