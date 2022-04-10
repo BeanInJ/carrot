@@ -3,6 +3,7 @@ package com.vegetables.core;
 import com.vegetables.annotation.BeforeEnter;
 import com.vegetables.annotation.BeforeReturn;
 import com.vegetables.annotation.Controller;
+import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.notch.YouCanChange;
 import com.vegetables.util.PackageUtil;
 
@@ -35,26 +36,19 @@ public class InnerScanner implements YouCanChange {
         beforeReturns = new HashSet<>();
 
         try {
+            // 扫描内部包
             scannerAnnotation("com.vegetables.system.baseServer");
+            // 扫描外部包
+            if(!main.getName().equals(App.class.getName())){
+                String outPackage = (String)InnerConfig.getConfig().get(ConfigKey.APP_START_PACKAGE);
+                if (outPackage == null){
+                    outPackage = main.getPackage().toString().split(" ")[1];
+                    InnerConfig.put(ConfigKey.APP_START_PACKAGE,outPackage);
+                }
+                scannerAnnotation(outPackage);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        // 外部扫描路径
-        // 判断clazz是否是App
-        if(!main.getName().equals(App.class.getName())){
-            String outPackage = (String)InnerConfig.getConfig().get("app.scanner.package");
-            if (outPackage == null){
-                outPackage = main.getPackage().toString().split(" ")[1];
-                InnerConfig.setMainPackage(outPackage);
-            }
-
-        System.out.println("outPackage:"+outPackage);
-            try {
-                scannerAnnotation(outPackage);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
     }
@@ -71,12 +65,13 @@ public class InnerScanner implements YouCanChange {
         return beforeReturns;
     }
 
+    /**
+     * 扫描注解
+     */
     private static void scannerAnnotation(String packageName) throws ClassNotFoundException, IOException {
         List<String> classNames = PackageUtil.getClassName(packageName);
         for (String className : classNames) {
-            // 加载类
             Class<?> aClass = Class.forName(className);
-
             if (aClass.isAnnotationPresent(BeforeEnter.class)) {
                 beforeEnters.add(aClass);
             }else if(aClass.isAnnotationPresent(Controller.class)){

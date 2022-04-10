@@ -1,5 +1,6 @@
 package com.vegetables.core;
 
+import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.notch.YouCanChange;
 import org.yaml.snakeyaml.Yaml;
 
@@ -48,18 +49,14 @@ public class InnerConfig implements YouCanChange {
 
     // 获取端口号
     public static int getAppPort(){
-        Object port = getConfig().get("app.port");
+        Object port = getConfig().get(ConfigKey.APP_PORT);
         if(port == null){
             return DEFAULT_APP_PORT;
         }
         return (int)port;
     }
 
-    public static String getMainPackage(){
-        return (String) config.get("app.package");
-    }
-
-    public static void setMainPackage(String mainPackage){
-        config.put("app.package",mainPackage);
+    public static void put(String key,Object value){
+        config.put(key,value);
     }
 }

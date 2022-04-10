@@ -1,6 +1,7 @@
 package com.vegetables.core;
 
 import com.vegetables.annotation.Controller;
+import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.dict.Msg;
 import com.vegetables.entity.HttpGetter;
 import com.vegetables.entity.HttpSetter;
@@ -124,7 +125,11 @@ public class InnerUrlMethod implements YouCanChange {
         }
 
         // 打印urlMap
-        urlMapPrint();
+        if(InnerConfig.getConfig().get(ConfigKey.APP_ACTIVE) == null
+                || InnerConfig.getConfig().get(ConfigKey.APP_ACTIVE).equals("test")) {
+
+            urlMapPrint();
+        }
     }
 
     protected static void update(Map<String, Object[]> newUrlMap) {
