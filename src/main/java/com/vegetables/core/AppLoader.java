@@ -37,16 +37,6 @@ public class AppLoader {
         }
     }
 
-//    @SuppressWarnings("unchecked")
-//    public static void updateInnerScanner(ChangeSource changeSource) {
-//        if(changeSource != null){
-//            Object o = changeSource.get();
-//            if(o instanceof List) {
-//                InnerScanner.update((List<Class<?>>) changeSource.get());
-//            }
-//        }
-//    }
-
     @SuppressWarnings("unchecked")
     public static void updateUrlMethod(ChangeSource changeSource) {
         if(changeSource != null){

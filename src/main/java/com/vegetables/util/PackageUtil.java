@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * 包扫描工具类
+ */
 public class PackageUtil {
     public static List<String> getClassName(String packageName) throws IOException {
         return getClassName(packageName, true);
@@ -128,9 +131,4 @@ public class PackageUtil {
         return myClassName;
     }
 
-
-    public static void main(String[] args) throws IOException {
-        List<String> className = PackageUtil.getClassName("com.vegetables.system.baseServer");
-        System.out.println(className);
-    }
-    }
+}
