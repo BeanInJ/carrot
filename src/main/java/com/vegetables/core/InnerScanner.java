@@ -14,6 +14,12 @@ import java.util.*;
  *
  */
 public class InnerScanner implements YouCanChange {
+
+    // 此处待优化，
+    // 1、扫描到的类列表，不应该用Set，这些列表的 取出次数 大于添加
+    // 2、考虑是否在扫描的时候，就把所有的类都加载进来，这样就不需要每次用的时候加载类（考虑类的加载次数）
+    // 2、解耦
+
     /**
      * 扫描得到的Controller
      */

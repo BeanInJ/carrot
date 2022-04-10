@@ -9,7 +9,6 @@ import com.vegetables.util.BufferUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,9 +31,9 @@ public class RequestThread implements Runnable {
     }
 
     private void request(SocketChannel socketChannel) throws Exception {
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
 
         // 接收到的内容
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
         socketChannel.read(buffer);
         if(buffer.position() == 0) return;
         String string = BufferUtils.getString(buffer);
