@@ -9,25 +9,25 @@ public class AopLinkTarget {
     /**
      * aop切入时要执行的方法
      */
-    private List<AopMethodAndClass> aopMethods;
+    private List<MethodAndClass> aopMethods;
     /**
      * 目标对象最终要执行的方法
      */
-    private AopMethodAndClass targetMethod;
+    private MethodAndClass targetMethod;
 
-    public List<AopMethodAndClass> getAopMethods() {
+    public List<MethodAndClass> getAopMethods() {
         return aopMethods;
     }
 
-    public void setAopMethods(List<AopMethodAndClass> aopMethods) {
+    public void setAopMethods(List<MethodAndClass> aopMethods) {
         this.aopMethods = aopMethods;
     }
 
-    public AopMethodAndClass getTargetMethod() {
+    public MethodAndClass getTargetMethod() {
         return targetMethod;
     }
 
-    public void setTargetMethod(AopMethodAndClass targetMethod) {
+    public void setTargetMethod(MethodAndClass targetMethod) {
         this.targetMethod = targetMethod;
     }
 }

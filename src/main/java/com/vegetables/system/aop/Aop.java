@@ -1,8 +1,8 @@
 package com.vegetables.system.aop;
 
 import com.vegetables.system.aop.entity.AopLinkTarget;
-import com.vegetables.system.aop.entity.AopMethodAndClass;
 import com.vegetables.system.aop.entity.AopMethods;
+import com.vegetables.system.aop.entity.MethodAndClass;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,8 +12,9 @@ public class Aop {
         // 匹配当前method，然后执行
         for (AopLinkTarget before : new AopMethods().getBefores()) {
             if(before.getTargetMethod().getMethod() == method){
-                for (AopMethodAndClass aopMethod : before.getAopMethods()) {
-                    aopMethod.getMethod().invoke(aopMethod.getObject(),args);
+                for (MethodAndClass aopMethod : before.getAopMethods()) {
+                    // 执行要切入的方法，这里要检测切入方法所需要的参数
+                    // aopMethod.getMethod().invoke(aopMethod.getObject(),args);
                 }
             }
         }

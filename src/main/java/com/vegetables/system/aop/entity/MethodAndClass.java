@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 /**
  * 一个方法对应一个类
  */
-public class AopMethodAndClass {
+public class MethodAndClass {
     /**
      * aop切入时要执行的方法
      */
