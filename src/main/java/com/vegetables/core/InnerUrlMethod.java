@@ -44,7 +44,7 @@ public class InnerUrlMethod implements YouCanChange {
     }
 
     // 执行Controller中对应的方法
-    public static Object httpToController(HttpGetter httpGetter, HttpSetter httpSetter) throws Exception {
+    public static Object httpToController(HttpGetter httpGetter, HttpSetter httpSetter){
         List<Object> params = new LinkedList<>();
 
         String url = httpGetter.getUrl();
@@ -59,6 +59,9 @@ public class InnerUrlMethod implements YouCanChange {
 
         Object clazz = objects[0];
         Method method = (Method) objects[1];
+
+        // AOP
+        Nanny nanny = new Nanny();
         for (Class<?> parameterType : method.getParameterTypes()) {
             // 判断parameterType的类型
             if (parameterType.equals(HttpGetter.class)) {
@@ -77,8 +80,7 @@ public class InnerUrlMethod implements YouCanChange {
         Object[] param = params.toArray();
 
         try {
-            // AOP
-            Nanny nanny = new Nanny();
+            // AOP 介入
             return nanny.invoke(clazz,method,param);
 //            return method.invoke(clazz, param);
         } catch (Exception e) {
