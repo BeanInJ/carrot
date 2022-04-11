@@ -61,7 +61,7 @@ public class RequestThread implements Runnable {
         if(response.isGoToController()){
             // 跳转到控制器（跳转到控制器前，HttpSetter是已经初始化了的，但是控制器有权重新初始化）
             try {
-                Object o = InnerUrlMethod.HttpToController(request, response);
+                Object o = InnerUrlMethod.httpToController(request, response);
                 boolean isEmpty = o == null || o.toString().length() == 0;
                 if(!isEmpty){
                     response = new HttpSetter();

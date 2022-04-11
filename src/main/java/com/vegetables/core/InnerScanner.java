@@ -3,6 +3,9 @@ package com.vegetables.core;
 import com.vegetables.annotation.BeforeEnter;
 import com.vegetables.annotation.BeforeReturn;
 import com.vegetables.annotation.Controller;
+import com.vegetables.system.aop.AopPool;
+import com.vegetables.system.aop.Nanny;
+import com.vegetables.system.aop.active.AOP;
 import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.notch.YouCanChange;
 import com.vegetables.util.PackageUtil;
@@ -74,16 +77,23 @@ public class InnerScanner implements YouCanChange {
     /**
      * 扫描注解
      */
-    private static void scannerAnnotation(String packageName) throws ClassNotFoundException, IOException {
+    private static void scannerAnnotation(String packageName) throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
         List<String> classNames = PackageUtil.getClassName(packageName);
         for (String className : classNames) {
+
+//            Nanny nanny = new Nanny();
             Class<?> aClass = Class.forName(className);
+//            Object o = nanny.theChild(aClass.newInstance());
+//            Class<?> cls = o.getClass();
+//            System.out.println(aClass.getName());
             if (aClass.isAnnotationPresent(BeforeEnter.class)) {
                 beforeEnters.add(aClass);
             }else if(aClass.isAnnotationPresent(Controller.class)){
                 controllers.add(aClass);
             }else if(aClass.isAnnotationPresent(BeforeReturn.class)){
                 beforeReturns.add(aClass);
+            }else if (aClass.isAnnotationPresent(AOP.class)){
+                AopPool.add(aClass);
             }
         }
     }

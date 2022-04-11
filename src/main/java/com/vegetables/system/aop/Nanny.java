@@ -1,5 +1,7 @@
 package com.vegetables.system.aop;
 
+import com.vegetables.system.aop.entity.MethodBody;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -10,27 +12,62 @@ import java.lang.reflect.Proxy;
  * 在方法执行 前、后、异常时、最终执行时，做出相对应的处理
  */
 public class Nanny implements InvocationHandler {
-    private Object targetObject;
+    private Object proxyObject;
 
-    public Object theChild(Object targetObject){
-        this.targetObject=targetObject;
-        return Proxy.newProxyInstance(targetObject.getClass().getClassLoader(),
-                targetObject.getClass().getInterfaces(),this);
+    // 不需要代理
+    public Nanny(){}
+
+    // 生成代理类
+    public Nanny(Object targetObject){
+        this.proxyObject = Proxy.newProxyInstance(
+                targetObject.getClass().getClassLoader(),
+                targetObject.getClass().getInterfaces(),
+                this);
     }
 
+    // 获取代理类
+    public Object getProxy(){
+        return proxyObject;
+    }
+
+    // 执行方法
     @Override
     public Object invoke(Object proxy, Method method, Object[] args){
 
-        Object ret=null;
+        // 方法最终返回值,在Aop.methodBody中进行初始化
+        Aop aop = new Aop(proxy,method,args);
+
         try{
-            Aop.before(proxy,method,args);
-            ret = method.invoke(targetObject, args);
-            Aop.after(proxy,method,args,ret);
+            // 1  方法执行前
+            aop.before();
+            // true：不执行invoke()、after()方法
+            if(aop.gotoFinally()) return aop.result();
+
+            // 2  方法执行
+            aop.invoke();
+            // true：不执行after()方法
+            if(aop.gotoFinally()) return aop.result();
+
+            // 3  方法执行后
+            aop.after();
         }catch (Exception e){
-            Aop.catchException(method,e,ret);
+
+            // 4 方法异常时
+            aop.catchException(e);
         }finally {
-            Aop.finallyTty(proxy,method,args,ret);
+
+            // 5 方法最终必须执行
+            // 任何情况下都会执行
+            aop.finallyTty();
         }
-        return ret;
+        return aop.result();
+    }
+
+    /**
+     * 跳到Finally，并返回
+     */
+    private boolean gotoFinallyAndReturn(MethodBody methodBody){
+        // ”立即返回“ 优先级大于 “继续执行”
+        return methodBody.isReturnNow() || !methodBody.isContinue();
     }
 }

@@ -1,6 +1,7 @@
 package com.vegetables.core;
 
 import com.vegetables.annotation.Controller;
+import com.vegetables.system.aop.Nanny;
 import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.dict.Msg;
 import com.vegetables.entity.HttpGetter;
@@ -43,7 +44,7 @@ public class InnerUrlMethod implements YouCanChange {
     }
 
     // 执行Controller中对应的方法
-    public static Object HttpToController(HttpGetter httpGetter, HttpSetter httpSetter) throws Exception {
+    public static Object httpToController(HttpGetter httpGetter, HttpSetter httpSetter) throws Exception {
         List<Object> params = new LinkedList<>();
 
         String url = httpGetter.getUrl();
