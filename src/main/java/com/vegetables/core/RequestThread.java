@@ -9,7 +9,7 @@ import com.vegetables.util.BufferUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.Set;
+import java.util.List;
 
 /**
  * 请求解析及响应
@@ -41,7 +41,7 @@ public class RequestThread implements Runnable {
         HttpSetter response = null;
 
         // 请求前拦截器加载
-        Set<Class<?>> beforeEnters = InnerScanner.getBeforeEnters();
+        List<Class<?>> beforeEnters = InnerScanner.getBeforeEnters();
         for (Class<?> beforeEnter:beforeEnters){
             response = beforeEnter(request,beforeEnter);
         }
@@ -75,7 +75,7 @@ public class RequestThread implements Runnable {
         }
 
         // controller返回前拦截
-        Set<Class<?>> beforeReturns = InnerScanner.getBeforeReturns();
+        List<Class<?>> beforeReturns = InnerScanner.getBeforeReturns();
         for (Class<?> beforeReturn:beforeReturns){
             beforeReturn(request,response,beforeReturn);
         }
