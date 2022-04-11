@@ -16,6 +16,8 @@ public class AopPool {
     }
 
     public static void add(Class<?> clazz){
-        AopPool.getClasses().add(clazz);
+        if (!classes.contains(clazz)) {
+            AopPool.getClasses().add(clazz);
+        }
     }
 }

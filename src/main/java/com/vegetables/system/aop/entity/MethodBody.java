@@ -1,12 +1,16 @@
 package com.vegetables.system.aop.entity;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
+/**
+ * MethodBody中包含了aop目标方法的信息，包括所在类、方法名，方法参数，方法返回值、异常内容等
+ */
 public class MethodBody {
     /**
      * 方法所在的类
      */
-    private Object proxy;
+    private Object object;
     /**
      * 方法
      */
@@ -41,8 +45,13 @@ public class MethodBody {
      */
     private int step = 0;
 
-    public MethodBody(Object proxy, Method method, Object[] args) {
-        this.proxy = proxy;
+    /**
+     * 记录都执行了哪些方法
+     */
+    private List<Integer> stepList;
+
+    public MethodBody(Object object, Method method, Object[] args) {
+        this.object = object;
         this.method = method;
         this.args = args;
         this.returnValue = null;
@@ -77,12 +86,12 @@ public class MethodBody {
         isContinue = aContinue;
     }
 
-    public Object getProxy() {
-        return proxy;
+    public Object getObject() {
+        return object;
     }
 
-    public void setProxy(Object proxy) {
-        this.proxy = proxy;
+    public void setObject(Object object) {
+        this.object = object;
     }
 
     public Method getMethod() {

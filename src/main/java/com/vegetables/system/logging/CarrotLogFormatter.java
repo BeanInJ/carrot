@@ -27,7 +27,7 @@ public class CarrotLogFormatter extends Formatter {
         StringBuilder className = new StringBuilder(arg0.getSourceClassName() + "." + arg0.getSourceMethodName());
         int length = className.length();
         if(length>25){
-            className = new StringBuilder("..." + className.substring(length - 30, length));
+            className = new StringBuilder("..." + className.substring(length - 25, length));
         }else{
             int num = 28-length;
             for(int i=0;i<num;i++){

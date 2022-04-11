@@ -30,15 +30,16 @@ public class AopHelper {
             try {
                 aopClassName = getAopClassName(aopValue);
             }catch (ArrayIndexOutOfBoundsException e){
-                log.info("未扫描到："+aopValue);
+                log.info("aop未扫描到："+aopValue);
                 continue;
             }
 
             // 如果aopValue中的类名 = 目标类名
             if(targetObjectName.equals(aopClassName)){
                 String aopMethodName = getAopMethodName(aopValue);
-                // 如果aopValue中的方法名 = 目标方法名
-                if(targetMethodName.equals(aopMethodName)){
+                // 如果aopValue中的方法名 = 目标方法名，则添加到list中
+                // 如果aopValue中的方法名 = “*” ，则代表所有方法都需要执行
+                if("*".equals(aopMethodName) ||targetMethodName.equals(aopMethodName)){
                     // 加入匹配列表
                     list.add(aClass);
                 }
@@ -61,7 +62,13 @@ public class AopHelper {
      * 获取 类全名
      */
     public static String getAopClassName(String aopValue){
-        return aopValue.replace("."+getAopMethodName(aopValue),"");
+        String end = getAopMethodName(aopValue);
+        if(aopValue.endsWith("*")){
+            end = ".*";
+        }else {
+            end = "." + end;
+        }
+        return aopValue.replace(end,"");
     }
 
 
