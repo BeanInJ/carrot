@@ -77,7 +77,10 @@ public class InnerUrlMethod implements YouCanChange {
         Object[] param = params.toArray();
 
         try {
-            return method.invoke(clazz, param);
+            // AOP
+            Nanny nanny = new Nanny();
+            return nanny.invoke(clazz,method,param);
+//            return method.invoke(clazz, param);
         } catch (Exception e) {
             log.info(clazz.getClass().getName() + "." + method.getName() + " 方法执行异常");
             throw e;
