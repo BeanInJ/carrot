@@ -19,6 +19,9 @@ public class BaseResponse implements Http{
     private Map<String,String> header;
     private String body;
 
+    private boolean isReturnNow = false;
+    private boolean isGoToController = true;
+
     public BaseResponse() {
         this.baseHttp = new BaseHttp();
         this.version = "HTTP/1.1";
@@ -45,6 +48,22 @@ public class BaseResponse implements Http{
         baseHttp.setHeader(MapUtils.copyMap(this.getHeader()));
         baseHttp.setBody(this.getBody());
         return baseHttp;
+    }
+
+    public boolean isGoToController() {
+        return isGoToController;
+    }
+
+    public void setIsGoToController(boolean isGoToController) {
+        this.isGoToController = isGoToController;
+    }
+
+    public boolean isReturnNow() {
+        return isReturnNow;
+    }
+
+    public void setReturnNow(boolean returnNow) {
+        isReturnNow = returnNow;
     }
 
     public String getVersion() {

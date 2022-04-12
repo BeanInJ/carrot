@@ -1,8 +1,8 @@
 package com.vegetables.system.baseServer;
 
 import com.vegetables.annotation.BeforeEnter;
-import com.vegetables.entity.HttpGetter;
-import com.vegetables.entity.HttpSetter;
+import com.vegetables.entity.BaseRequest;
+import com.vegetables.entity.BaseResponse;
 import com.vegetables.system.notch.BeforeEnterFunction;
 
 /**
@@ -10,17 +10,17 @@ import com.vegetables.system.notch.BeforeEnterFunction;
  */
 @BeforeEnter(0)
 public class UrlIntercept implements BeforeEnterFunction {
-    public HttpSetter beforeEnterAndReturn(HttpGetter httpGetter){
-        String url = httpGetter.getUrl();
+    public BaseResponse beforeEnterAndReturn(BaseRequest request){
+        String url = request.getUrl();
         if (url.equals("/?")){
-            HttpSetter httpSetter = new HttpSetter();
-            httpSetter.setCode("300");
-            httpSetter.setMsg("?");
-            httpSetter.setData("想做点什么呢？");
+            BaseResponse response = new BaseResponse();
+            response.setStatus("300");
+            response.setReason("?");
+            response.setBody("想做点什么呢？");
 
             // 直接返回前端，不再执行控制器或后续拦截器
-            httpSetter.setReturnNow(true);
-            return httpSetter;
+            response.setReturnNow(true);
+            return response;
         }
 
         return null;

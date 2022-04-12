@@ -1,15 +1,17 @@
 package com.vegetables.core;
 
-import com.vegetables.entity.HttpGetter;
-import com.vegetables.entity.HttpSetter;
+import com.vegetables.entity.BaseRequest;
+import com.vegetables.entity.BaseResponse;
 import com.vegetables.system.notch.BeforeEnterFunction;
 import com.vegetables.system.notch.BeforeReturnFunction;
 import com.vegetables.util.BufferUtils;
+import com.vegetables.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 请求解析及响应
@@ -36,9 +38,8 @@ public class RequestThread implements Runnable {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         socketChannel.read(buffer);
         if(buffer.position() == 0) return;
-        String string = BufferUtils.getString(buffer);
-        HttpGetter request = new HttpGetter(string);
-        HttpSetter response = null;
+        BaseRequest request = new BaseRequest(buffer);
+        BaseResponse response = null;
 
         // 请求前拦截器加载
         List<Class<?>> beforeEnters = InnerScanner.getBeforeEnters();
@@ -48,7 +49,7 @@ public class RequestThread implements Runnable {
 
         // 拦截后如果没有返回响应，则new一个响应体，并进行请求处理
         if(response == null){
-            response = new HttpSetter();
+            response = new BaseResponse();
         }else {
             // 如果拦截器要求立即返回给前端，则直接返回
             if(response.isReturnNow()){
@@ -64,13 +65,13 @@ public class RequestThread implements Runnable {
                 Object o = InnerUrlMethod.httpToController(request, response);
                 boolean isEmpty = o == null || o.toString().length() == 0;
                 if(!isEmpty){
-                    response = new HttpSetter();
-                    response.setData(o);
+                    response = new BaseResponse();
+                    response.setBody(StringUtils.toStringOrJson(o));
                 }
             } catch (Exception e) {
                 // 异常拦截可在此处写
                 e.printStackTrace();
-                response.setData(e);
+                response.setBody(e.toString());
             }
         }
 
@@ -83,7 +84,7 @@ public class RequestThread implements Runnable {
         response(socketChannel,response);
     }
 
-    private void response(SocketChannel socketChannel,HttpSetter response) throws IOException {
+    private void response(SocketChannel socketChannel,BaseResponse response) throws IOException {
         socketChannel.write(BufferUtils.getByteBuffer(response.toString()));
         socketChannel.close();
     }
@@ -91,16 +92,16 @@ public class RequestThread implements Runnable {
     /**
      * 处理请求前拦截
      */
-    private HttpSetter beforeEnter(HttpGetter request,Class<?> clazz){
+    private BaseResponse beforeEnter(BaseRequest request,Class<?> clazz){
         try {
             BeforeEnterFunction beforeEnterFunction =(BeforeEnterFunction) clazz.newInstance();
-            HttpSetter httpSetter = beforeEnterFunction.beforeEnterAndReturn(request);
+            BaseResponse response = beforeEnterFunction.beforeEnterAndReturn(request);
 
-            if(httpSetter == null){
+            if(response == null){
                 beforeEnterFunction.beforeEnter(request);
                 return null;
             }else {
-                return httpSetter;
+                return response;
             }
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
@@ -111,7 +112,7 @@ public class RequestThread implements Runnable {
     /**
      * 处理请求后拦截
      */
-    private void beforeReturn(HttpGetter request,HttpSetter response,Class<?> clazz){
+    private void beforeReturn(BaseRequest request, BaseResponse response, Class<?> clazz){
         try {
             BeforeReturnFunction beforeEnterFunction =(BeforeReturnFunction) clazz.newInstance();
             beforeEnterFunction.beforeReturn(request,response);

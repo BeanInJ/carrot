@@ -1,6 +1,11 @@
 package com.vegetables.util;
 
+import com.google.gson.Gson;
+
 import java.math.BigDecimal;
+import java.rmi.MarshalledObject;
+import java.util.List;
+import java.util.Map;
 
 public class StringUtils {
     // 判断字符串为null或者""
@@ -39,4 +44,12 @@ public class StringUtils {
         return str.matches("^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$");
     }
 
+    // 尝试将一个未知类型转为String
+    public static String toStringOrJson(Object obj) {
+        if(obj == null) return "";
+        if (obj instanceof String || obj instanceof Number) {
+            return obj.toString();
+        }
+        return (new Gson()).toJson(obj);
+    }
 }

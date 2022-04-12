@@ -35,4 +35,6 @@ public class TestAopHelper {
         Object o1 = o.getClass().newInstance();
         System.out.println(o1.hashCode());
     }
+
+
 }

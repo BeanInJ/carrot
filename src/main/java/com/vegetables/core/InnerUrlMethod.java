@@ -1,11 +1,11 @@
 package com.vegetables.core;
 
 import com.vegetables.annotation.Controller;
+import com.vegetables.entity.BaseRequest;
+import com.vegetables.entity.BaseResponse;
 import com.vegetables.system.aop.Nanny;
 import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.dict.Msg;
-import com.vegetables.entity.HttpGetter;
-import com.vegetables.entity.HttpSetter;
 import com.vegetables.system.notch.YouCanChange;
 
 import java.lang.reflect.Method;
@@ -26,19 +26,19 @@ public class InnerUrlMethod implements YouCanChange {
     /**
      * 执行 url 对应的方法
       */
-    public static Object httpToController(HttpGetter httpGetter, HttpSetter httpSetter){
+    public static Object httpToController(BaseRequest request, BaseResponse response){
         // 这个list装控制器中方法的参数
         List<Object> params = new LinkedList<>();
 
         // 从request中获取url
-        String url = httpGetter.getUrl();
+        String url = request.getUrl();
 
         // 根据url得到 [类，方法]
         Object[] objects = getMethod(url);
 
         // objects == 未匹配到 url
         if (objects == null) {
-            httpSetter.setCode("404");
+            response.setStatus("404");
             log.info(Msg.ERROR_NOT_FIND_URL + url);
             return null;
         }
@@ -54,15 +54,15 @@ public class InnerUrlMethod implements YouCanChange {
         // 循环url方法的参数类型
         for (Class<?> parameterType : method.getParameterTypes()) {
 
-            if (parameterType.equals(HttpGetter.class)) {
+            if (parameterType.equals(BaseRequest.class)) {
                 // 如果是HttpGetter类型参数，则将HttpGetter对象放入params中
-                params.add(httpGetter);
-            } else if (parameterType.equals(HttpSetter.class)) {
+                params.add(request);
+            } else if (parameterType.equals(BaseResponse.class)) {
                 // 如果是HttpSetter类型参数，则将HttpSetter对象放入params中
-                params.add(httpSetter);
+                params.add(response);
             } else {
                 // 目前前端传过来的全部是String类型，还未进行类型转化
-                params.add(httpGetter.getBody());
+                params.add(request.getBody());
             }
         }
 
