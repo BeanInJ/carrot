@@ -33,7 +33,6 @@ public class BaseHttp implements Http{
         String[] requestLineAndHeader = requestArray[0].split("\r\n");
         this.setFirstLine(requestLineAndHeader[0].split(" "));
         this.setHeader(HttpUtils.headerToMap(requestLineAndHeader));
-        System.out.println("sssssssssssssssss"+requestArray[1]);
         this.setBody(requestArray[1]);
     }
 

@@ -7,6 +7,7 @@ import com.vegetables.system.aop.Nanny;
 import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.dict.Msg;
 import com.vegetables.system.notch.YouCanChange;
+import com.vegetables.util.UrlUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -94,14 +95,14 @@ public class InnerUrlMethod implements YouCanChange {
                 e.printStackTrace();
                 continue;
             }
-            String baseUrl = correctUrl(controllerInClass.value());
+            String baseUrl = UrlUtils.correctUri(controllerInClass.value());
 
             // 获取方法上的url
             Method[] declaredMethods = clazz.getDeclaredMethods();
             for (Method method : declaredMethods) {
                 if (method.isAnnotationPresent(Controller.class)) {
                     Controller controllerInMethod = method.getAnnotation(Controller.class);
-                    String url = correctUrl(controllerInMethod.value());
+                    String url = UrlUtils.correctUri(controllerInMethod.value());
                     if (!baseUrl.equals("/")) {
                         url = baseUrl + url;
                     }
@@ -153,22 +154,6 @@ public class InnerUrlMethod implements YouCanChange {
 
             log.info("url: " + k + "  映射方法: " + method);
         });
-    }
-
-    // 纠正url
-    private static String correctUrl(String url) {
-
-        if (!url.startsWith("/")) {
-            url = "/" + url;
-        }
-
-        if (url.endsWith("/")) {
-            if (url.length() != 1) {
-                url = url.substring(0, url.length() - 1);
-            }
-        }
-
-        return url;
     }
 
     // 获取url对应的方法
