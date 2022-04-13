@@ -1,7 +1,9 @@
 package com.vegetables.core;
 
 import com.vegetables.system.dict.ConfigKey;
+import com.vegetables.system.dict.ConfigValue;
 import com.vegetables.system.notch.YouCanChange;
+import com.vegetables.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -37,13 +39,32 @@ public class InnerConfig implements YouCanChange {
     private InnerConfig(){}
 
     // 加载配置文件
-    protected static void load(){
+    protected static void load(Class<?> main){
+
+        // 加载配置文件
         Yaml yaml = new Yaml();
         try{
             File file = new File(DEFAULT_CONFIG_FILE_PATH);
             FileReader fileReader = new FileReader(file);
             config.putAll(yaml.load(fileReader));
         } catch (Exception ignored) {
+        }
+
+        // 配置内部包
+        Object innerPackageObject = config.get(ConfigKey.APP_INNER_PACKAGE);
+        if(StringUtils.isNotBlankOrNull(innerPackageObject)){
+            config.put(ConfigKey.APP_INNER_PACKAGE, ConfigValue.APP_INNER_PACKAGE);
+        }
+
+        // 配置外部包
+        if (!main.getName().equals(App.class.getName())) {
+            String outPackage = (String) config.get(ConfigKey.APP_START_PACKAGE);
+            if (StringUtils.isNotBlankOrNull(outPackage)) {
+                outPackage = main.getPackage().toString().split(" ")[1];
+                config.put(ConfigKey.APP_START_PACKAGE, outPackage);
+            }
+        }else {
+            config.put(ConfigKey.APP_START_PACKAGE, "");
         }
     }
 
@@ -58,5 +79,8 @@ public class InnerConfig implements YouCanChange {
 
     public static void put(String key,Object value){
         config.put(key,value);
+    }
+    public static Object get(String key){
+        return config.get(key);
     }
 }

@@ -38,6 +38,19 @@ public class StringUtils {
         return !isBlankOrNull(str);
     }
 
+    // 判断Object为null或者""或者" "或者"null"
+    public static boolean isBlankOrNull(Object o) {
+        if(o == null) return true;
+        if(o instanceof String) {
+            return isBlankOrNull((String)o);
+        }
+        return false;
+    }
+    public static boolean isNotBlankOrNull(Object o) {
+        return !isBlankOrNull(o);
+    }
+
+
     // 判断string是数字(包括小数)
     public static boolean isNumber(String str){
         if(isBlankOrNull(str)) return false;

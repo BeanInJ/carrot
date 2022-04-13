@@ -1,5 +1,6 @@
 package com.vegetables.entity;
 
+import com.vegetables.system.exception.CarrotException;
 import com.vegetables.util.MapUtils;
 
 import java.nio.ByteBuffer;
@@ -23,7 +24,7 @@ public class BaseRequest implements Http {
         this.refresh();
     }
 
-    public BaseRequest(ByteBuffer buffer) {
+    public BaseRequest(ByteBuffer buffer) throws CarrotException {
         this.baseHttp = new BaseHttp(buffer);
         this.refresh();
     }

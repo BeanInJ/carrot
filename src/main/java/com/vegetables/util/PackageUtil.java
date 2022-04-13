@@ -1,5 +1,8 @@
 package com.vegetables.util;
 
+import com.vegetables.core.InnerConfig;
+import com.vegetables.system.dict.ConfigKey;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -14,6 +17,16 @@ import java.util.jar.JarFile;
  * 包扫描工具类
  */
 public class PackageUtil {
+    /**
+     * 根据class获取包名
+     */
+    public static String getPackageByClass(Class<?> clazz){
+        return clazz.getPackage().toString().split(" ")[1];
+    }
+
+    /**
+     * 根据包名获取 类全名列表
+     */
     public static List<String> getClassName(String packageName) throws IOException {
         return getClassName(packageName, true);
     }

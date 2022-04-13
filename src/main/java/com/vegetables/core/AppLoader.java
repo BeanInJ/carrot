@@ -1,5 +1,6 @@
 package com.vegetables.core;
 
+import com.vegetables.core.factory.classPool.ClassFactory;
 import com.vegetables.system.logging.LogConfig;
 import com.vegetables.system.notch.ChangeSource;
 
@@ -13,13 +14,17 @@ public class AppLoader {
 
     public static void load(Class<?> main){
         // 加载配置中心
-        InnerConfig.load();
+        InnerConfig.load(main);
 
         // 加载日志配置
         LogConfig.load();
 
+        ClassFactory.load();
+
         // 加载controller
-        InnerScanner.load(main);
+//        InnerScanner.load(main);
+
+        Scanner.load();
 
         // 加载url映射器
         InnerUrlMethod.load();

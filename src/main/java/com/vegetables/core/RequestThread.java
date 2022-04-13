@@ -1,7 +1,10 @@
 package com.vegetables.core;
 
+import com.vegetables.core.factory.classPool.BeforeEnterPool;
+import com.vegetables.core.factory.classPool.BeforeReturnPool;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
+import com.vegetables.system.exception.CarrotException;
 import com.vegetables.system.notch.BeforeEnterFunction;
 import com.vegetables.system.notch.BeforeReturnFunction;
 import com.vegetables.util.BufferUtils;
@@ -11,12 +14,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 请求解析及响应
  */
 public class RequestThread implements Runnable {
+    private static final Logger log = Logger.getGlobal();
+
     private final SocketChannel socketChannel;
 
     public RequestThread(SocketChannel socketChannel) {
@@ -29,6 +34,12 @@ public class RequestThread implements Runnable {
             request(this.socketChannel);
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            try {
+                socketChannel.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -38,11 +49,18 @@ public class RequestThread implements Runnable {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         socketChannel.read(buffer);
         if(buffer.position() == 0) return;
-        BaseRequest request = new BaseRequest(buffer);
+
+        BaseRequest request;
+        try {
+            request = new BaseRequest(buffer);
+        } catch (CarrotException e) {
+            e.printStackTrace();
+            return;
+        }
         BaseResponse response = null;
 
         // 请求前拦截器加载
-        List<Class<?>> beforeEnters = InnerScanner.getBeforeEnters();
+        List<Class<?>> beforeEnters = BeforeEnterPool.getClasses();
         for (Class<?> beforeEnter:beforeEnters){
             response = beforeEnter(request,beforeEnter);
         }
@@ -76,7 +94,7 @@ public class RequestThread implements Runnable {
         }
 
         // controller返回前拦截
-        List<Class<?>> beforeReturns = InnerScanner.getBeforeReturns();
+        List<Class<?>> beforeReturns = BeforeReturnPool.getClasses();
         for (Class<?> beforeReturn:beforeReturns){
             beforeReturn(request,response,beforeReturn);
         }
@@ -86,7 +104,6 @@ public class RequestThread implements Runnable {
 
     private void response(SocketChannel socketChannel,BaseResponse response) throws IOException {
         socketChannel.write(BufferUtils.getByteBuffer(response.toString()));
-        socketChannel.close();
     }
 
     /**

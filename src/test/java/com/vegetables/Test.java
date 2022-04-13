@@ -1,7 +1,15 @@
 package com.vegetables;
 
-import java.util.ArrayList;
+import com.vegetables.annotation.Controller;
+import com.vegetables.system.aop.active.AOP;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+@Controller
+@AOP("SS")
 public class Test {
     public static void main(String[] args) {
 //        String s = "Content-Type: application/json\n" +
@@ -30,7 +38,16 @@ public class Test {
 //        System.out.println(baseClassFactory1.getClasses().hashCode());
 
 
-        ArrayList<Object> objects = new ArrayList<>();
-        objects.remove("ssss");
+//        ArrayList<Object> objects = new ArrayList<>();
+//        objects.remove("ssss");
+        Class<?> clazz = Test.class;
+        Map<String,Class<? extends Annotation>> classPoolMap = new HashMap<>();
+        classPoolMap.put("sss",Controller.class);
+        classPoolMap.put("S2",Controller.class);
+        classPoolMap.put("S3",AOP.class);
+
+        classPoolMap.entrySet().stream()
+                .filter(entry -> clazz.isAnnotationPresent(entry.getValue()))
+                .forEach(entry -> System.out.println( entry.getKey()+"； sss:"+entry.getValue()));
     }
 }

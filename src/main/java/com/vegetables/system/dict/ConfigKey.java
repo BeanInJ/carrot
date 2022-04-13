@@ -9,6 +9,7 @@ public class ConfigKey {
     public static final String APP_AUTHOR = "app.author";
     public static final String APP_KEY = "app.key";
     public static final String APP_START_PACKAGE = "app.start.package";
+    public static final String APP_INNER_PACKAGE = "app.inner.package";
     public static final String APP_LOG_PATH = "app.log.path";
     public static final String APP_LOG_LEVEL = "app.log.level";
 }

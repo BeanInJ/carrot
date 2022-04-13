@@ -1,6 +1,7 @@
 package com.vegetables.core;
 
 import com.vegetables.annotation.Controller;
+import com.vegetables.core.factory.classPool.ControllerPool;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
 import com.vegetables.system.aop.Nanny;
@@ -83,7 +84,7 @@ public class InnerUrlMethod implements YouCanChange {
     // 从扫描器中，加载url对应的方法
     protected static void load() {
         // 从扫描器中，获取所有的Controller类
-        List<Class<?>> classes = InnerScanner.getControllers();
+        List<Class<?>> classes = ControllerPool.getClasses();
         for (Class<?> clazz : classes) {
             // 获取类名上的url
             Controller controllerInClass = clazz.getAnnotation(Controller.class);
