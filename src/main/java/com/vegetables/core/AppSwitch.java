@@ -1,5 +1,6 @@
 package com.vegetables.core;
 
+import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.dict.Msg;
 
 import java.io.IOException;
@@ -20,13 +21,20 @@ public class AppSwitch implements Runnable {
 
     // 端口
     private final int port;
-    // channel队列保存
-    private final ArrayBlockingQueue<SocketChannel> channelQueue = new ArrayBlockingQueue<>(1024);
 
+    // channel队列
+    private final ArrayBlockingQueue<SocketChannel> channelQueue;
+
+    {
+        channelQueue = new ArrayBlockingQueue<>((int)InnerConfig.get(ConfigKey.APP_CHANNEL_SIZE));
+    }
+
+    // 构造函数,传入端口
     public AppSwitch(int port) {
         this.port = port;
     }
 
+    // 获取channel队列
     public ArrayBlockingQueue<SocketChannel> get() {
         return channelQueue;
     }
@@ -54,7 +62,6 @@ public class AppSwitch implements Runnable {
             channel.configureBlocking(false);
 
             channel.register(selector, SelectionKey.OP_ACCEPT);
-
             log.info( Msg.OPEN_SERVER + this.port + ", 尝试访问 http://localhost:"+this.port);
         } catch (IOException e) {
             e.printStackTrace();
@@ -79,8 +86,6 @@ public class AppSwitch implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 }
