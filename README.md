@@ -24,26 +24,18 @@ public class Test {
 }
 ```
 
-初始化项目后，测试接口：
-```
-接口：                                       理想返回内容:
-http://localhost:8081                                  服务注册名：carrot, 系统版本：1.0.0, Carrot author: BeanInJ
-http://localhost:8081/version                          1.0.1
-http://localhost:8081/carrot                           服务注册名：carrot, 系统版本：1.0.0   
-http://localhost:8081/?                                想做点什么呢？
-http://localhost:8081/author                           Carrot author: BeanInJ
-```
+启动项目后，用于测试的内置接口：
 
 
-| 接口                            |              测试内容               | 描述 |
-|-------------------------------|:-------------------------------:|:-----|
+| 接口                            |              测试内容               | 理想返回内容                                           |
+|-------------------------------|:-------------------------------:|:-------------------------------------------------|
 | http://localhost:8081         |           控制器方法，正常返回            | 服务注册名：carrot, 系统版本：1.0.0, Carrot author: BeanInJ |
-| http://localhost:8081/author  |           控制器方法，正常返回            |Carrot author: BeanInJ|
-| http://localhost:8081/carrot  |         控制器方法，强制覆盖重复url         | 服务注册名：carrot, 系统版本：1.0.0 |
-| http://localhost:8081/version |   AOP切面类：VersionControllerAop   | 1.0.1 |
-| http://localhost:8081/?       |       前置拦截器：UrlIntercept        |想做点什么呢？ |
-| http://localhost:8081/404     | 后置拦截器：ResponseIntercept，404状态拦截 |404 - Not Found : /404|
-| http://localhost:8081/123     |  后置拦截器：ResponseIntercept，空返回拦截  |/123 - 返回 null|
+| http://localhost:8081/author  |           控制器方法，正常返回            | Carrot author: BeanInJ                           |
+| http://localhost:8081/carrot  |         控制器方法，强制覆盖重复url         | 服务注册名：carrot, 系统版本：1.0.0                         |
+| http://localhost:8081/version |   AOP切面类：VersionControllerAop   | 1.0.1                                            |
+| http://localhost:8081/?       |       前置拦截器：UrlIntercept        | 想做点什么呢？                                          |
+| http://localhost:8081/404     | 后置拦截器：ResponseIntercept，404状态拦截 | 404 - Not Found : /404                           |
+| http://localhost:8081/123     |  后置拦截器：ResponseIntercept，空返回拦截  | /123 - 返回 null                                   |
 
 
 ![启动时日志截图](img/start.png)
