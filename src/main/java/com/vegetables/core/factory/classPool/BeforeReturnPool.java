@@ -1,7 +1,9 @@
 package com.vegetables.core.factory.classPool;
 
 import com.vegetables.core.factory.Pool;
-import com.vegetables.system.notch.BeforeReturnFunction;
+import com.vegetables.entity.BaseRequest;
+import com.vegetables.entity.BaseResponse;
+import com.vegetables.label.method.BeforeReturnFunction;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -35,5 +37,19 @@ public class BeforeReturnPool implements Pool {
     @Override
     public void add(Object o) {
         CLASS_POOL_CORE.add((Class<?>)o);
+    }
+
+    /**
+     * 执行在控制器方法之后，传给前端之前
+     */
+    public static void filter(BaseRequest request,BaseResponse response){
+        for (Class<?> beforeReturn:getClasses()) {
+            try {
+                BeforeReturnFunction beforeEnterFunction = (BeforeReturnFunction) beforeReturn.newInstance();
+                beforeEnterFunction.beforeReturn(request, response);
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

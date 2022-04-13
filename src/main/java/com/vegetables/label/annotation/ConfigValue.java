@@ -1,4 +1,4 @@
-package com.vegetables.annotation;
+package com.vegetables.label.annotation;
 
 /**
  * 从系统或配置文件获取参数

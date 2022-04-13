@@ -1,4 +1,4 @@
-package com.vegetables.system.notch;
+package com.vegetables.label.method;
 
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;

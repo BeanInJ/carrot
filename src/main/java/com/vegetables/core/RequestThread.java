@@ -5,15 +5,12 @@ import com.vegetables.core.factory.classPool.BeforeReturnPool;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
 import com.vegetables.system.exception.CarrotException;
-import com.vegetables.system.notch.BeforeEnterFunction;
-import com.vegetables.system.notch.BeforeReturnFunction;
 import com.vegetables.util.BufferUtils;
 import com.vegetables.util.StringUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -50,6 +47,7 @@ public class RequestThread implements Runnable {
         socketChannel.read(buffer);
         if(buffer.position() == 0) return;
 
+        // http内容初始化失败，直接返回
         BaseRequest request;
         try {
             request = new BaseRequest(buffer);
@@ -57,13 +55,9 @@ public class RequestThread implements Runnable {
             e.printStackTrace();
             return;
         }
-        BaseResponse response = null;
 
-        // 请求前拦截器加载
-        List<Class<?>> beforeEnters = BeforeEnterPool.getClasses();
-        for (Class<?> beforeEnter:beforeEnters){
-            response = beforeEnter(request,beforeEnter);
-        }
+        // 前置拦截器
+        BaseResponse response = BeforeEnterPool.filter(request);
 
         // 拦截后如果没有返回响应，则new一个响应体，并进行请求处理
         if(response == null){
@@ -76,7 +70,7 @@ public class RequestThread implements Runnable {
             }
         }
 
-        // 如果拦截器不跳过控制器，则进入控制器
+        // 判断拦截器是否要求跳过控制器
         if(response.isGoToController()){
             // 跳转到控制器（跳转到控制器前，HttpSetter是已经初始化了的，但是控制器有权重新初始化）
             try {
@@ -93,11 +87,8 @@ public class RequestThread implements Runnable {
             }
         }
 
-        // controller返回前拦截
-        List<Class<?>> beforeReturns = BeforeReturnPool.getClasses();
-        for (Class<?> beforeReturn:beforeReturns){
-            beforeReturn(request,response,beforeReturn);
-        }
+        // 后置拦截器
+        BeforeReturnPool.filter(request,response);
 
         response(socketChannel,response);
     }
@@ -106,35 +97,4 @@ public class RequestThread implements Runnable {
         socketChannel.write(BufferUtils.getByteBuffer(response.toString()));
     }
 
-    /**
-     * 处理请求前拦截
-     */
-    private BaseResponse beforeEnter(BaseRequest request,Class<?> clazz){
-        try {
-            BeforeEnterFunction beforeEnterFunction =(BeforeEnterFunction) clazz.newInstance();
-            BaseResponse response = beforeEnterFunction.beforeEnterAndReturn(request);
-
-            if(response == null){
-                beforeEnterFunction.beforeEnter(request);
-                return null;
-            }else {
-                return response;
-            }
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 处理请求后拦截
-     */
-    private void beforeReturn(BaseRequest request, BaseResponse response, Class<?> clazz){
-        try {
-            BeforeReturnFunction beforeEnterFunction =(BeforeReturnFunction) clazz.newInstance();
-            beforeEnterFunction.beforeReturn(request,response);
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 }

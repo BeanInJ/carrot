@@ -1,6 +1,6 @@
 package com.vegetables.system.baseServer;
 
-import com.vegetables.annotation.Controller;
+import com.vegetables.label.annotation.Controller;
 import com.vegetables.core.InnerConfig;
 
 /**
@@ -12,7 +12,7 @@ public class CarrotController {
 
     @Controller
     public String nullUrl() {
-        return getCarrot();
+        return getCarrot()+", "+getAuthor();
     }
 
     @Controller(value = "/carrot", isCover = true)
@@ -30,6 +30,11 @@ public class CarrotController {
         return "服务注册名：" + carrotName + ", 系统版本：" + carrotVersion;
     }
 
+    @Controller(value = "/carrot")
+    public String getCarrot1() {
+        return "已被强制覆盖";
+    }
+
     @Controller(value = "/version", isCover = true)
     public String getCarrotVersion() {
         String carrotVersion = (String) InnerConfig.getConfig().get("carrot.version");
@@ -42,5 +47,19 @@ public class CarrotController {
     @Controller("/?")
     public String question() {
         return "此接口已被拦截";
+    }
+
+    @Controller(value = "/author", isCover = true)
+    public String getAuthor() {
+        String author = (String) InnerConfig.getConfig().get("carrot.author");
+        if(author == null) {
+            author = "Carrot author: BeanInJ";
+        }
+        return author;
+    }
+
+    @Controller(value = "/123", isCover = true)
+    public void nullReturn() {
+        // 后置拦截器 ResponseIntercept，将拦截空返回
     }
 }

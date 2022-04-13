@@ -1,9 +1,9 @@
-package com.vegetables.annotation;
+package com.vegetables.label.annotation;
 
 import java.lang.annotation.*;
 
 /**
- * 注册路由：
+ * 标记注册路由：
  * 一个路由方法的类名上必须有这个注解
  */
 @Documented

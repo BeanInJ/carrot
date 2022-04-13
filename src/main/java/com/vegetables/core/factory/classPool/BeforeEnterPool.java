@@ -1,7 +1,9 @@
 package com.vegetables.core.factory.classPool;
 
 import com.vegetables.core.factory.Pool;
-import com.vegetables.system.notch.BeforeEnterFunction;
+import com.vegetables.entity.BaseRequest;
+import com.vegetables.entity.BaseResponse;
+import com.vegetables.label.method.BeforeEnterFunction;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -35,5 +37,31 @@ public class BeforeEnterPool implements Pool {
     @Override
     public void add(Object o) {
         CLASS_POOL_CORE.add((Class<?>)o);
+    }
+
+    /**
+     * 本方法放到请求体前执行
+     */
+    public static BaseResponse filter(BaseRequest request){
+        BaseResponse response = null;
+        for (Class<?> beforeEnter:getClasses()){
+            try {
+                // 创建对象
+                BeforeEnterFunction beforeEnterFunction =(BeforeEnterFunction) beforeEnter.newInstance();
+                // 执行需要改变响应体的方法
+                BaseResponse methodReturn = beforeEnterFunction.beforeEnterAndReturn(request);
+
+                // 如果返回null，可能未定义beforeEnterAndReturn()方法，执行beforeEnter()方法
+                if(methodReturn == null){
+                    // 执行不需要改变响应体的方法
+                    beforeEnterFunction.beforeEnter(request);
+                }else{
+                    response = methodReturn;
+                }
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return response;
     }
 }

@@ -1,9 +1,9 @@
-package com.vegetables.annotation;
+package com.vegetables.label.annotation;
 
 import java.lang.annotation.*;
 
 /**
- * 拦截器：在方法执行之后执行
+ * 标记后置拦截器：在方法执行之后执行
  */
 @Documented
 @Target({ElementType.TYPE})

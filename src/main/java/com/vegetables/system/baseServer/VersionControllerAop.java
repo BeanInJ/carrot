@@ -10,12 +10,13 @@ import com.vegetables.system.dict.ConfigKey;
 public class VersionControllerAop {
 
     /**
-     * 拦截getCarrotVersion方法，返回从配置文件中获取的版本号
+     * 拦截 ip:8081/version，返回配置文件中的版本号
      */
     @AOPBefore
     public void getCorrectVersion(MethodBody methodBody){
 
         Object version = InnerConfig.getConfig().get(ConfigKey.APP_VERSION);
+        System.out.println(version);
         if(version != null){
             methodBody.setReturnValue(version);
             methodBody.setReturnNow(true);

@@ -1,9 +1,9 @@
 package com.vegetables.system.baseServer;
 
-import com.vegetables.annotation.BeforeEnter;
+import com.vegetables.label.annotation.BeforeEnter;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
-import com.vegetables.system.notch.BeforeEnterFunction;
+import com.vegetables.label.method.BeforeEnterFunction;
 
 /**
  * 拦截 /?

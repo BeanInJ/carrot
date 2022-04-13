@@ -1,9 +1,9 @@
 package com.vegetables.system.baseServer;
 
-import com.vegetables.annotation.BeforeReturn;
+import com.vegetables.label.annotation.BeforeReturn;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
-import com.vegetables.system.notch.BeforeReturnFunction;
+import com.vegetables.label.method.BeforeReturnFunction;
 import com.vegetables.util.StringUtils;
 
 /**
@@ -16,11 +16,11 @@ public class ResponseIntercept implements BeforeReturnFunction {
 
         // 拦截404
         if(response.getStatus().equals("404")){
-            response.setBody("404 - Not Found");
+            response.setBody("404 - Not Found : "+ request.getUrl());
         }
 
         // 拦截空返回
-        if(StringUtils.isNotBlankOrNull(response.getBody())){
+        if(StringUtils.isBlankOrNull(response.getBody())){
             response.setBody(request.getUrl() + " - 返回 null");
         }
     }

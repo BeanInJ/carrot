@@ -1,4 +1,4 @@
-package com.vegetables.annotation;
+package com.vegetables.label.annotation;
 
 import java.lang.annotation.*;
 

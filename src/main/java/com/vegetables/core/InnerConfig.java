@@ -2,7 +2,7 @@ package com.vegetables.core;
 
 import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.dict.ConfigValue;
-import com.vegetables.system.notch.YouCanChange;
+import com.vegetables.label.method.YouCanChange;
 import com.vegetables.util.PackageUtil;
 import com.vegetables.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
