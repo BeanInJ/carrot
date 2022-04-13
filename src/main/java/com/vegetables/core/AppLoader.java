@@ -19,11 +19,10 @@ public class AppLoader {
         // 加载日志配置
         LogConfig.load();
 
+        // 加载class工厂
         ClassFactory.load();
 
-        // 加载controller
-//        InnerScanner.load(main);
-
+        // 系统扫描器开始工作
         Scanner.load();
 
         // 加载url映射器
