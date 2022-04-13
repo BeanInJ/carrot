@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 响应内容
+ * 响应内容基类
  *
  * 数据处理逻辑：BaseResponse入数据 -> 封装为BaseHttp原始数据 -> 前端字符流
  * 响应的设计 入数据需求 > 取数据需求
  */
 public class BaseResponse implements Http{
-    private final BaseHttp baseHttp;
+    private BaseHttp baseHttp;
     private String version;
     private String status;
     private String reason;
@@ -24,14 +24,7 @@ public class BaseResponse implements Http{
 
     public BaseResponse() {
         this.baseHttp = new BaseHttp();
-        this.version = "HTTP/1.1";
-        this.status = "200";
-        this.reason = "OK";
-        Map<String, String> map = new HashMap();
-        map.put("Carrot", "Spicy");
-        map.put("Content-Type", "text/html;charset=utf-8");
-        map.put("Character-Encoding", "UTF-8");
-        this.header = map;
+        initResponse();
     }
 
     /**
@@ -40,6 +33,8 @@ public class BaseResponse implements Http{
     public BaseResponse(BaseHttp baseHttp) {
         this.baseHttp = baseHttp;
         this.refresh();
+
+        initResponse();
     }
 
     public BaseHttp getBaseHttp() {
@@ -124,6 +119,32 @@ public class BaseResponse implements Http{
     }
 
     /**
+     * 初始化响应内容
+     */
+    public void initResponse() {
+        if(this.version == null) {
+            this.version = "HTTP/1.1";
+        }
+        if(this.status == null) {
+            this.status = "200";
+        }
+        if(this.reason == null) {
+            this.reason = "OK";
+        }
+
+        if(this.header == null || this.header.size() == 0) {
+            Map<String, String> map = new HashMap<>();
+            map.put("Carrot", "Spicy");
+            map.put("Content-Type", "text/html;charset=utf-8");
+            map.put("Character-Encoding", "UTF-8");
+            this.header = map;
+        }
+    }
+    public String toString() {
+        return this.getBaseHttp().toString();
+    }
+
+    /**
      * 从原始对象baseHttp中刷新BaseResponse
      */
     public void refresh() {
@@ -134,9 +155,7 @@ public class BaseResponse implements Http{
             this.header = MapUtils.copyMap(this.baseHttp.getHeader());
             this.body = this.baseHttp.getBody();
         }
-    }
 
-    public String toString() {
-        return this.getBaseHttp().toString();
+        initResponse();
     }
 }

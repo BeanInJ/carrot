@@ -1,6 +1,5 @@
 package com.vegetables.entity;
 
-import com.vegetables.system.exception.CarrotException;
 import com.vegetables.util.BufferUtils;
 import com.vegetables.util.HttpUtils;
 
@@ -10,9 +9,9 @@ import java.util.Map;
 
 /**
  * BaseHttp 的设计参考了装饰器设计模式
- * 以BaseHttp为基类的类，内部都应该封装一个baseHttp对象,作为原始数据，一般情况下不对原始数据进行修改
- * <p>
- * Request、Response基类，储存三段：请求行、请求头、请求体
+ * Request、Response基类，内部都封装了一个baseHttp对象,作为原始数据对象
+ *
+ * BaseHttp将一个http消息分为三段：第一行、请求头/响应头、请求体
  */
 public class BaseHttp implements Http {
     private String[] firstLine;

@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
- * 请求内容
+ * 请求内容基类
  *
  * 数据处理逻辑： 前端字符流 -> BaseHttp原始数据 -> BaseRequest加工处理，方便获取参数
  * 请求的设计 取数据需求 > 入数据需求

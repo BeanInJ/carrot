@@ -21,3 +21,10 @@
 3、动态配置内容在 AppCpu.start方法的while循环中 切入加载
 
 后续实现： 依赖注入、aop
+
+baseHttp.setRequestLine(new String[]{"HTTP/1.1","200","OK"});
+
+
+父类.class.isAssignableFrom(子类.class)
+
+子类实例 instanceof 父类类型
