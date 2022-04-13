@@ -15,7 +15,7 @@ public class ControllerPool implements Pool {
 
     private static final ClassPoolCore CLASS_POOL_CORE = new ClassPoolCore();
 
-    public static void trim() {
+    public void trim() {
         for(Class<?> clazz:getClasses()){
             for (Method method : clazz.getMethods()) {
                 if(method.isAnnotationPresent(Controller.class)){

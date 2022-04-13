@@ -36,7 +36,7 @@ public class ClassFactory {
     }
 
     /**
-     * 注册一个"池"
+     * 注册一个"池",必须在扫描器扫描之前注册才有效
      */
     public static boolean addPool(Pool pool,Class<? extends Annotation> annotationType){
         // 如果put成功，则返回true
@@ -60,10 +60,9 @@ public class ClassFactory {
     }
 
     public static void trim(){
-        ControllerPool.trim();
-        BeforeEnterPool.trim();
-        BeforeReturnPool.trim();
-        AopPool.trim();
+        for (Map.Entry<Pool, Class<? extends Annotation>> poolClassEntry : classPoolMap.entrySet()) {
+            poolClassEntry.getKey().trim();
+        }
     }
 
 }

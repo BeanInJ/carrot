@@ -3,6 +3,9 @@ package com.vegetables.core.factory.classPool;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 类加载池核心，所有的类加载池都应该有一个ClassPoolCore
+ */
 public class ClassPoolCore {
     private final List<Class<?>> classes = new ArrayList<>();
 

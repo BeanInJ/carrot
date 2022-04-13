@@ -11,7 +11,7 @@ public class BeforeEnterPool implements Pool {
 
     private static final ClassPoolCore CLASS_POOL_CORE = new ClassPoolCore();
 
-    public static void trim() {
+    public void trim() {
         for(Class<?> clazz:getClasses()){
             if(clazz.isAssignableFrom(BeforeEnterFunction.class)){
                 log.info("移除无效前置拦截器：" + clazz.getName());

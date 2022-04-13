@@ -3,6 +3,7 @@ package com.vegetables.core;
 import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.dict.ConfigValue;
 import com.vegetables.system.notch.YouCanChange;
+import com.vegetables.util.PackageUtil;
 import com.vegetables.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
@@ -14,8 +15,6 @@ import java.util.Map;
 /**
  * 静态资源类：配置中心
  *
- * Inner开头的类名，为静态资源类
- * 静态资源类是不可new的，且load()方法仅包内可调用
  * 静态资源类的load()方法一般情况下仅在AppLoader中加载
  */
 public class InnerConfig implements YouCanChange {
@@ -50,17 +49,27 @@ public class InnerConfig implements YouCanChange {
         } catch (Exception ignored) {
         }
 
+        // 配置ServerSocketChannel大小
+        Object serverSocketChannelSize = config.get(ConfigKey.APP_CHANNEL_SIZE);
+        if(StringUtils.isBlankOrNull(serverSocketChannelSize)){
+            config.put(ConfigKey.APP_CHANNEL_SIZE, ConfigValue.APP_CHANNEL_SIZE);
+        }else if(serverSocketChannelSize instanceof String){
+                config.put(ConfigKey.APP_CHANNEL_SIZE,
+                        Integer.parseInt((String)serverSocketChannelSize));
+        }
+
+
         // 配置内部包
         Object innerPackageObject = config.get(ConfigKey.APP_INNER_PACKAGE);
-        if(StringUtils.isNotBlankOrNull(innerPackageObject)){
+        if(StringUtils.isBlankOrNull(innerPackageObject)){
             config.put(ConfigKey.APP_INNER_PACKAGE, ConfigValue.APP_INNER_PACKAGE);
         }
 
         // 配置外部包
         if (!main.getName().equals(App.class.getName())) {
             String outPackage = (String) config.get(ConfigKey.APP_START_PACKAGE);
-            if (StringUtils.isNotBlankOrNull(outPackage)) {
-                outPackage = main.getPackage().toString().split(" ")[1];
+            if (StringUtils.isBlankOrNull(outPackage)) {
+                outPackage = PackageUtil.getPackageByClass(main);
                 config.put(ConfigKey.APP_START_PACKAGE, outPackage);
             }
         }else {
