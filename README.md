@@ -27,7 +27,7 @@ public class Test {
 启动项目后，用于测试的内置接口：
 
 
-| 接口                            | 测试内容                           | 理想返回内容                                          |
+| 接口                            | 测试内容|理想返回内容|
 |----|----|----|
 | http://localhost:8081         | 控制器方法，正常返回                     | 服务注册名：carrot, 系统版本：1.0.0, Carrot author: BeanInJ |
 | http://localhost:8081/author  | 控制器方法，正常返回                     | Carrot author: BeanInJ                          |
