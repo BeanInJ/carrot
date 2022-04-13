@@ -22,9 +22,39 @@ public class Test {
         App.start(Test.class);
     }
 }
+// App.start(Test.class);   Carrot根据Test所在位置进行包扫描
+// 当然你也可以通过在项目根目录下，添加配置文件 config.yml 配置需要进行扫描的包名。（app.start.package: **.**.**）
 ```
 
-启动项目后，用于测试的内置接口：
+#### 个性化配置
+
+你可以通过在项目根目录下，添加配置文件 config.yml，配置系统参数。
+
+可配置参数示例：
+```yaml
+# 服务端口号
+app.port: 8000
+# 当期启动状态/子配置文件名
+app.active: test
+# 服务名
+app.name: myWebServer
+# 服务描述
+app.desc: 我的web服务器
+# 系统版本
+app.version: 0.0.1
+# 作者
+app.author: BeanInJ
+# 密钥
+app.key: Q2Fycm90Cg==
+# 请求缓存池大小（请根据服务器自身运行配置）
+app.channel.size: 1024
+# 待扫描包名（Controller、Service、Aop 不在待扫描包下无效）
+app.start.package: com.excemple.test
+```
+
+#### 内置接口
+
+用于测试的内置接口：
 
 
 | 接口                            | 测试内容|理想返回内容|
