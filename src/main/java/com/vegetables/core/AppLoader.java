@@ -19,13 +19,19 @@ public class AppLoader {
         // 加载日志配置
         LogConfig.load();
 
-        // 加载class工厂
+        // 初始化class工厂
         ClassFactory.load();
 
-        // 系统扫描器开始工作
+        // 系统扫描器从配置中心加载需要扫描的包
         Scanner.load();
 
-        // 加载url映射器
+        // 系统扫描器开始工作（向class工厂提供"原料"）
+        Scanner.start();
+
+        // class工厂开始将 class分发到各个池
+        ClassFactory.start();
+
+        // 从controller池中加载url，初始化url映射器
         InnerUrlMethod.load();
 
     }

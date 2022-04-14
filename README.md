@@ -80,7 +80,33 @@ AOP执行流程图，如下：
 
 ![AOP流程图](img/aop.png)。
 
-#### 参与贡献
+#### 系统结构
+
+系统启动过程：
+
+加载资源 --> 开放端口（打开socket） -->  开启线程池（一个请求进来，申请一个线程）
+
+
+加载资源过程：
+
+配置加载 -->  日志加载 --> 类工厂初始化 --> 扫描器初始化 --> 开启包扫描扫描 --> 类工厂分发资源到“类池” --> url映射器初始化
+
+(类池只会等待被加载或调用,也就是它的"技能"是被动的)
+
+
+url映射器：
+
+从 controller类池 解析url并保存
+
+一个请求进来（数据类型的传递）：
+
+线程1：  channel.read --> ByteBuffer  -->  baseHttp --> request --> response --> baseHttp --> ByteBuffer --> channel.write.close
+
+
+一个请求进来（程序流程，这里每一步都可以往后跳载）：
+
+线程1：channel.read --> 前置拦截器 -->  request --> url映射器 --> "控"制"器" -->  response --> 后置拦截器 --> 异常拦截器  ("代表aop) --> channel.write.close
+
 
 
 

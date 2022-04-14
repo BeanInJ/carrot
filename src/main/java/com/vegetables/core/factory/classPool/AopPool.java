@@ -3,6 +3,7 @@ package com.vegetables.core.factory.classPool;
 import com.vegetables.core.factory.Pool;
 import com.vegetables.system.aop.active.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.logging.Logger;
@@ -33,6 +34,11 @@ public class AopPool implements Pool {
             log.info("移除无效AOP：" + clazz.getName());
             CLASS_POOL_CORE.remove(clazz);
         }
+    }
+
+    @Override
+    public Class<? extends Annotation> getLabel() {
+        return AOP.class;
     }
 
     public static void add(Class<?> clazz) {

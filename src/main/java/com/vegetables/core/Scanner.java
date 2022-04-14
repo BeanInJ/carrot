@@ -24,25 +24,19 @@ public class Scanner {
     private static final List<String> classPackage = new ArrayList<>();
 
     public static void load() {
-
         // 内部包
         classPackage.add(ConfigValue.APP_INNER_PACKAGE);
         // 外部包
         classPackage.add(InnerConfig.get(ConfigKey.APP_START_PACKAGE).toString());
-
-
-        startScanner();
     }
 
     /**
      * 开始扫描包
      */
-    private static void startScanner(){
+    public static void start(){
         for (String packageString:classPackage){
             scannerOne(packageString);
         }
-        // 清除工厂中不合格产品
-        ClassFactory.trim();
     }
 
     /**
@@ -58,6 +52,8 @@ public class Scanner {
             log.warning("异常包名：" + packageName);
             return;
         }
+
+
 
         for (String className : classNames) {
             try {

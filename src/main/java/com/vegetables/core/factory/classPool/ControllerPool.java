@@ -5,6 +5,7 @@ import com.vegetables.core.factory.Pool;
 import com.vegetables.system.dict.Msg;
 import com.vegetables.util.UrlUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,11 @@ public class ControllerPool implements Pool {
                 CLASS_POOL_CORE.remove(clazz);
             }
         }
+    }
+
+    @Override
+    public Class<? extends Annotation> getLabel() {
+        return Controller.class;
     }
 
 

@@ -3,8 +3,10 @@ package com.vegetables.core.factory.classPool;
 import com.vegetables.core.factory.Pool;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
+import com.vegetables.label.annotation.BeforeEnter;
 import com.vegetables.label.method.BeforeEnterFunction;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -20,6 +22,11 @@ public class BeforeEnterPool implements Pool {
                 CLASS_POOL_CORE.remove(clazz);
             }
         }
+    }
+
+    @Override
+    public Class<? extends Annotation> getLabel() {
+        return BeforeEnter.class;
     }
 
     public static void add(Class<?> clazz) {
