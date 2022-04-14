@@ -16,7 +16,6 @@ public class VersionControllerAop {
     public void getCorrectVersion(MethodBody methodBody){
 
         Object version = InnerConfig.getConfig().get(ConfigKey.APP_VERSION);
-        System.out.println(version);
         if(version != null){
             methodBody.setReturnValue(version);
             methodBody.setReturnNow(true);
