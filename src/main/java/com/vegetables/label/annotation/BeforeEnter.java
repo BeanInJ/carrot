@@ -3,7 +3,7 @@ package com.vegetables.label.annotation;
 import java.lang.annotation.*;
 
 /**
- * 标记拦截器：在目标方法执行之前执行
+ * 标记前拦截器
  */
 @Documented
 @Target({ElementType.TYPE})

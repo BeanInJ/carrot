@@ -3,6 +3,9 @@ package com.vegetables.label.method;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
 
+/**
+ * 前置拦截器必须实现这个接口，并实现其中一个方法
+ */
 public interface BeforeEnterFunction {
 
     /**
