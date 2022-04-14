@@ -5,6 +5,7 @@ import com.vegetables.util.MapUtils;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 请求内容基类
@@ -13,6 +14,8 @@ import java.util.Map;
  * 请求的设计 取数据需求 > 入数据需求
  */
 public class BaseRequest implements Http {
+    private static final Logger log = Logger.getGlobal();
+
     private final BaseHttp baseHttp;
     private String url;
     private String method;
@@ -104,6 +107,28 @@ public class BaseRequest implements Http {
             this.version = this.baseHttp.getFirstLine()[2];
             this.header = MapUtils.copyMap(this.baseHttp.getHeader());
         }
+    }
+
+    /**
+     * 获取请求体中的cookie
+     */
+    public String getCookie(String key){
+        String cookie = this.header.get("Set-Cookie");
+        // 解析cookie中的键值对
+        String[] kvs = cookie.split(";");
+        for(String kv : kvs) {
+            try {
+                String[] kvArr = kv.split("=");
+                if (kvArr[0].equals(key)) {
+                    return kvArr[1];
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                log.fine("解析cookie失败，失败键值对：" + kv);
+                return null;
+            }
+        }
+        return null;
     }
 
     public String toString() {

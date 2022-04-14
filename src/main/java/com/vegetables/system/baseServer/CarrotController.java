@@ -1,5 +1,6 @@
 package com.vegetables.system.baseServer;
 
+import com.vegetables.entity.BaseResponse;
 import com.vegetables.label.annotation.Controller;
 import com.vegetables.core.InnerConfig;
 
@@ -11,12 +12,12 @@ public class CarrotController {
 
 
     @Controller
-    public String nullUrl() {
-        return getCarrot()+", "+getAuthor();
+    public String nullUrl(BaseResponse response) {
+        return getCarrot(response)+", "+getAuthor();
     }
 
     @Controller(value = "/carrot", isCover = true)
-    public String getCarrot() {
+    public String getCarrot(BaseResponse response) {
         String carrotName = (String) InnerConfig.getConfig().get("carrot.name");
         if(carrotName == null) {
             carrotName = "carrot";
@@ -27,6 +28,7 @@ public class CarrotController {
             carrotVersion = "1.0.0";
         }
 
+        response.setCookie("name","BeanInJ");
         return "服务注册名：" + carrotName + ", 系统版本：" + carrotVersion;
     }
 
@@ -55,6 +57,8 @@ public class CarrotController {
         if(author == null) {
             author = "Carrot author: BeanInJ";
         }
+
+
         return author;
     }
 

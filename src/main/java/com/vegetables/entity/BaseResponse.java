@@ -1,9 +1,11 @@
 package com.vegetables.entity;
 
 import com.vegetables.util.MapUtils;
+import com.vegetables.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 响应内容基类
@@ -12,6 +14,8 @@ import java.util.Map;
  * 响应的设计 入数据需求 > 取数据需求
  */
 public class BaseResponse implements Http{
+    private static final Logger log = Logger.getGlobal();
+
     private BaseHttp baseHttp;
     private String version;
     private String status;
@@ -22,6 +26,9 @@ public class BaseResponse implements Http{
     private boolean isReturnNow = false;
     private boolean isGoToController = true;
 
+    /**
+     * 初始化一个新响应实体
+     */
     public BaseResponse() {
         this.baseHttp = new BaseHttp();
         initResponse();
@@ -33,8 +40,6 @@ public class BaseResponse implements Http{
     public BaseResponse(BaseHttp baseHttp) {
         this.baseHttp = baseHttp;
         this.refresh();
-
-        initResponse();
     }
 
     public BaseHttp getBaseHttp() {
@@ -140,8 +145,37 @@ public class BaseResponse implements Http{
             this.header = map;
         }
     }
-    public String toString() {
-        return this.getBaseHttp().toString();
+
+    /**
+     * 设置cookie
+     */
+    public void setCookie(String key,String value) {
+        String cookie = this.header.get("Set-Cookie");
+        String kv = key + "=" + value;
+        if(StringUtils.isBlank(cookie)){
+            this.header.put("Set-Cookie",key+"="+value);
+        }else {
+            this.header.put("Set-Cookie",cookie + ";" + kv);
+        }
+    }
+
+    public String getCookie(String key){
+        String cookie = this.header.get("Set-Cookie");
+        // 解析cookie中的键值对
+        String[] kvs = cookie.split(";");
+        for(String kv : kvs) {
+            try {
+                String[] kvArr = kv.split("=");
+                if (kvArr[0].equals(key)) {
+                    return kvArr[1];
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+                log.fine("解析cookie失败，失败键值对：" + kv);
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -157,5 +191,9 @@ public class BaseResponse implements Http{
         }
 
         initResponse();
+    }
+
+    public String toString() {
+        return this.getBaseHttp().toString();
     }
 }
