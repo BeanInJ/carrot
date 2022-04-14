@@ -26,7 +26,8 @@ public class AppSwitch implements Runnable {
     private final ArrayBlockingQueue<SocketChannel> channelQueue;
 
     {
-        channelQueue = new ArrayBlockingQueue<>((int)InnerConfig.get(ConfigKey.APP_CHANNEL_SIZE));
+        int size = (int) InnerConfig.get(ConfigKey.APP_CHANNEL_SIZE);
+        channelQueue = new ArrayBlockingQueue<>(size);
     }
 
     // 构造函数,传入端口

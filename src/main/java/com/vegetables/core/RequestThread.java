@@ -51,7 +51,7 @@ public class RequestThread implements Runnable {
         BaseRequest request;
         try {
             request = new BaseRequest(buffer);
-        } catch (CarrotException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }

@@ -16,18 +16,24 @@ import java.util.logging.Logger;
 public class BaseRequest implements Http {
     private static final Logger log = Logger.getGlobal();
 
-    private final BaseHttp baseHttp;
+    private BaseHttp baseHttp;
     private String url;
     private String method;
     private String version;
     private Map<String,String> header;
+
+    /**
+     * 无参构造仅用于父类向子类转换
+     */
+    protected BaseRequest() {
+    }
 
     public BaseRequest(BaseHttp baseHttp) {
         this.baseHttp = baseHttp;
         this.refresh();
     }
 
-    public BaseRequest(ByteBuffer buffer) throws CarrotException {
+    public BaseRequest(ByteBuffer buffer){
         this.baseHttp = new BaseHttp(buffer);
         this.refresh();
     }

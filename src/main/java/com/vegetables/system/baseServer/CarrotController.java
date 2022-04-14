@@ -1,8 +1,12 @@
 package com.vegetables.system.baseServer;
 
+import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
+import com.vegetables.entity.GetRequest;
+import com.vegetables.entity.JsonResponse;
 import com.vegetables.label.annotation.Controller;
 import com.vegetables.core.InnerConfig;
+import com.vegetables.system.exception.CarrotException;
 
 /**
  * 获取系统初始化的一些信息
@@ -65,5 +69,12 @@ public class CarrotController {
     @Controller(value = "/123", isCover = true)
     public void nullReturn() {
         // 后置拦截器 ResponseIntercept，将拦截空返回
+    }
+
+    @Controller("/user")
+    public String getUrl(BaseRequest request, BaseResponse response){
+        GetRequest getRequest = new GetRequest(request);
+        response.setBody(getRequest.getParams().toString());
+        return null;
     }
 }

@@ -1,6 +1,5 @@
 package com.vegetables.core;
 
-import com.vegetables.label.annotation.Controller;
 import com.vegetables.core.factory.classPool.ControllerPool;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
@@ -8,7 +7,6 @@ import com.vegetables.system.aop.Nanny;
 import com.vegetables.system.dict.ConfigKey;
 import com.vegetables.system.dict.Msg;
 import com.vegetables.label.method.YouCanChange;
-import com.vegetables.util.UrlUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -113,6 +111,9 @@ public class InnerUrlMethod implements YouCanChange {
 
     // 获取url对应的方法
     private static Object[] getMethod(String url) {
+        if(url.contains("?")){
+            url = url.split("\\?")[0];
+        }
         return urlMap.get(url);
     }
 }
