@@ -1,6 +1,6 @@
 package com.vegetables.core;
 
-import com.vegetables.core.factory.classPool.ClassFactory;
+import com.vegetables.core.factory.ClassFactory;
 import com.vegetables.system.logging.LogConfig;
 import com.vegetables.label.method.ChangeSource;
 

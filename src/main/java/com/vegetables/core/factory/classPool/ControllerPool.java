@@ -1,5 +1,6 @@
 package com.vegetables.core.factory.classPool;
 
+import com.vegetables.core.factory.ClassPoolCore;
 import com.vegetables.label.annotation.Controller;
 import com.vegetables.core.factory.Pool;
 import com.vegetables.system.dict.Msg;
