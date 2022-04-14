@@ -65,10 +65,8 @@ public class AppSwitch implements Runnable {
             log.info( Msg.OPEN_SERVER + this.port + ", 尝试访问 http://localhost:"+this.port);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
-
-        assert selector != null;
-        assert channel != null;
 
         // 监听选择器中的可读事件
         // noinspection InfiniteLoopStatement

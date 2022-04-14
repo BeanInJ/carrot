@@ -41,7 +41,7 @@ public class InnerUrlMethod implements YouCanChange {
         // objects == 未匹配到 url
         if (objects == null) {
             response.setStatus("404");
-            log.info(Msg.ERROR_NOT_FIND_URL + url);
+            log.fine(Msg.ERROR_NOT_FIND_URL + url);
             return null;
         }
 
@@ -107,7 +107,7 @@ public class InnerUrlMethod implements YouCanChange {
             String[] s = path.split("\\.");
             String method = s[s.length - 2] + "." + s[s.length - 1];
 
-            log.info("url: " + k + "  映射方法: " + method);
+            log.fine("url: " + k + "  映射方法: " + method);
         });
     }
 

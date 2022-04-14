@@ -49,6 +49,12 @@ public class InnerConfig implements YouCanChange {
         } catch (Exception ignored) {
         }
 
+        // 配置日志
+        Object logFile = config.get(ConfigKey.APP_LOG_PATH);
+        if(StringUtils.isBlankOrNull(logFile)){
+            config.put(ConfigKey.APP_LOG_PATH, ConfigValue.APP_LOG_PATH);
+        }
+
         // 配置ServerSocketChannel大小
         Object serverSocketChannelSize = config.get(ConfigKey.APP_CHANNEL_SIZE);
         if(StringUtils.isBlankOrNull(serverSocketChannelSize)){

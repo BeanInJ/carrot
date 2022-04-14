@@ -34,7 +34,7 @@ public class Test {
 ```yaml
 # 服务端口号
 app.port: 8000
-# 当期启动状态/子配置文件名
+# 系统环境
 app.active: test
 # 服务名
 app.name: myWebServer

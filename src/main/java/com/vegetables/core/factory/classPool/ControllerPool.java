@@ -87,12 +87,12 @@ public class ControllerPool implements Pool {
                             // 覆盖
                             Object oldClass = urlMap.get(url)[0];
                             Method oldMethod = (Method) urlMap.get(url)[1];
-                            log.info("url: " + url +
+                            log.fine("url: " + url +
                                     Msg.ERROR_URL_DUPLICATE +
                                     oldClass.getClass().getName() + "." + oldMethod.getName());
                         } else {
                             // 不能覆盖
-                            log.info("url: " + url +
+                            log.fine("url: " + url +
                                     Msg.ERROR_URL_DUPLICATE +
                                     clazz.getName() + "." + method.getName());
                             continue;

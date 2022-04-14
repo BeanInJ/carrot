@@ -17,6 +17,7 @@ public class ResponseIntercept implements BeforeReturnFunction {
         // 拦截404
         if(response.getStatus().equals("404")){
             response.setBody("404 - Not Found : "+ request.getUrl());
+            response.setReason("Not Found");
         }
 
         // 拦截空返回
