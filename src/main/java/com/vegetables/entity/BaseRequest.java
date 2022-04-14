@@ -1,6 +1,5 @@
 package com.vegetables.entity;
 
-import com.vegetables.system.exception.CarrotException;
 import com.vegetables.util.MapUtils;
 
 import java.nio.ByteBuffer;
@@ -22,10 +21,7 @@ public class BaseRequest implements Http {
     private String version;
     private Map<String,String> header;
 
-    /**
-     * 无参构造仅用于父类向子类转换
-     */
-    protected BaseRequest() {
+    public BaseRequest() {
     }
 
     public BaseRequest(BaseHttp baseHttp) {
@@ -34,6 +30,11 @@ public class BaseRequest implements Http {
     }
 
     public BaseRequest(ByteBuffer buffer){
+        this.baseHttp = new BaseHttp(buffer);
+        this.refresh();
+    }
+
+    public void reload(ByteBuffer buffer){
         this.baseHttp = new BaseHttp(buffer);
         this.refresh();
     }
@@ -56,7 +57,7 @@ public class BaseRequest implements Http {
     }
 
     public String getHeaderOne(String key) {
-        return (String)this.header.get(key);
+        return this.header.get(key);
     }
 
     public String getUrl() {

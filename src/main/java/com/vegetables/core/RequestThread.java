@@ -5,6 +5,7 @@ import com.vegetables.core.factory.classPool.BeforeReturnPool;
 import com.vegetables.entity.BaseRequest;
 import com.vegetables.entity.BaseResponse;
 import com.vegetables.system.exception.CarrotException;
+import com.vegetables.system.exception.ReturnNow;
 import com.vegetables.util.BufferUtils;
 import com.vegetables.util.StringUtils;
 
@@ -40,17 +41,19 @@ public class RequestThread implements Runnable {
         }
     }
 
+
+
     private void request(SocketChannel socketChannel) throws Exception {
 
         // 接收到的内容
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         socketChannel.read(buffer);
-        if(buffer.position() == 0) return;
+        nullThrow(buffer);
 
         // http内容初始化失败，直接返回
-        BaseRequest request;
+        BaseRequest request = new BaseRequest();
         try {
-            request = new BaseRequest(buffer);
+            request.reload(buffer);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -94,6 +97,10 @@ public class RequestThread implements Runnable {
 
     private void response(SocketChannel socketChannel,BaseResponse response) throws IOException {
         socketChannel.write(BufferUtils.getByteBuffer(response.toString()));
+    }
+
+    private void nullThrow(ByteBuffer buffer) throws CarrotException {
+        if(buffer.position() == 0) throw new ReturnNow();
     }
 
 }
