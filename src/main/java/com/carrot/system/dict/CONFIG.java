@@ -23,8 +23,7 @@ public class CONFIG {
     public static final String APP_AUTHOR_VALUE = "Carrot";
     public static final String APP_KEY_VALUE = "Q2Fycm90";
     public static final int APP_CHANNEL_SIZE_VALUE = 1024;
-    public static final String APP_START_PACKAGE_VALUE = "com.carrot";
-    public static final String APP_INNER_PACKAGE_VALUE = "com.carrot.core";
+    public static final String APP_INNER_PACKAGE_VALUE = "com.carrot.system.BaseServer";
     public static final String APP_LOG_PATH_VALUE = "carrot.log";
     public static final String APP_LOG_LEVEL_VALUE = "INFO";
 }

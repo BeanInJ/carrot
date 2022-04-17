@@ -9,12 +9,17 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
 
 /**
  * 包扫描工具类
  */
 public class PackageUtil {
+    /**
+     * 根据class获取包名
+     */
+    public static String getPackageByClass(Class<?> clazz){
+        return clazz.getPackage().toString().split(" ")[1];
+    }
 
     /**
      * 根据包名获取 类全名列表
