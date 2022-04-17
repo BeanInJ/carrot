@@ -6,7 +6,7 @@ import com.carrot.core.step.ConfigCenter;
 import com.carrot.system.BaseServer.pool.label.Aop;
 import com.carrot.system.dict.CONFIG;
 
-@Aop("com.vegetables.system.baseServer.CarrotController.getCarrotVersion")
+@Aop("com.carrot.system.BaseServer.controller.CarrotController.getCarrotVersion")
 public class VersionControllerAop {
 
     /**

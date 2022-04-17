@@ -69,7 +69,7 @@ public class FilterPool implements Pool {
         }
 
         // 预备执行
-        forList(beforeMethods, HttpUtils.getTestRequest(), null);
+        forList(beforeMethods, HttpUtils.getTestRequest(), HttpUtils.getTestResponse());
         forList(afterMethods, HttpUtils.getTestRequest(), HttpUtils.getTestResponse());
 
         if(beforeMethods.size()>0) {
@@ -109,24 +109,30 @@ public class FilterPool implements Pool {
     }
 
     private static BaseResponse forList(List<FilterBody> list, BaseRequest request, BaseResponse response){
-        for(FilterBody filterBody :beforeMethods){
+
+        for(FilterBody filterBody :list){
             filterBody.setRequest(request);
+            filterBody.setResponse(response);
             Method method = filterBody.getMethodBody().getMethod();
             Object object = filterBody.getMethodBody().getObject();
             try {
                 Class<?>[] parameterType = method.getParameterTypes();
                 int parameterCount = method.getParameterCount();
-                Object[] params = new Object[parameterCount];
-                for (int i = 0; i < parameterCount; i++) {
-                    if(parameterType[i] == BaseRequest.class){
-                        params[i] = request;
-                    }else if(parameterType[i] == BaseResponse.class){
-                        params[i] = response;
-                    }else if(parameterType[i] == FilterBody.class){
-                        params[i] = filterBody;
+                if(parameterCount == 0){
+                    response = (BaseResponse) method.invoke(object);
+                }else{
+                    Object[] params = new Object[parameterCount];
+                    for (int i = 0; i < parameterCount; i++) {
+                        if(parameterType[i] == BaseRequest.class){
+                            params[i] = request;
+                        }else if(parameterType[i] == BaseResponse.class){
+                            params[i] = response;
+                        }else if(parameterType[i] == FilterBody.class){
+                            params[i] = filterBody;
+                        }
                     }
+                    response = (BaseResponse) method.invoke(object, params);
                 }
-                response = (BaseResponse) method.invoke(object, params);
             }catch (Exception e){
                 e.printStackTrace();
             }

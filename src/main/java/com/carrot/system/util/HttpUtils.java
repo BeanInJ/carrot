@@ -83,6 +83,9 @@ public class HttpUtils {
 
     public static BaseResponse getTestResponse(){
         BaseResponse response =  new BaseResponse();
+        response.setStatus("200");
+        response.setReason("OK");
+        response.setVersion("HTTP/1.1");
         response.setBody("{\"code\":\"200\",\"msg\":\"success\",\"data\":{\"id\":\"1\",\"name\":\"张三\",\"age\":\"18\"}}");
         return response;
     }

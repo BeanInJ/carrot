@@ -3,8 +3,10 @@ package com.carrot.system.BaseServer.filter;
 import com.carrot.core.http.BaseRequest;
 import com.carrot.core.http.BaseResponse;
 import com.carrot.system.BaseServer.pool.FilterBody;
+import com.carrot.system.BaseServer.pool.label.AfterController;
 import com.carrot.system.BaseServer.pool.label.BeforeController;
 import com.carrot.system.BaseServer.pool.label.Filter;
+import com.carrot.system.util.StringUtils;
 
 @Filter
 public class BaseFilter {
@@ -33,6 +35,28 @@ public class BaseFilter {
             }
         }
         return response;
+    }
+
+    /**
+     * 拦截404、空返回
+     */
+    @AfterController
+    public void after(FilterBody filterBody){
+        BaseRequest request = filterBody.getRequest();
+        BaseResponse response = filterBody.getResponse();
+
+        // 拦截404
+        if(response.getStatus().equals("404")){
+            response.setBody("404 - Not Found : "+ request.getUrl());
+            response.setReason("Not Found");
+        }
+        System.out.println(request.getUrl() + " : " + response.getStatus());
+
+
+        // 拦截空返回
+        if(StringUtils.isBlankOrNull(response.getBody())){
+            response.setBody(request.getUrl() + " - 返回 null");
+        }
     }
 }
 
