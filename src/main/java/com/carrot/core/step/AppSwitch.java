@@ -4,6 +4,7 @@ import com.carrot.system.dict.CONFIG;
 import com.carrot.system.dict.MSG;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -61,7 +62,15 @@ public class AppSwitch implements Runnable {
 
             channel.register(selector, SelectionKey.OP_ACCEPT);
             log.info( MSG.OPEN_SERVER + this.port + ", 尝试访问 http://localhost:"+this.port);
-        } catch (IOException e) {
+        }catch (BindException e){
+            e.printStackTrace();
+            if("Address already in use: bind".equals(e.getMessage())){
+                log.warning("端口"+this.port+" 已被占用，建议在config.yml中修改端口号");
+            }
+            log.warning("程序异常退出！");
+            System.exit(0);
+            return;
+        }catch (IOException e) {
             e.printStackTrace();
             return;
         }

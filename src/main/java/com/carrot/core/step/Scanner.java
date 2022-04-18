@@ -1,5 +1,6 @@
 package com.carrot.core.step;
 
+import com.carrot.App;
 import com.carrot.system.dict.CONFIG;
 import com.carrot.system.util.PackageUtil;
 import com.carrot.system.util.StringUtils;
@@ -24,8 +25,15 @@ public class Scanner {
     public static void load() {
         // 内部包
         classPackage.add(CONFIG.APP_INNER_PACKAGE_VALUE);
+
         // 外部包
-        classPackage.add(ConfigCenter.get(CONFIG.APP_START_PACKAGE).toString());
+        Object outerPackage = ConfigCenter.get(CONFIG.APP_START_PACKAGE);
+        if(StringUtils.isNotBlankOrNull(outerPackage)){
+            if(!App.class.getName().equals(outerPackage))
+                classPackage.add(outerPackage.toString());
+        }else {
+            log.warning("无法获取main方法所在的包名，您可以在config.yml下手动配置main方法所在的包");
+        }
     }
 
     /**
@@ -50,8 +58,6 @@ public class Scanner {
             log.warning("异常包名：" + packageName);
             return;
         }
-
-
 
         for (String className : classNames) {
             try {

@@ -69,14 +69,10 @@ public class ConfigCenter {
         }
 
         // 配置外部包
-        if (!main.getName().equals(App.class.getName())) {
-            String outPackage = (String) config.get(CONFIG.APP_START_PACKAGE);
-            if (StringUtils.isBlankOrNull(outPackage)) {
-                outPackage = PackageUtil.getPackageByClass(main);
-                config.put(CONFIG.APP_START_PACKAGE, outPackage);
-            }
-        }else {
-            config.put(CONFIG.APP_START_PACKAGE, "");
+        String outPackage = (String) config.get(CONFIG.APP_START_PACKAGE);
+        if (StringUtils.isBlankOrNull(outPackage)) {
+            outPackage = PackageUtil.getPackageByClass(main);
+            config.put(CONFIG.APP_START_PACKAGE, outPackage);
         }
     }
 

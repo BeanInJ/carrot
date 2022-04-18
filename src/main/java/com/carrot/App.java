@@ -41,6 +41,7 @@ public class App {
         // 启动
         Stater.start();
 
+        Thread.currentThread().interrupt();
     }
 
     /**
