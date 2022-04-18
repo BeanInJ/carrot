@@ -106,11 +106,12 @@ public class UrlMapper {
 
     private static void urlMapPrint() {
         urlMap.forEach((k, v) -> {
-            String path = v[1].toString();
-            String[] s = path.split("\\.");
-            String method = s[s.length - 2] + "." + s[s.length - 1];
+            String methodName = ((Method)v[1]).getName();
+            String className = v[0].getClass().getName();
+            String[] ns = className.split("\\.");
+            String name = ns[ns.length-1] + "." + methodName;
 
-            log.fine("url: " + k + "  映射方法: " + method);
+            log.fine("url: " + k + "  映射方法: " + name);
         });
     }
 

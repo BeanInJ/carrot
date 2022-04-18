@@ -86,13 +86,13 @@ public class HttpUtils {
         response.setStatus("200");
         response.setReason("OK");
         response.setVersion("HTTP/1.1");
-        response.setBody("{\"code\":\"200\",\"msg\":\"success\",\"data\":{\"id\":\"1\",\"name\":\"张三\",\"age\":\"18\"}}");
+        response.setBody("{\"code\":\"200\",\"msg\":\"success\",\"data\":{\"id\":\"1\",\"msg\":\"测试BaseResponse\"}}");
         return response;
     }
 
     public static BaseRequest getTestRequest(){
         BaseRequest request = new BaseRequest(new BaseHttp());
-        request.setBody("{\"id\":\"1\",\"name\":\"张三\",\"age\":\"18\"}");
+        request.setBody("{\"id\":\"1\",\"msg\":\"测试BaseRequest\"}");
         request.setUrl("/user/add");
         request.setVersion("HTTP/1.1");
         request.setMethod("POST");

@@ -29,7 +29,8 @@ public class RequestThread implements Runnable {
     public void run() {
         try {
             request(this.socketChannel);
-        } catch (Exception e) {
+        }catch (ReturnNow ignore){
+        }catch (Exception e) {
             e.printStackTrace();
         }finally {
             try {

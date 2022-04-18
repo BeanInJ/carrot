@@ -72,6 +72,7 @@ public class FilterPool implements Pool {
         forList(beforeMethods, HttpUtils.getTestRequest(), HttpUtils.getTestResponse());
         forList(afterMethods, HttpUtils.getTestRequest(), HttpUtils.getTestResponse());
 
+        // 排序
         if(beforeMethods.size()>0) {
             // 清理后根据优先级排序
             beforeMethods = beforeMethods.stream()
@@ -105,22 +106,30 @@ public class FilterPool implements Pool {
     }
 
     public static void afterController(BaseRequest request,BaseResponse response){
-        forList(beforeMethods, request, response);
+        forList(afterMethods, request, response);
     }
 
     private static BaseResponse forList(List<FilterBody> list, BaseRequest request, BaseResponse response){
 
         for(FilterBody filterBody :list){
+            // 初始化 filterBody
             filterBody.setRequest(request);
             filterBody.setResponse(response);
             Method method = filterBody.getMethodBody().getMethod();
             Object object = filterBody.getMethodBody().getObject();
+
             try {
                 Class<?>[] parameterType = method.getParameterTypes();
                 int parameterCount = method.getParameterCount();
+
+                // 判断有无参数
                 if(parameterCount == 0){
+                    // 无参数执行方法
                     response = (BaseResponse) method.invoke(object);
                 }else{
+                    // 有参数执行方法
+
+                    // 循环入参
                     Object[] params = new Object[parameterCount];
                     for (int i = 0; i < parameterCount; i++) {
                         if(parameterType[i] == BaseRequest.class){
@@ -131,7 +140,13 @@ public class FilterPool implements Pool {
                             params[i] = filterBody;
                         }
                     }
-                    response = (BaseResponse) method.invoke(object, params);
+
+                    // 如果返回类型不是BaseResponse，则不改变原有的response
+                    if(method.getReturnType() == BaseResponse.class){
+                        response = (BaseResponse) method.invoke(object, params);
+                    }else {
+                        method.invoke(object, params);
+                    }
                 }
             }catch (Exception e){
                 e.printStackTrace();

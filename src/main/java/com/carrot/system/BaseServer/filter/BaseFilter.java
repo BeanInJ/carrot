@@ -8,6 +8,14 @@ import com.carrot.system.BaseServer.pool.label.BeforeController;
 import com.carrot.system.BaseServer.pool.label.Filter;
 import com.carrot.system.util.StringUtils;
 
+/**
+ * 过滤器创建规则：
+ * 1、类名上必须有 @Filter注解
+ * 2、方法上有@BeforeController（前置过滤）、@AfterController（后置过滤）
+ * 3、每个过滤都有一个FilterBody参数可以接收，FilterBody可以获取request、response、过滤器优先级等信息
+ * 4、关于过滤器的优先级，可以在FilterBody中设置，数值越小，优先级越高，默认值为1000
+ * 5、关于返回值，可以是BaseResponse或者空，其他返回值无效
+ */
 @Filter
 public class BaseFilter {
 
@@ -50,8 +58,6 @@ public class BaseFilter {
             response.setBody("404 - Not Found : "+ request.getUrl());
             response.setReason("Not Found");
         }
-        System.out.println(request.getUrl() + " : " + response.getStatus());
-
 
         // 拦截空返回
         if(StringUtils.isBlankOrNull(response.getBody())){
