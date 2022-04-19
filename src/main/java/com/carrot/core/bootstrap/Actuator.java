@@ -2,6 +2,10 @@ package com.carrot.core.bootstrap;
 
 import java.util.ArrayDeque;
 
+/**
+ * 执行器
+ * Loader 和 Starter 的父类
+ */
 public class Actuator {
     /**
      * 是否已经开始（防止重载）
