@@ -1,6 +1,6 @@
 package com.carrot.core.step;
 
-import com.carrot.App;
+import com.carrot.core.bootstrap.Loader;
 import com.carrot.system.dict.CONFIG;
 import com.carrot.system.util.PackageUtil;
 import com.carrot.system.util.StringUtils;
@@ -8,13 +8,19 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 配置中心，这里可以拿到全局配置
  */
 public class ConfigCenter {
+    private static final Logger log = Logger.getGlobal();
+
     // 默认端口 app.port
     private static final int DEFAULT_APP_PORT = 8080;
     // 默认配置文件路径
@@ -34,17 +40,15 @@ public class ConfigCenter {
 
     private ConfigCenter(){}
 
-    // 加载配置文件
-    public static void load(Class<?> main){
+    /**
+     * 加载配置中心
+     */
+    public static void load(){
+        Class<?> mainClass = Loader.getMainClass();
 
         // 加载配置文件
-        Yaml yaml = new Yaml();
-        try{
-            File file = new File(DEFAULT_CONFIG_FILE_PATH);
-            FileReader fileReader = new FileReader(file);
-            config.putAll(yaml.load(fileReader));
-        } catch (Exception ignored) {
-        }
+        boolean isConfigByMain = initConfigByMain(mainClass);
+        if(!isConfigByMain) initConfigByBootPath();
 
         // 配置日志
         Object logFile = config.get(CONFIG.APP_LOG_PATH);
@@ -71,7 +75,7 @@ public class ConfigCenter {
         // 配置外部包
         String outPackage = (String) config.get(CONFIG.APP_START_PACKAGE);
         if (StringUtils.isBlankOrNull(outPackage)) {
-            outPackage = PackageUtil.getPackageByClass(main);
+            outPackage = PackageUtil.getPackageByClass(mainClass);
             config.put(CONFIG.APP_START_PACKAGE, outPackage);
         }
     }
@@ -90,5 +94,28 @@ public class ConfigCenter {
     }
     public static Object get(String key){
         return config.get(key);
+    }
+
+
+    private static boolean initConfigByMain(Class<?> main){
+        try{
+            Yaml yaml = new Yaml();
+            Enumeration<URL> resources = main.getClassLoader().getResources(CONFIG.APP_CONFIG_NAME_VALUE);
+            InputStream content = (InputStream) resources.nextElement().getContent();
+            config.putAll(yaml.load(content));
+
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    private static void initConfigByBootPath(){
+        try{
+            Yaml yaml = new Yaml();
+            File file = new File(CONFIG.APP_CONFIG_NAME_VALUE);
+            FileReader fileReader = new FileReader(file);
+            config.putAll(yaml.load(fileReader));
+        }catch (Exception ignored){}
     }
 }

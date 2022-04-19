@@ -26,4 +26,6 @@ public class CONFIG {
     public static final String APP_INNER_PACKAGE_VALUE = "com.carrot.system.BaseServer";
     public static final String APP_LOG_PATH_VALUE = "carrot.log";
     public static final String APP_LOG_LEVEL_VALUE = "INFO";
+
+    public static final String APP_CONFIG_NAME_VALUE = "config.yml";
 }
