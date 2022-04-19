@@ -9,23 +9,32 @@ import java.util.concurrent.TimeUnit;
 public class AppCpu {
     private static final ExecutorService service = Executors.newCachedThreadPool();
 
+    /**
+     * 开启线程池，循环处理请求
+     */
     public static void start() {
         ArrayBlockingQueue<SocketChannel> channelQueue = AppSwitch.get();
         // noinspection InfiniteLoopStatement
         while (true) {
             try {
                 SocketChannel socketChannel = channelQueue.take();
-                service.execute(new RequestThread(socketChannel));
+                service.execute(new RequestActuator(socketChannel));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    /**
+     * 停止线程池
+     */
     public void stop() {
         service.shutdown();
     }
 
+    /**
+     *  service join
+     */
     public void join() throws InterruptedException {
         boolean b = service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     }

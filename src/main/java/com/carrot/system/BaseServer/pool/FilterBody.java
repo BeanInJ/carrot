@@ -4,6 +4,9 @@ import com.carrot.aop.MethodBody;
 import com.carrot.core.http.BaseRequest;
 import com.carrot.core.http.BaseResponse;
 
+/**
+ * 一个FilterBody一个过略器所需要的所有信息
+ */
 public class FilterBody {
     private BaseRequest request;
     private BaseResponse response;

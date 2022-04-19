@@ -16,7 +16,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -150,8 +149,8 @@ public class FilterPool implements Pool {
                 }
 
                 // 如果当前拦截器要求立即返回
-                if(response.isReturnNow()){
-                    return response;
+                if(response != null){
+                    if(response.isReturnNow()) return response;
                 }
             }catch (Exception e){
                 e.printStackTrace();
