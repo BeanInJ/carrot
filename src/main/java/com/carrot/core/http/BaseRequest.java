@@ -49,6 +49,10 @@ public class BaseRequest implements Http {
         this.baseHttp.setBody(body);
     }
 
+    public void setBaseHttp(BaseHttp baseHttp) {
+        this.baseHttp = baseHttp;
+    }
+
     public Map<String, String> getHeader() {
         return this.header;
     }

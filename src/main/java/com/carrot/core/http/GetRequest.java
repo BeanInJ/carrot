@@ -21,12 +21,11 @@ public class GetRequest extends BaseRequest{
             initUrlParam(request.getUrl());
         }
 
+        this.setBaseHttp(request.getBaseHttp());
+
         this.setVersion(request.getVersion());
         this.setHeader(request.getHeader());
         this.setBody(request.getBody());
-
-
-
     }
 
     public GetRequest(BaseHttp baseHttp){

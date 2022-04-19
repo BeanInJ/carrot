@@ -2,6 +2,7 @@ package com.carrot.system.BaseServer.filter;
 
 import com.carrot.core.http.BaseRequest;
 import com.carrot.core.http.BaseResponse;
+import com.carrot.core.http.GetRequest;
 import com.carrot.system.BaseServer.pool.FilterBody;
 import com.carrot.system.BaseServer.pool.label.AfterController;
 import com.carrot.system.BaseServer.pool.label.BeforeController;
@@ -41,6 +42,14 @@ public class BaseFilter {
                 response.setReturnNow(true);
                 return response;
             }
+        }
+
+        /**
+         * 识别get请求
+         */
+        String type = request.getMethod();
+        if("GET".equals(type) || url.contains("?")){
+            request = new GetRequest(request);
         }
         return response;
     }
