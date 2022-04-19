@@ -148,6 +148,11 @@ public class FilterPool implements Pool {
                         method.invoke(object, params);
                     }
                 }
+
+                // 如果当前拦截器要求立即返回
+                if(response.isReturnNow()){
+                    return response;
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }

@@ -14,6 +14,7 @@ import java.nio.channels.SocketChannel;
 import java.util.logging.Logger;
 
 /**
+ * 请求处理器
  * 请求解析及响应
  */
 public class RequestThread implements Runnable {
@@ -97,6 +98,7 @@ public class RequestThread implements Runnable {
         socketChannel.write(BufferUtils.getByteBuffer(response.toString()));
     }
 
+    // 空请求返回
     private void nullThrow(ByteBuffer buffer){
         if(buffer.position() == 0) throw new ReturnNow();
     }

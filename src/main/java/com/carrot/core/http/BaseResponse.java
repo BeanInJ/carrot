@@ -23,7 +23,13 @@ public class BaseResponse implements Http{
     private Map<String,String> header;
     private String body;
 
+    /**
+     * 立即返回，不再通过其他过滤器方法，不再通过控制器方法
+     */
     private boolean isReturnNow = false;
+    /**
+     * 直接跳到控制器方法，不再执行其他过滤器方法
+     */
     private boolean isGoToController = true;
 
     /**
