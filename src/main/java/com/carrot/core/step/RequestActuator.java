@@ -67,6 +67,7 @@ public class RequestActuator implements Runnable{
      */
     private boolean passBeforeFilter() {
         this.response = FilterPool.beforeController(this.request);
+        // 如果经过过略器链后，response还未初始化，则在此初始化
         if (this.response == null) {
             this.response = new BaseResponse();
         }
