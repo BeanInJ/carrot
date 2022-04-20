@@ -11,7 +11,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Logger;
 
-public class RequestActuator implements Runnable{
+/**
+ * getRequest、passBeforeFilter、passController、passAfterFilter、passAfterFilter
+ * 返回 false 表示直接跳到sendResponse执行
+ * 返回 true  表示继续执行
+ */
+public class RequestActuator implements Runnable {
     private static final Logger log = Logger.getGlobal();
     private final SocketChannel socketChannel;
     private BaseRequest request;
@@ -23,10 +28,12 @@ public class RequestActuator implements Runnable{
 
     public void run() {
         try {
+            // 执行请求流程
             this.flow();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
+            // 关闭当前请求通道
             try {
                 socketChannel.close();
             } catch (IOException e) {
@@ -40,11 +47,14 @@ public class RequestActuator implements Runnable{
      */
     private void flow() throws IOException {
         try {
+            // 获取请求->前过滤->控制器->后过滤
             boolean flow = this.getRequest() && this.passBeforeFilter() && this.passController() && this.passAfterFilter();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
+            // 异常拦截
             this.ifException();
         }
+        // 返回到前端
         this.sendResponse();
     }
 
@@ -52,14 +62,14 @@ public class RequestActuator implements Runnable{
      * 获取请求体
      */
     private boolean getRequest() throws IOException {
-            ByteBuffer buffer = ByteBuffer.allocate(1024);
-            this.socketChannel.read(buffer);
-            if (buffer.position() == 0) {
-                return false;
-            } else {
-                this.request = new BaseRequest(buffer);
-                return true;
-            }
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        this.socketChannel.read(buffer);
+        if (buffer.position() == 0) {
+            return false;
+        } else {
+            this.request = new BaseRequest(buffer);
+            return true;
+        }
     }
 
     /**
@@ -67,11 +77,11 @@ public class RequestActuator implements Runnable{
      */
     private boolean passBeforeFilter() {
         this.response = FilterPool.beforeController(this.request);
-        // 如果经过过略器链后，response还未初始化，则在此初始化
+        // 如果经过过略器后，response还未初始化，则在此初始化
         if (this.response == null) {
             this.response = new BaseResponse();
         }
-        return true;
+        return !this.response.isReturnNow();
     }
 
     /**
@@ -79,11 +89,12 @@ public class RequestActuator implements Runnable{
      */
     private boolean passController() {
         if (this.response.isGoToController()) {
-                Object returnValue = UrlMapper.httpToController(this.request, this.response);
-                boolean isEmpty = returnValue == null || returnValue.toString().length() == 0;
-                if (!isEmpty) {
-                    this.response.setBody(StringUtils.toStringOrJson(returnValue));
-                }
+            Object returnValue = UrlMapper.httpToController(this.request, this.response);
+            if (returnValue instanceof BaseResponse) {
+                this.response = (BaseResponse) returnValue;
+            } else if (StringUtils.isNotBlankOrNull(returnValue)) {
+                this.response.setBody(StringUtils.toStringOrJson(returnValue));
+            }
         }
         return true;
     }
@@ -93,20 +104,20 @@ public class RequestActuator implements Runnable{
      */
     private boolean passAfterFilter() {
         FilterPool.afterController(this.request, this.response);
-        return true;
+        return !this.response.isReturnNow();
     }
 
     /**
      * 向前端发送数据
      */
     private void sendResponse() throws IOException {
-        if(this.response != null)
+        if (this.response != null)
             this.socketChannel.write(BufferUtils.getByteBuffer(this.response.toString()));
     }
 
     /**
      * 执行异常拦截器
      */
-    private void ifException(){
+    private void ifException() {
     }
 }

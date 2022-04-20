@@ -71,5 +71,21 @@ public class AopHelper {
         return aopValue.replace(end,"");
     }
 
+    /**
+     * 解析aopValue
+     *
+     * aopValue 可能出现的类型：
+     * 1、XX.XX                  (匹配具体类，表示该类下的所有controller方法都接收切面)
+     * 3、XX.XX*                 (模糊匹配类名)
+     * 4、XX.XX.*                (匹配XX.XX包下所有类)
+     * 5、XX.*.YY                (匹配XX包下所有子包中名叫YY的类)
+     * 6、class:XX.XX            ( = XX.XX)
+     * 7、method:XX.XX.xx        (匹配具体方法，仅该方法接收切面)
+     * 8、package:包名            (匹配具体包，该包下的所有controller方法都接收切面)
+     * 9、method:XX.*.YY.GG*     (匹配XX包下所有子包中名叫YY的类里的GG开头的方法)
+     */
+    public static List<String[]> parseAopValue(){
+        return null;
+    }
 
 }

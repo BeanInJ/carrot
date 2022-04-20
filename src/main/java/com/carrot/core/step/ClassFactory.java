@@ -10,16 +10,16 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * ClassFactory 的实现参考了工厂模式
+ * <b> ClassFactory 的实现参考了工厂模式 </b>
  * <p>
  * 扫描器扫描到的所有 class 在这里统一处理
  * ClassFactory 4个对外开放的方法:
- * 1、load()            初始化、加载内部类池。仅供 AppLoader.load()调用
+ * 1、load()            初始化、加载内部类池。仅供 Loader.load()调用
  * 2、addClass()        添加“原料”。仅供 Scanner.scannerOne()调用
- * 3、start()           开始工作（注册外部类池、分发原料）。仅供 Scanner
+ * 3、start()           开始工作（注册外部类池、分发原料）。仅供 Starter调用
+ * </p>
  */
 public class ClassFactory {
-
     private static final Logger log = Logger.getGlobal();
 
     /**
@@ -28,14 +28,15 @@ public class ClassFactory {
     private static final List<Pool> poolList = new ArrayList<>();
 
     /**
-     * 保存原料的临时列表，注册、分发完成会被清空
+     * 保存"原料"的临时列表，注册、分发完成会被清空
      */
     private static final Set<Class<?>> classTempSet = new HashSet<>();
 
     /**
      * 工厂初始化（在扫描器运行 Scanner.load(); 之前调用）
      */
-    public static void load() {}
+    public static void load() {
+    }
 
     /**
      * 注册一个"池",必须在扫描器扫描之前注册才有效
