@@ -19,9 +19,28 @@ public class AopActuator implements PoolActuator {
         Aop annotation = clazz.getAnnotation(Aop.class);
         String aopValue = annotation.value();
 
-        // 解析aopValue,得到对应的类名、方法名列表
-        List<String[]> strings = AopHelper.parseAopValue();
+        // 获取aopValue中的类名
+        String aopClassName;
+        try {
+            aopClassName = AopHelper.getAopClassName(aopValue);
+        }catch (ArrayIndexOutOfBoundsException e){
+            log.info("aop未扫描到："+aopValue);
+            return;
+        }
 
+        // 将获取到的类名保存到aop容器
+
+
+        // 如果aopValue中的类名 = 目标类名
+//        if(targetObjectName.equals(aopClassName)){
+//            String aopMethodName = AopHelper.getAopMethodName(aopValue);
+//            // 如果aopValue中的方法名 = 目标方法名，则添加到list中
+//            // 如果aopValue中的方法名 = “*” ，则代表所有方法都需要执行
+//            if("*".equals(aopMethodName) ||targetMethodName.equals(aopMethodName)){
+//                // 加入匹配列表
+//                list.add(aClass);
+//            }
+//        }
 
         // 如果aopValue中的类名 = 目标类名
 //        if(targetObjectName.equals(aopClassName)){
