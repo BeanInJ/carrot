@@ -15,7 +15,7 @@ public class MethodContainer {
      */
     private static final Map<String,MethodBody> methodBodyMap = new HashMap<>();
 
-    protected static void put(String id,MethodBody methodBody){
+    protected static void registerMethodBody(String id,MethodBody methodBody){
         methodBodyMap.put(id,methodBody);
     }
 

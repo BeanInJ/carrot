@@ -88,6 +88,7 @@ public class AopHelper {
      * 7、method:XX.XX.xx        (匹配具体方法，仅该方法接收切面)
      * 8、package:包名            (匹配具体包，该包下的所有controller方法都接收切面)
      * 9、method:XX.*.YY.GG*     (匹配XX包下所有子包中名叫YY的类里的GG开头的方法)
+     * 10、Exception: XX.XXException (匹配异常)
      */
     public static List<Class<?>> getClassList(String aopValue){
 

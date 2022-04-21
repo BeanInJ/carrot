@@ -56,9 +56,7 @@ public class MethodHelper {
      * 生成 MethodBody，返回其ID
      */
     public static String initMethodBody(Class<?> clazz,Method method){
-        MethodBody methodBody = new MethodBody();
-        methodBody.setMethod(method);
-        methodBody.setClazz(clazz);
+        MethodBody methodBody = new MethodBody(method, clazz);
         return methodBody.getMethodId();
     }
 

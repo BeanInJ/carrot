@@ -20,6 +20,7 @@ import java.util.Map;
  *
  *
  * 注意，如果多个aop方法拦截到同一个目标方法，aop方法是无序的
+ * 本项目aop采用动态实现
  */
 public class AopActuator {
     private final MethodBody methodBody;

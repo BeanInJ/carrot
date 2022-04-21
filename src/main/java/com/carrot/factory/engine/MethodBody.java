@@ -1,17 +1,18 @@
 package com.carrot.factory.engine;
 
 import java.lang.reflect.Method;
-import java.util.UUID;
 
 /**
  * 方法体
- * {Method，Class，参数[]，返回值}
+ *
+ * MethodBody 是在扫描到类中的某个方法为“功能”方法后 new
+ * {id,Method，Class}
  */
 public class MethodBody {
     /**
      * 方法体唯一标识
      */
-    private String methodId;
+    private final String methodId;
 
     /**
      * 方法所在的类
@@ -20,55 +21,25 @@ public class MethodBody {
     /**
      * 方法
      */
-    private Method method;
-    /**
-     * 参数列表
-     */
-    private Object[] args;
-    /**
-     * 返回值
-     */
-    private Object returnValue;
+    private final Method method;
 
     /**
      * 每一个 MethodBody 生成的时候，会自动往MethodEngine注册
      * 所以仅允许本包内方法创建 MethodBody
      */
-    protected MethodBody(){
-        this.methodId = UUID.randomUUID().toString();
-        // 向MethodEngine注册
-        MethodContainer.put(this.methodId,this);
+    protected MethodBody(Method method,Class<?> clazz){
+        this.method = method;
+        this.clazz = clazz;
+        this.methodId = clazz.getName() + "." + method.getName();
+        MethodContainer.registerMethodBody(this.methodId,this);
     }
 
-    /**
-     * 获取方法体唯一标识
-     */
     public String getMethodId() {
         return methodId;
     }
 
     public Method getMethod() {
         return method;
-    }
-
-    public void setMethod(Method method) {
-        this.method = method;
-    }
-
-    public Object[] getArgs() {
-        return args;
-    }
-
-    public void setArgs(Object[] args) {
-        this.args = args;
-    }
-
-    public Object getReturnValue() {
-        return returnValue;
-    }
-
-    public void setReturnValue(Object returnValue) {
-        this.returnValue = returnValue;
     }
 
     public Class<?> getClazz() {
