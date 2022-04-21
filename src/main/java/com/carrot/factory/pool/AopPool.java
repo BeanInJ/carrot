@@ -22,10 +22,10 @@ public class AopPool extends ClassPool {
      */
     @Override
     public void trim() {
-        Iterator<Class<?>> var1 = this.classes.iterator();
+        Iterator<Class<?>> clazzIterator = this.classes.iterator();
         out:
-        while (var1.hasNext()) {
-            Class<?> clazz = var1.next();
+        while (clazzIterator.hasNext()) {
+            Class<?> clazz = clazzIterator.next();
 
             // 循环方法，检查注解
             for (Method method : clazz.getMethods()) {

@@ -48,7 +48,7 @@ public class Scanner {
     /**
      * 扫描包，并分发扫描得到的class
      */
-    private static void scannerOne(String packageName){
+    public static void scannerOne(String packageName){
         if(StringUtils.isBlankOrNull(packageName)) return;
         List<String> classNames;
         try {

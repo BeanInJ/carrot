@@ -1,10 +1,15 @@
 package com.carrot.aop;
 
+import com.carrot.aop.annotation.*;
+import com.carrot.core.step.Scanner;
+import com.carrot.factory.ClassScanner;
+import com.carrot.factory.engine.MethodHelper;
 import com.carrot.system.BaseServer.pool.label.Aop;
 import com.carrot.system.BaseServer.pool.AopPool;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -84,8 +89,75 @@ public class AopHelper {
      * 8、package:包名            (匹配具体包，该包下的所有controller方法都接收切面)
      * 9、method:XX.*.YY.GG*     (匹配XX包下所有子包中名叫YY的类里的GG开头的方法)
      */
-    public static List<String[]> parseAopValue(){
-        return null;
+    public static List<Class<?>> getClassList(String aopValue){
+
+        // 如果是包列表
+
+        // 如果是类列表
+
+        // 如果是方法列表
+
+        List<String> packageNames = parseAopValue(aopValue);
+        return parsePackageNames(packageNames);
     }
+
+    /**
+     * 解析包列表，得到类列表
+     */
+    public static List<Class<?>> parsePackageNames(List<String> packageNames){
+        List<Class<?>> clazzList = new ArrayList<>();
+        for (String packageName : packageNames) {
+            clazzList.addAll(ClassScanner.getClassList(packageName));
+        }
+        return clazzList;
+    }
+
+    /**
+     * 解析类列表，并将得到的方法体放入aop方法容器
+     */
+    public static List<String> classToAopContainer(List<Class<?>> classes){
+        for (Class<?> clazz:classes){
+            for (Method method : clazz.getMethods()) {
+
+            }
+
+        }
+//        MethodHelper.initMethodBody(clazz,)
+        return new ArrayList<>();
+    }
+
+    public static void trimAopTargetClasses(List<Class<?>> classes){
+        Iterator<Class<?>> clazzIterator = classes.iterator();
+        out:
+        while (clazzIterator.hasNext()) {
+            Class<?> clazz = clazzIterator.next();
+
+            // 循环方法，检查注解
+            for (Method method : clazz.getMethods()) {
+                if (method.isAnnotationPresent(AopAfter.class)
+                        || method.isAnnotationPresent(AopAround.class)
+                        || method.isAnnotationPresent(AopBefore.class)
+                        || method.isAnnotationPresent(AopException.class)
+                        || method.isAnnotationPresent(AopFinally.class)) {
+                    continue out;
+                }
+            }
+            log.info("移除无效AOP：" + clazz.getName());
+            classes.remove(clazz);
+        }
+    }
+
+
+    /**
+     * 解析aopValue，得到包列表
+     */
+    public static List<String> parseAopValue(String aopValue){
+        // 待完成
+        List<String> packageNames = new ArrayList<>();
+        packageNames.add(aopValue);
+        return packageNames;
+    }
+
+
 
 }

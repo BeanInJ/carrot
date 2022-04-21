@@ -1,12 +1,22 @@
 package com.carrot.factory.engine;
 
 import java.lang.reflect.Method;
+import java.util.UUID;
 
+/**
+ * 方法体
+ * {Method，Class，参数[]，返回值}
+ */
 public class MethodBody {
+    /**
+     * 方法体唯一标识
+     */
+    private String methodId;
+
     /**
      * 方法所在的类
      */
-    private Object object;
+    private Class<?> clazz;
     /**
      * 方法
      */
@@ -20,12 +30,21 @@ public class MethodBody {
      */
     private Object returnValue;
 
-    public Object getObject() {
-        return object;
+    /**
+     * 每一个 MethodBody 生成的时候，会自动往MethodEngine注册
+     * 所以仅允许本包内方法创建 MethodBody
+     */
+    protected MethodBody(){
+        this.methodId = UUID.randomUUID().toString();
+        // 向MethodEngine注册
+        MethodContainer.put(this.methodId,this);
     }
 
-    public void setObject(Object object) {
-        this.object = object;
+    /**
+     * 获取方法体唯一标识
+     */
+    public String getMethodId() {
+        return methodId;
     }
 
     public Method getMethod() {
@@ -50,5 +69,13 @@ public class MethodBody {
 
     public void setReturnValue(Object returnValue) {
         this.returnValue = returnValue;
+    }
+
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class<?> clazz) {
+        this.clazz = clazz;
     }
 }

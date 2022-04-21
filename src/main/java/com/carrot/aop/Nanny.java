@@ -60,12 +60,4 @@ public class Nanny implements InvocationHandler {
         }
         return aop.result();
     }
-
-    /**
-     * 跳到Finally，并返回
-     */
-    private boolean gotoFinallyAndReturn(MethodBody methodBody){
-        // ”立即返回“ 优先级大于 “继续执行”
-        return methodBody.isReturnNow() || !methodBody.isContinue();
-    }
 }

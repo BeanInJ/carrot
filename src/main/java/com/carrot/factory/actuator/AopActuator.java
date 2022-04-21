@@ -8,21 +8,29 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * aop执行器的功能主要是解析类、执行aop方法，其他的交给AopContainer执行
+ * aop执行逻辑：
+ * 1、调用aop检查：AopActuator.isAopTarget(类全名.方法名)
+ * 2、检查该方法名是否在aop目标方法容器中
+ * 3、如果在，将该方法包裹aop切面方法后执行
+ *
+ * 注意，如果多个aop方法拦截到同一个目标方法，aop方法是无序的
  */
 public class AopActuator implements PoolActuator {
     private static final Logger log = Logger.getGlobal();
 
+    /**
+     * 解析得到aop方法体，向aop容器中推送
+     */
     @Override
     public void parse(Class<?> clazz) {
         // 获取AOP注解中的value
         Aop annotation = clazz.getAnnotation(Aop.class);
         String aopValue = annotation.value();
 
-        // 获取aopValue中的类名
-        String aopClassName;
+        // 获取aopValue中的类全名列表
+        List<String> packages;
         try {
-            aopClassName = AopHelper.getAopClassName(aopValue);
+            packages = AopHelper.parseAopValue(aopValue);
         }catch (ArrayIndexOutOfBoundsException e){
             log.info("aop未扫描到："+aopValue);
             return;

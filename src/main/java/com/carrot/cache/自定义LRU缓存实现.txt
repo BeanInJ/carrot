@@ -1,0 +1,3 @@
+LRU（最近最少使用） 缓存算法
+
+1、LinkedHashMap内部提供了一个removeEldestEntry方法，该方法正是实现LRU策略的关键所在。

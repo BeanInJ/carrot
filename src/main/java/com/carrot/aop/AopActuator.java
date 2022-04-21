@@ -12,6 +12,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * aop执行逻辑：
+ * 1、调用aop检查：AopActuator.isAopTarget(类全名.方法名)
+ * 2、检查该方法名是否在aop目标方法容器中
+ * 3、如果在，将该方法包裹aop切面方法后执行
+ *
+ *
+ *
  * 注意，如果多个aop方法拦截到同一个目标方法，aop方法是无序的
  */
 public class AopActuator {
