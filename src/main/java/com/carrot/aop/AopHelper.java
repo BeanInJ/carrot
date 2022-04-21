@@ -3,6 +3,7 @@ package com.carrot.aop;
 import com.carrot.aop.annotation.*;
 import com.carrot.core.step.Scanner;
 import com.carrot.factory.ClassScanner;
+import com.carrot.factory.engine.MethodBody;
 import com.carrot.factory.engine.MethodHelper;
 import com.carrot.system.BaseServer.pool.label.Aop;
 import com.carrot.system.BaseServer.pool.AopPool;
@@ -159,6 +160,12 @@ public class AopHelper {
         return packageNames;
     }
 
+    /**
+     * 检查是否是aop目标
+     */
+    public static boolean isAopTarget(){
 
+        return true;
+    }
 
 }

@@ -24,6 +24,9 @@ public class MethodUtils {
         return invokeMethod(obj, methodName, new Object[]{});
     }
 
+    /**
+     * 执行Carrot启动前需要执行的代码
+     */
     public static void invokeMainMethod(Class<?> clazz) {
         // 执行mainClass中除了main方法以外的其他方法
         Object main;
@@ -37,6 +40,7 @@ public class MethodUtils {
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
             String name = method.getName();
+            // 需要提前执行的方法名，必须是beforeStart开头，且不能有参数
             if(name.startsWith("beforeStart") && method.getParameterCount() == 0){
                 try {
                     method.invoke(main);
