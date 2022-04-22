@@ -17,6 +17,9 @@ public class ControllerActuator implements PoolActuator {
     // map<url,[类，方法]>
     private static final Map<String, Object[]> urlMap = new HashMap<>();
 
+    /**
+     * 解析控制器类，获取url和方法
+     */
     @Override
     public void parse(Class<?> clazz) {
         // 获取类名上的url
@@ -62,4 +65,10 @@ public class ControllerActuator implements PoolActuator {
             }
         }
     }
+
+    @Override
+    public <T> void execute(T t) {
+
+    }
+
 }

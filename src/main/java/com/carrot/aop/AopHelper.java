@@ -1,10 +1,6 @@
 package com.carrot.aop;
 
 import com.carrot.aop.annotation.*;
-import com.carrot.core.step.Scanner;
-import com.carrot.factory.ClassScanner;
-import com.carrot.factory.engine.MethodBody;
-import com.carrot.factory.engine.MethodHelper;
 import com.carrot.system.BaseServer.pool.label.Aop;
 import com.carrot.system.BaseServer.pool.AopPool;
 
@@ -77,57 +73,6 @@ public class AopHelper {
         return aopValue.replace(end,"");
     }
 
-    /**
-     * 解析aopValue
-     *
-     * aopValue 可能出现的类型：
-     * 1、XX.XX                  (匹配具体类，表示该类下的所有controller方法都接收切面)
-     * 3、XX.XX*                 (模糊匹配类名)
-     * 4、XX.XX.*                (匹配XX.XX包下所有类)
-     * 5、XX.*.YY                (匹配XX包下所有子包中名叫YY的类)
-     * 6、class:XX.XX            ( = XX.XX)
-     * 7、method:XX.XX.xx        (匹配具体方法，仅该方法接收切面)
-     * 8、package:包名            (匹配具体包，该包下的所有controller方法都接收切面)
-     * 9、method:XX.*.YY.GG*     (匹配XX包下所有子包中名叫YY的类里的GG开头的方法)
-     * 10、Exception: XX.XXException (匹配异常)
-     */
-    public static List<Class<?>> getClassList(String aopValue){
-
-        // 如果是包列表
-
-        // 如果是类列表
-
-        // 如果是方法列表
-
-        List<String> packageNames = parseAopValue(aopValue);
-        return parsePackageNames(packageNames);
-    }
-
-    /**
-     * 解析包列表，得到类列表
-     */
-    public static List<Class<?>> parsePackageNames(List<String> packageNames){
-        List<Class<?>> clazzList = new ArrayList<>();
-        for (String packageName : packageNames) {
-            clazzList.addAll(ClassScanner.getClassList(packageName));
-        }
-        return clazzList;
-    }
-
-    /**
-     * 解析类列表，并将得到的方法体放入aop方法容器
-     */
-    public static List<String> classToAopContainer(List<Class<?>> classes){
-        for (Class<?> clazz:classes){
-            for (Method method : clazz.getMethods()) {
-
-            }
-
-        }
-//        MethodHelper.initMethodBody(clazz,)
-        return new ArrayList<>();
-    }
-
     public static void trimAopTargetClasses(List<Class<?>> classes){
         Iterator<Class<?>> clazzIterator = classes.iterator();
         out:
@@ -153,19 +98,14 @@ public class AopHelper {
     /**
      * 解析aopValue，得到包列表
      */
-    public static List<String> parseAopValue(String aopValue){
-        // 待完成
-        List<String> packageNames = new ArrayList<>();
-        packageNames.add(aopValue);
-        return packageNames;
+    public static String parseAopValue(String aopValue){
+        if(aopValue.startsWith("method:")){
+            aopValue = aopValue.replace("method:","");
+        }else if(aopValue.startsWith("class:")){
+            aopValue = aopValue.replace("class:","") + "[\\S]+";
+        }else if(aopValue.startsWith("package:")){
+            aopValue = aopValue.replace("package:","") + "[\\S]+";
+        }
+        return aopValue;
     }
-
-    /**
-     * 检查是否是aop目标
-     */
-    public static boolean isAopTarget(){
-
-        return true;
-    }
-
 }

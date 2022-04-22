@@ -1,9 +1,11 @@
 package com.carrot.factory.actuator;
 
-import com.carrot.aop.AopHelper;
+import com.carrot.aop.*;
 import com.carrot.factory.PoolActuator;
 import com.carrot.system.BaseServer.pool.label.Aop;
+import com.carrot.system.util.StringUtils;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -19,47 +21,40 @@ public class AopActuator implements PoolActuator {
     private static final Logger log = Logger.getGlobal();
 
     /**
-     * 解析得到aop方法体，向aop容器中推送
+     * 解析AopValue，向aop容器中推送
      */
     @Override
     public void parse(Class<?> clazz) {
         // 获取AOP注解中的value
-        Aop annotation = clazz.getAnnotation(Aop.class);
-        String aopValue = annotation.value();
-
-        // 获取aopValue中的类全名列表
-        List<String> packages;
-        try {
-            packages = AopHelper.parseAopValue(aopValue);
-        }catch (ArrayIndexOutOfBoundsException e){
-            log.info("aop未扫描到："+aopValue);
-            return;
+        for (Annotation annotation : clazz.getAnnotations()) {
+            if (annotation.annotationType().equals(Aop.class)) {
+                Aop aop = (Aop) annotation;
+                String value = aop.value();
+                if(StringUtils.isBlankOrNull(value)) continue;
+                value = AopHelper.parseAopValue(value);
+                AopContainer.put(value,clazz);
+            }
         }
+    }
 
-        // 将获取到的类名保存到aop容器
+    @Override
+    public <T> void execute(T t) {
+        AopInvokeFlow flow = (AopInvokeFlow) t;
+        new AopInvoke().invoke(flow);
+    }
 
+    public AopBody checkAndGet(String targetMethodName) {
+        // 从缓存中找aop
+        AopBody aopBody = AopTargetBodyContainer.get(targetMethodName);
+        if(aopBody == null) {
+            // 解析目标方法获取aop
+            List<Class<?>> aop = AopContainer.getAop(targetMethodName);
+            if(aop.isEmpty()) return null;
 
-        // 如果aopValue中的类名 = 目标类名
-//        if(targetObjectName.equals(aopClassName)){
-//            String aopMethodName = AopHelper.getAopMethodName(aopValue);
-//            // 如果aopValue中的方法名 = 目标方法名，则添加到list中
-//            // 如果aopValue中的方法名 = “*” ，则代表所有方法都需要执行
-//            if("*".equals(aopMethodName) ||targetMethodName.equals(aopMethodName)){
-//                // 加入匹配列表
-//                list.add(aClass);
-//            }
-//        }
-
-        // 如果aopValue中的类名 = 目标类名
-//        if(targetObjectName.equals(aopClassName)){
-//            String aopMethodName = getAopMethodName(aopValue);
-//            // 如果aopValue中的方法名 = 目标方法名，则添加到list中
-//            // 如果aopValue中的方法名 = “*” ，则代表所有方法都需要执行
-//            if("*".equals(aopMethodName) ||targetMethodName.equals(aopMethodName)){
-//                // 加入匹配列表
-//                list.add(aClass);
-//            }
-//        }
+            aopBody = new AopBody(targetMethodName,aop);
+            AopTargetBodyContainer.put(targetMethodName, aopBody);
+        }
+        return aopBody;
     }
 
 }

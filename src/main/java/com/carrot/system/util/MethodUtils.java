@@ -51,4 +51,24 @@ public class MethodUtils {
         }
     }
 
+    /**
+     * 获取从类全名中获取包名
+     */
+    public static String getPackageName(String className) {
+        int lastIndex = className.lastIndexOf(".");
+        return className.substring(0, lastIndex);
+    }
+
+    /**
+     * 获取方法全名
+     */
+    public static String getFullMethodName(Class<?> clazz, String methodName) {
+        return clazz.getName() + "." + methodName;
+    }
+
+    public static String getFullMethodName(Class<?> clazz, Method method) {
+        return clazz.getName() + "." + method.getName();
+    }
+
+
 }
