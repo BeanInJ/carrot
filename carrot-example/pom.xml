@@ -15,9 +15,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.vegetables</groupId>
-            <artifactId>Carrot</artifactId>
-            <version>0.0.1-jar-with-dependencies</version>
+            <groupId>com.easily</groupId>
+            <artifactId>carrot</artifactId>
+            <version>0.0.3-jar-with-dependencies</version>
         </dependency>
     </dependencies>
 </project>
