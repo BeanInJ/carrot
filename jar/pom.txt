@@ -1,5 +1,0 @@
-        <dependency>
-            <groupId>com.carrot</groupId>
-            <artifactId>carrot</artifactId>
-            <version>0.0.2-jar-with-dependencies</version>
-        </dependency>
