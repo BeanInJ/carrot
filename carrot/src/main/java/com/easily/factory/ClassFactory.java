@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 
 /**
  * class -> 进入工厂 -> 分发到类池解析 -> 解析完放入类池容器
+ *
+ * 目前类工厂加载的所有的类都是单例的（饿汉式，在池解析时，完成类创建）
  */
 public class ClassFactory {
     private static final Logger log = Logger.getGlobal();

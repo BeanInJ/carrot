@@ -103,19 +103,18 @@ public class RequestActuator implements Runnable {
 
         // 方法、类型、参数
         Method method = (Method) classAndMethod[1];
-        Class<?> clazz = classAndMethod[0].getClass();
+        Object object = classAndMethod[0];
         Object[] params = controllerContainer.getParams(method, this.request, this.response);
 
         // 获取切面信息
         AopContainer aopContainer = Container.getAopContainer();
         AopMethod aopMethod = null;
         try {
-            aopMethod = aopContainer.getAopMethod(method,clazz);
+            aopMethod = aopContainer.getAopMethod(method,object);
             Object returnValue;
             if (aopMethod == null){
                 // 切面信息为空，则直接执行方法
-                Object o = clazz.newInstance();
-                returnValue = method.invoke(o, params);
+                returnValue = method.invoke(object, params);
             }else {
                 // 包切面信息，则执行切面方法
                 returnValue = aopMethod.invoke(params);
@@ -127,10 +126,6 @@ public class RequestActuator implements Runnable {
             } else if (StringUtils.isNotBlankOrNull(returnValue)) {
                 this.response.setBody(StringUtils.toStringOrJson(returnValue));
             }
-
-        }catch (ReflectiveOperationException e){
-            e.printStackTrace();
-            log.warning("异常控制器类型");
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -55,10 +55,10 @@ public class AopContainer implements ProductContainer {
      * 1、如果返回null表示该目标没有aop方法
      * 2、如果过有返回该aop方法，并加入缓存
      */
-    public AopMethod getAopMethod(Method targetMethod, Class<?> targetClass) throws InstantiationException, IllegalAccessException {
+    public AopMethod getAopMethod(Method targetMethod, Object targetObject) throws InstantiationException, IllegalAccessException {
 
         // 目标方法全名
-        String targetMethodId = targetClass.getName() + "." + targetMethod.getName();
+        String targetMethodId = targetObject.getClass().getName() + "." + targetMethod.getName();
 
         // 从缓存中获取
         AopMethod aopMethod = AopMethodCache.get(targetMethodId);
@@ -69,7 +69,7 @@ public class AopContainer implements ProductContainer {
         if (aopClassList.isEmpty()) return null;
 
         // 构建aop方法
-        aopMethod = createAopMethod(targetMethod,targetClass,aopClassList);
+        aopMethod = createAopMethod(targetMethod,targetObject,aopClassList);
 
         // 存入缓存
         if (aopMethod != null) AopMethodCache.put(aopMethod.getMethodTag(),aopMethod);
@@ -80,15 +80,11 @@ public class AopContainer implements ProductContainer {
     /**
      * 构建aop方法
      * @param targetMethod 目标方法
-     * @param targetClass 目标方法所在的类
      * @param aopClassList aop类列表
      * @return 构建完成的aop方法体
      */
-    private AopMethod createAopMethod(Method targetMethod,Class<?> targetClass,List<Class<?>> aopClassList) throws InstantiationException, IllegalAccessException {
+    private AopMethod createAopMethod(Method targetMethod,Object targetObject,List<Class<?>> aopClassList) throws InstantiationException, IllegalAccessException {
         AopMethod aopMethod = null;
-
-        // object 目标方法所在的类
-        Object object = targetClass.newInstance();
         for (Class<?> aopClass : aopClassList) {
             String aopObjectName = aopClass.getName();
             try {
@@ -96,10 +92,10 @@ public class AopContainer implements ProductContainer {
                 Object aopObject = aopClass.newInstance();
                 if (aopMethod == null) {
                     // 根据原始方法创建
-                    aopMethod = new AopMethod(targetMethod, object, aopObject);
+                    aopMethod = new AopMethod(targetMethod, targetObject, aopObject);
                 } else if (!aopObjectName.equals(aopMethod.getAopObject().getClass().getName())) {
                     // 检查非重复后，根据aop方法创建
-                    aopMethod = new AopMethod(aopMethod, object, aopObject);
+                    aopMethod = new AopMethod(aopMethod, targetObject, aopObject);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -44,9 +44,7 @@ public class BaseFilter {
             }
         }
 
-        /**
-         * 识别get请求
-         */
+        // 识别get请求
         String type = request.getMethod();
         if("GET".equals(type) || url.contains("?")){
             request = new GetRequest(request);

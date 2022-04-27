@@ -30,6 +30,9 @@ public class FilterPool extends ClassPool {
             try {
                 Object cls = clazz.newInstance();
                 for (Method method : clazz.getMethods()) {
+                    // 无参过略器无法实现过滤功能
+                    if(method.getParameterCount() == 0) continue;
+
                     FilterBody filterBody = new FilterBody();
                     MethodBody methodBody = new MethodBody(cls, method, new Object[]{filterBody});
                     filterBody.setMethodBody(methodBody);
