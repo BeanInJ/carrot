@@ -9,9 +9,10 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Session 缓存
  * 1、超时后清理(24小时)
- * 3、可被redis或其他缓存替换
+ * 2、可被redis或其他缓存替换
  */
 public class Session {
+    // 保存结构 {uuid，[data,time]}
     private final ConcurrentMap<String, Object[]> map = new ConcurrentHashMap<>();
     private final static long MAX_TIME = 1000 * 60 * 60 * 24;
 
