@@ -46,7 +46,6 @@ public class Session {
 
     public static  <T> T get(String key, Class<T> expectedType){
         Object object = get(key);
-        if(object == null) return null;
-        return expectedType.cast(object);
+        return object == null ? null : expectedType.cast(object);
     }
 }
