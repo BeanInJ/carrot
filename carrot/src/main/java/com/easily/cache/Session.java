@@ -17,6 +17,8 @@ public class Session {
     private static final ConcurrentMap<String, Object[]> map = new ConcurrentHashMap<>();
     private static final long MAX_TIME = 1000 * 60 * 60 * 24;
 
+    private Session(){}
+
     /**
      * 保存session
      */
