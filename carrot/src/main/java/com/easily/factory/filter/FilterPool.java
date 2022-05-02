@@ -53,8 +53,6 @@ public class FilterPool extends ClassPool {
 
     @Override
     public <T> T getProductContainer(Class<T> clazz) {
-        if(clazz.isAssignableFrom(FilterContainer.class))
-            return (T)container;
-        return null;
+        return clazz.isAssignableFrom(FilterContainer.class) ? clazz.cast(this.container) : null;
     }
 }

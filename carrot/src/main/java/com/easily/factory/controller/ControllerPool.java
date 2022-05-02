@@ -91,12 +91,7 @@ public class ControllerPool extends ClassPool {
      */
     @Override
     public <T> T getProductContainer(Class<T> clazz) {
-        if (clazz.isAssignableFrom (ControllerContainer.class)) {
-            return (T)this.container;
-        }else {
-            log.warning("在ControllerPool中只能获取ControllerContainer容器");
-            return null;
-        }
+        return clazz.isAssignableFrom (ControllerContainer.class)? clazz.cast(this.container):null;
     }
 
 }

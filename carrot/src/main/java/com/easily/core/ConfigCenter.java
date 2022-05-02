@@ -1,6 +1,7 @@
 package com.easily.core;
 
 import com.easily.core.bootstrap.Loader;
+import com.easily.label.AddConfig;
 import com.easily.system.dict.CONFIG;
 import com.easily.system.util.PackageUtil;
 import com.easily.system.util.StringUtils;

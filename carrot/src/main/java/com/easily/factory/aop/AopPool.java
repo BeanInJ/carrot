@@ -99,12 +99,7 @@ public class AopPool extends ClassPool {
      */
     @Override
     public <T> T getProductContainer(Class<T> clazz) {
-        if (clazz.isAssignableFrom (AopContainer.class)) {
-            return (T)this.container;
-        }else {
-            log.warning("在AopPool中只能获取AopContainer容器");
-            return null;
-        }
+        return clazz.isAssignableFrom(AopContainer.class)? clazz.cast(this.container):null;
     }
 
     /**

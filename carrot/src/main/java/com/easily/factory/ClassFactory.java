@@ -1,6 +1,7 @@
 package com.easily.factory;
 
 import com.easily.factory.aop.AopPool;
+import com.easily.factory.configure.ConfigurePool;
 import com.easily.factory.controller.ControllerPool;
 import com.easily.factory.filter.FilterPool;
 import com.easily.label.AddPool;
@@ -34,6 +35,7 @@ public class ClassFactory {
         addPool(new AopPool());
         addPool(new ControllerPool());
         addPool(new FilterPool());
+        addPool(new ConfigurePool());
     }
 
     public static Pool getPool(String poolName){
