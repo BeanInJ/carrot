@@ -56,7 +56,6 @@ public class App {
         Stater.add(AppSwitch::open);
         Stater.add(AppCpu::start);
 
-
     }
 
     /**

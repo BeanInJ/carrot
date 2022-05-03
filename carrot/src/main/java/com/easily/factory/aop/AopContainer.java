@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 /**
  * aop容器：存储Map{匹配目标的正则,AopClass}
+ *
+ * Method 方法被执行时，进行aop正则判断，true -- 》 AopMethod初始化（有可能会被多层包裹）   -- 》 缓存 lru(定长)
  */
 public class AopContainer implements ProductContainer {
     private static final Logger log = Logger.getGlobal();

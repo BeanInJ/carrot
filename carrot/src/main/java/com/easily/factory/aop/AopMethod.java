@@ -71,10 +71,10 @@ public class AopMethod {
 
             // 2  方法执行
             if(rootAopMethod == null){
-                // 如果包裹的是原始方法
+                // 如果包裹的是原始方法 Method
                 aop.targetInvoke(method,object,args);
             }else{
-                // 如果包裹的是aop方法
+                // 如果包裹的是aop方法 AopMethod
                 aop.targetInvoke(rootAopMethod,object,args);
             }
             if(aop.gotoFinally()) return aop.result();
