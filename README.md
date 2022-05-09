@@ -3,7 +3,7 @@
 #### 介绍
 通过 Carrot ，你可以轻松地构建一个简单的web程序。
 
-Carrot 的优势： 不基于Servlet,不需要Tomcat，App.start(**.class) 一键启动，如果你想快速构建一个简单的web程序，Carrot 是你的选择。
+Carrot 的优势：App.start(**.class) 一键启动，如果你想快速构建一个简单的web程序，Carrot 是你的选择。
 #### 快速开始
 
 添加maven依赖
