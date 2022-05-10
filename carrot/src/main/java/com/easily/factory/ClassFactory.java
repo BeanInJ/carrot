@@ -5,6 +5,7 @@ import com.easily.factory.configure.ConfigurePool;
 import com.easily.factory.controller.ControllerPool;
 import com.easily.factory.filter.FilterPool;
 import com.easily.label.AddPool;
+import com.easily.system.util.AnnotationUtils;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,7 +91,7 @@ public class ClassFactory {
         classTempSet.stream()
 
                 .filter(clazz ->
-                        clazz.isAnnotationPresent(AddPool.class) || clazz.isAssignableFrom(Pool.class)
+                        clazz.isAnnotationPresent(AddPool.class) && clazz.isAssignableFrom(Pool.class)
                 )
 
                 .forEach(clazz ->
@@ -115,7 +116,7 @@ public class ClassFactory {
         classTempSet.forEach(clazz ->
                 // 循环池列表，找到该clazz属于哪个池
                 pools.values().stream()
-                        .filter(pool -> clazz.isAnnotationPresent(pool.getLabel()))
+                        .filter(pool -> AnnotationUtils.hasAnnotation(clazz,pool.getLabel()))
                         .forEach(pool -> pool.add(clazz))
         );
     }

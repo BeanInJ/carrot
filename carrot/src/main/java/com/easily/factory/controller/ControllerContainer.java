@@ -20,6 +20,9 @@ public class ControllerContainer implements ProductContainer {
     protected void put(String url,Object[] classAndMethod){
         urlMap.put(url,classAndMethod);
     }
+    protected void putAll(Map<String, Object[]> map){
+        urlMap.putAll(map);
+    }
 
     // 获取url对应的方法
     public Object[] getMethod(String url) {

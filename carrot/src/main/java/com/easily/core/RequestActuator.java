@@ -99,7 +99,11 @@ public class RequestActuator implements Runnable {
         // 获取url对应的方法
         ControllerContainer controllerContainer = Container.getControllerContainer();
         Object[] classAndMethod = controllerContainer.getMethod(request.getUrl());
-        if(classAndMethod == null) return true;
+
+        if(classAndMethod == null) {
+            this.response.setStatus("404");
+            return true;
+        }
 
         // 方法、类型、参数
         Method method = (Method) classAndMethod[1];

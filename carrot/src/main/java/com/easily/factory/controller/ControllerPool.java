@@ -1,13 +1,19 @@
 package com.easily.factory.controller;
 
 import com.easily.factory.ClassPool;
+import com.easily.label.AddUrls;
 import com.easily.label.Controller;
+import com.easily.label.Prefix;
+import com.easily.label.Suffix;
 import com.easily.system.dict.INNER;
 import com.easily.system.dict.MSG;
+import com.easily.system.util.StringUtils;
 import com.easily.system.util.UrlUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class ControllerPool extends ClassPool {
@@ -28,15 +34,59 @@ public class ControllerPool extends ClassPool {
 
     @Override
     public void parseToContainer() {
+        for (Class<?> clazz : classes) {
+            // 识别urls类
+            if (clazz.isAnnotationPresent(AddUrls.class)) {
+                urlsMethods:
+                for (Method method : clazz.getDeclaredMethods()) {
+                    // 识别urls方法
+                    if (method.getParameterCount() == 1) {
+                        Urls urls = new Urls();
+                        for (Class<?> parameterType : method.getParameterTypes()) {
+                            // 判断参数是否是Urls类型
+                            if (!parameterType.equals(Urls.class)) continue urlsMethods;
+                        }
 
-        // 移除无控制器方法的类
-        for(Class<?> clazz:classes){
-            for (Method method : clazz.getDeclaredMethods()) {
-                if(method.isAnnotationPresent(Controller.class)){
-                    break;
+                        try {
+                            Object o = clazz.newInstance();
+                            Object[] prams = new Object[]{urls};
+                            method.invoke(o, prams);
+                            Map<String, Object[]> urlsMap = urls.getUrls();
+                            Map<String, Object[]> newUrlsMap = new HashMap<>();
+
+                            String urlPrefix = "";
+                            String urlSuffix = "";
+
+                            if (method.isAnnotationPresent(Prefix.class)) {
+                                Prefix prefix = method.getAnnotation(Prefix.class);
+                                urlPrefix = prefix.value();
+                                urlPrefix = UrlUtils.correctUri(urlPrefix);
+                            }
+                            if (method.isAnnotationPresent(Suffix.class)) {
+                                Suffix suffix = method.getAnnotation(Suffix.class);
+                                urlSuffix = suffix.value();
+                            }
+
+                            // 循环invoke
+                            for (Map.Entry<String, Object[]> entry : urlsMap.entrySet()) {
+                                String url = entry.getKey();
+                                newUrlsMap.put(urlPrefix+url+urlSuffix, entry.getValue());
+                            }
+                            this.container.putAll(newUrlsMap);
+                        }catch (ReflectiveOperationException ignored) {}
+                    }
+
                 }
-                log.info("移除无效控制器：" + clazz.getName());
                 classes.remove(clazz);
+            } else {
+                // 移除无控制器方法的类
+                for (Method method : clazz.getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(Controller.class)) {
+                        break;
+                    }
+                    log.info("移除无效控制器：" + clazz.getName());
+                    classes.remove(clazz);
+                }
             }
         }
 
@@ -91,7 +141,7 @@ public class ControllerPool extends ClassPool {
      */
     @Override
     public <T> T getProductContainer(Class<T> clazz) {
-        return clazz.isAssignableFrom (ControllerContainer.class)? clazz.cast(this.container):null;
+        return clazz.isAssignableFrom(ControllerContainer.class) ? clazz.cast(this.container) : null;
     }
 
 }
