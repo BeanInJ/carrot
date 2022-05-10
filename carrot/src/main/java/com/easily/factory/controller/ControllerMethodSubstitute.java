@@ -10,8 +10,8 @@ public class ControllerMethodSubstitute {
         return response;
     }
 
-    public BaseResponse get(BaseRequest request,BaseResponse response) {
-        return this.method.invoke(request, response);
+    public void get(BaseRequest request,BaseResponse response) {
+        this.method.invoke(request, response);
     }
 
     protected void put(ControllerMethod method) {

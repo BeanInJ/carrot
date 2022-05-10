@@ -125,6 +125,10 @@ public class BaseResponse implements Http{
         this.body = body;
     }
 
+    public void setBody(Object body) {
+        this.body = StringUtils.toStringOrJson(body);
+    }
+
     public String[] getFirstLine() {
         return new String[]{this.version, this.status, this.reason};
     }

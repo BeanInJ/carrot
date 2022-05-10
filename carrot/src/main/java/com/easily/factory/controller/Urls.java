@@ -11,32 +11,48 @@ import java.util.Map;
 public class Urls {
     private final Map<String, Object[]> urls = new HashMap<>();
 
+    /**
+     * 仅传入url，返回空
+     */
     public void add(String url) {
         add(url, new BaseResponse());
     }
 
+    /**
+     * 传入控制器中的一个方法
+     */
+    public void add(String url, ControllerMethod method) {
+        ControllerMethodSubstitute substitute = new ControllerMethodSubstitute();
+        substitute.put(method);
+        try {
+            Method method1 = substitute.getClass().getMethod("get", BaseRequest.class, BaseResponse.class);
+            Object[] objects = {substitute, method1};
+            urls.put(url, objects);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 传入需要返回的数据
+     */
     public void add(String url, Object response) {
         ControllerMethodSubstitute substitute = new ControllerMethodSubstitute();
-        Method method = null;
+        Method method;
         try {
-            if (response instanceof ControllerMethod) {
-                substitute.put((ControllerMethod) response);
-                method = substitute.getClass().getMethod("get", BaseRequest.class, BaseResponse.class);
-            } else if (response instanceof BaseResponse) {
+            if (response instanceof BaseResponse) {
                 substitute.put((BaseResponse) response);
-                method = substitute.getClass().getMethod("get");
             } else {
                 BaseResponse baseResponse = new BaseResponse();
-                baseResponse.setBody(StringUtils.toStringOrJson(response));
+                baseResponse.setBody(response);
                 substitute.put(baseResponse);
-                method = substitute.getClass().getMethod("get");
             }
-        } catch (NoSuchMethodException ignored) {
+            method = substitute.getClass().getMethod("get");
+            Object[] objects = {substitute, method};
+            urls.put(url, objects);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
         }
-
-        Object[] objects = {substitute, method};
-        urls.put(url, objects);
-
     }
 
     protected Map<String, Object[]> getUrls() {

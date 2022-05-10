@@ -1,5 +1,7 @@
 package com.easily.system.baseServer;
 
+import com.easily.core.http.BaseRequest;
+import com.easily.core.http.BaseResponse;
 import com.easily.factory.controller.Urls;
 import com.easily.label.AddUrls;
 import com.easily.label.Prefix;
@@ -13,5 +15,10 @@ public class CarrotSimpleUrls {
         urls.add("/1","1");
         urls.add("/2","2");
         urls.add("/3","3");
+        urls.add("/4",this::testControllerMethod);
+    }
+
+    public void testControllerMethod(BaseRequest request,BaseResponse response){
+        response.setBody(request.getHeader());
     }
 }

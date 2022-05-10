@@ -128,7 +128,7 @@ public class RequestActuator implements Runnable {
             if (returnValue instanceof BaseResponse) {
                 this.response = (BaseResponse) returnValue;
             } else if (StringUtils.isNotBlankOrNull(returnValue)) {
-                this.response.setBody(StringUtils.toStringOrJson(returnValue));
+                this.response.setBody(returnValue);
             }
         }catch (Exception e){
             e.printStackTrace();

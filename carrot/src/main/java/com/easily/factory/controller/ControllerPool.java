@@ -73,7 +73,9 @@ public class ControllerPool extends ClassPool {
                                 newUrlsMap.put(urlPrefix+url+urlSuffix, entry.getValue());
                             }
                             this.container.putAll(newUrlsMap);
-                        }catch (ReflectiveOperationException ignored) {}
+                        }catch (ReflectiveOperationException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                 }
