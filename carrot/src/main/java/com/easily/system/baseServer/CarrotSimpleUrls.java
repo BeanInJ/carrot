@@ -9,13 +9,31 @@ import com.easily.label.Suffix;
 
 @AddUrls
 public class CarrotSimpleUrls {
-    @Prefix("/test")
+    @Prefix("/user")
     @Suffix(".do")
+    public void userUrls(Urls urls){
+        urls.add("/add",this::add);
+        urls.add("/getById",this::getById);
+        urls.add("/getList",this::getList);
+        urls.add("/save",this::testControllerMethod);
+    }
+
+    @Prefix("/carrot")
     public void carrotUrls(Urls urls){
-        urls.add("/1","1");
-        urls.add("/2","2");
-        urls.add("/3","3");
-        urls.add("/4",this::testControllerMethod);
+        urls.add("/add",this::add);
+        urls.add("/getById",this::getById);
+        urls.add("/getList",this::getList);
+        urls.add("/save",this::testControllerMethod);
+    }
+
+    public void add(BaseRequest request,BaseResponse response){
+        response.setBody(request.getHeader());
+    }
+    public void getById(BaseRequest request,BaseResponse response){
+        response.setBody(request.getHeader());
+    }
+    public void getList(BaseRequest request,BaseResponse response){
+        response.setBody(request.getHeader());
     }
 
     public void testControllerMethod(BaseRequest request,BaseResponse response){
