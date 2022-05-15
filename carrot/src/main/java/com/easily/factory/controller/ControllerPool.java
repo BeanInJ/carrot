@@ -1,16 +1,15 @@
 package com.easily.factory.controller;
 
+import com.easily.core.ConfigCenter;
 import com.easily.factory.ClassPool;
-import com.easily.label.AddUrls;
-import com.easily.label.Controller;
-import com.easily.label.Prefix;
-import com.easily.label.Suffix;
+import com.easily.label.*;
 import com.easily.system.dict.INNER;
 import com.easily.system.dict.MSG;
-import com.easily.system.util.StringUtils;
 import com.easily.system.util.UrlUtils;
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +20,11 @@ public class ControllerPool extends ClassPool {
 
     // 产品容器
     private final ControllerContainer container = new ControllerContainer();
+    private final ConfigCenter configCenter;
+
+    public ControllerPool(ConfigCenter configCenter){
+        this.configCenter =configCenter;
+    }
 
     @Override
     public Class<? extends Annotation> getLabel() {
@@ -66,6 +70,7 @@ public class ControllerPool extends ClassPool {
 
                 try {
                     Object o = clazz.newInstance();
+                    putFieldsValue(o);
                     Object[] prams = new Object[]{urls};
                     method.invoke(o, prams);
                     Map<String, Object[]> urlsMap = urls.getUrls();
@@ -105,6 +110,7 @@ public class ControllerPool extends ClassPool {
         Object newClazz;
         try {
             newClazz = clazz.newInstance();
+            putFieldsValue(newClazz);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -138,6 +144,21 @@ public class ControllerPool extends ClassPool {
                     }
                 }
                 container.put(url, new Object[]{newClazz, method});
+            }
+        }
+    }
+
+    /**
+     * 注入值
+     */
+    private void putFieldsValue(Object obj) throws IllegalAccessException {
+        for (Field field : obj.getClass().getDeclaredFields()) {
+            if(field.isAnnotationPresent(ConfigValue.class)){
+                field.setAccessible(true);
+                Class<?> type = field.getType();
+                ConfigValue annotation = field.getAnnotation(ConfigValue.class);
+                String value = annotation.value();
+                field.set(obj, this.configCenter.get(value,type));
             }
         }
     }

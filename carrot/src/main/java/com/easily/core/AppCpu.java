@@ -10,18 +10,17 @@ public class AppCpu {
     /**
      * 线程池
      */
-    private static final ExecutorService service = Executors.newCachedThreadPool();
+    private final ExecutorService service = Executors.newCachedThreadPool();
 
     /**
      * 开启线程池，循环处理请求
      */
-    public static void start() {
-        ArrayBlockingQueue<SocketChannel> channelQueue = AppSwitch.get();
+    public void start(ArrayBlockingQueue<SocketChannel> channelQueue,Container container) {
         // noinspection InfiniteLoopStatement
         while (true) {
             try {
                 SocketChannel socketChannel = channelQueue.take();
-                service.execute(new RequestActuator(socketChannel));
+                service.execute(new RequestActuator(socketChannel,container));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

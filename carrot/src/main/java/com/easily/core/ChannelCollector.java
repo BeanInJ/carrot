@@ -1,6 +1,6 @@
 package com.easily.core;
 
-import com.easily.system.dict.CONFIG;
+import com.easily.core.bootstrap.ElementsSingleton;
 import com.easily.system.dict.MSG;
 
 import java.io.IOException;
@@ -14,41 +14,31 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 
-public class AppSwitch implements Runnable {
+/**
+ * Channel收集器
+ */
+public class ChannelCollector extends ElementsSingleton implements Runnable{
     private static final Logger log = Logger.getGlobal();
 
     // 端口
-    private final int port;
+    private int port;
 
     // channel队列
-    private static ArrayBlockingQueue<SocketChannel> channelQueue = null;
+    private ArrayBlockingQueue<SocketChannel> channelQueue = null;
 
-    {
-        int size = (int) ConfigCenter.get(CONFIG.APP_CHANNEL_SIZE);
-        channelQueue = new ArrayBlockingQueue<>(size);
-    }
-
-    // 构造函数,传入端口
-    public AppSwitch(int port) {
+    public void init(Integer port,Integer queueSize){
         this.port = port;
+        this.channelQueue = new ArrayBlockingQueue<>(queueSize);
+        new Thread(this).start();
     }
 
     // 获取channel队列
-    protected static ArrayBlockingQueue<SocketChannel> get() {
+    public ArrayBlockingQueue<SocketChannel> get() {
         return channelQueue;
-    }
-
-    // 启动
-    public static void open() {
-        int port = ConfigCenter.getAppPort();
-        AppSwitch channelSwitch = new AppSwitch(port);
-        Thread thread = new Thread(channelSwitch);
-        thread.start();
     }
 
     @Override
     public void run() {
-
         ServerSocketChannel channel;
         Selector selector;
 
@@ -93,5 +83,4 @@ public class AppSwitch implements Runnable {
             }
         }
     }
-
 }

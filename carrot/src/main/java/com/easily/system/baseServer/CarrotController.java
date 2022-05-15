@@ -1,16 +1,26 @@
 package com.easily.system.baseServer;
 
-import com.easily.core.ConfigCenter;
 import com.easily.core.http.BaseRequest;
 import com.easily.core.http.BaseResponse;
 import com.easily.core.http.GetRequest;
+import com.easily.label.ConfigValue;
 import com.easily.label.Controller;
+import com.easily.system.dict.CONFIG;
 
 /**
  * 获取系统初始化的一些信息
  */
 @Controller
 public class CarrotController {
+
+    @ConfigValue(CONFIG.APP_NAME)
+    String CarrotName;
+
+    @ConfigValue(CONFIG.APP_VERSION)
+    String AppVersion;
+
+    @ConfigValue(CONFIG.APP_AUTHOR)
+    String AppAuthor;
 
     // 测试直接访问端口
     @Controller
@@ -21,12 +31,12 @@ public class CarrotController {
     // 测试强制覆盖url
     @Controller(value = "/carrot", isCover = true)
     public String getCarrot(BaseResponse response) {
-        String carrotName = (String) ConfigCenter.getConfig().get("carrot.name");
+        String carrotName = CarrotName;
         if(carrotName == null) {
             carrotName = "carrot";
         }
 
-        String carrotVersion = (String) ConfigCenter.getConfig().get("carrot.version");
+        String carrotVersion = AppVersion;
         if(carrotVersion == null) {
             carrotVersion = "1.0.0";
         }
@@ -44,7 +54,7 @@ public class CarrotController {
     // 测试从配置中心获取数据
     @Controller(value = "/version", isCover = true)
     public String getCarrotVersion() {
-        String carrotVersion = (String) ConfigCenter.getConfig().get("carrot.version");
+        String carrotVersion = AppAuthor;
         if(carrotVersion == null) {
             carrotVersion = "1.0.0";
         }
@@ -60,7 +70,7 @@ public class CarrotController {
     // 测试正常返回
     @Controller(value = "/author", isCover = true)
     public String getAuthor() {
-        String author = (String) ConfigCenter.getConfig().get("carrot.author");
+        String author = AppAuthor;
         if(author == null) {
             author = "Carrot author: BeanInJ";
         }

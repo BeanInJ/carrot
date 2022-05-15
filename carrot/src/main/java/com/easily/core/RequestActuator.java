@@ -23,11 +23,13 @@ import java.util.logging.Logger;
 public class RequestActuator implements Runnable {
     private static final Logger log = Logger.getGlobal();
     private final SocketChannel socketChannel;
+    private final Container container;
     private BaseRequest request;
     private BaseResponse response;
 
-    public RequestActuator(SocketChannel socketChannel) {
+    public RequestActuator(SocketChannel socketChannel,Container container) {
         this.socketChannel = socketChannel;
+        this.container = container;
     }
 
     public void run() {
@@ -80,7 +82,7 @@ public class RequestActuator implements Runnable {
      * 通过前置过略器
      */
     private boolean passBeforeFilter() {
-        FilterContainer filterContainer = Container.getFilterContainer();
+        FilterContainer filterContainer = container.getFilterContainer();
         this.response = filterContainer.beforeController(this.request);
 
         // 如果经过过略器后，response还未初始化，则在此初始化
@@ -97,7 +99,7 @@ public class RequestActuator implements Runnable {
         if(!this.response.isGoToController()) return true;
 
         // 获取url对应的方法
-        ControllerContainer controllerContainer = Container.getControllerContainer();
+        ControllerContainer controllerContainer = container.getControllerContainer();
         Object[] classAndMethod = controllerContainer.getMethod(request.getUrl());
 
         if(classAndMethod == null) {
@@ -111,7 +113,7 @@ public class RequestActuator implements Runnable {
         Object[] params = controllerContainer.getParams(method, this.request, this.response);
 
         // 获取切面信息
-        AopContainer aopContainer = Container.getAopContainer();
+        AopContainer aopContainer = container.getAopContainer();
         AopMethod aopMethod = null;
         try {
             aopMethod = aopContainer.getAopMethod(method,object);
@@ -140,7 +142,7 @@ public class RequestActuator implements Runnable {
      * 通过后置过滤器
      */
     private boolean passAfterFilter() {
-        FilterContainer filterContainer = Container.getFilterContainer();
+        FilterContainer filterContainer = container.getFilterContainer();
         filterContainer.afterController(this.request, this.response);
         return !this.response.isReturnNow();
     }

@@ -3,8 +3,8 @@ package com.easily.label;
 import java.lang.annotation.*;
 
 @Documented
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Carrot
-public @interface Filter {
+public @interface ConfigValue {
+    String value();
 }

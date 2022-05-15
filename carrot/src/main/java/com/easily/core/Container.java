@@ -12,47 +12,47 @@ public class Container {
     /**
      * 切面容器
      */
-    private static AopContainer aopContainer;
+    private final AopContainer aopContainer;
     /**
      * url方法容器
      */
-    private static ControllerContainer controllerContainer;
+    private final ControllerContainer controllerContainer;
     /**
      * 过略器方法容器
      */
-    private static FilterContainer filterContainer;
+    private final FilterContainer filterContainer;
     /**
      * 异常拦截器容器
      */
-    private static ExceptionInterceptContainer exceptionInterceptContainer;
+    private ExceptionInterceptContainer exceptionInterceptContainer;
 
-    public static void start(){
-        Pool aopPool = ClassFactory.getPool(INNER.AOP_POOl_NAME);
+    public Container(ClassFactory classFactory){
+        Pool aopPool = classFactory.getPool(INNER.AOP_POOl_NAME);
         aopContainer = aopPool.getProductContainer(AopContainer.class);
 
-        Pool controllerPool = ClassFactory.getPool(INNER.CONTROLLER_POOl_NAME);
+        Pool controllerPool = classFactory.getPool(INNER.CONTROLLER_POOl_NAME);
         controllerContainer = controllerPool.getProductContainer(ControllerContainer.class);
 
-        Pool filterPool = ClassFactory.getPool(INNER.FILTER_POOl_NAME);
+        Pool filterPool = classFactory.getPool(INNER.FILTER_POOl_NAME);
         filterContainer = filterPool.getProductContainer(FilterContainer.class);
 
 //        Pool exceptionInterceptPool = ClassFactory.getPool(INNER.EXCEPTION_POOl_NAME);
 //        exceptionInterceptContainer = exceptionInterceptPool.getProductContainer(ExceptionInterceptContainer.class);
     }
 
-    public static AopContainer getAopContainer() {
+    public AopContainer getAopContainer() {
         return aopContainer;
     }
 
-    public static ControllerContainer getControllerContainer() {
+    public ControllerContainer getControllerContainer() {
         return controllerContainer;
     }
 
-    public static FilterContainer getFilterContainer() {
+    public FilterContainer getFilterContainer() {
         return filterContainer;
     }
 
-    public static ExceptionInterceptContainer getExceptionInterceptContainer() {
+    public ExceptionInterceptContainer getExceptionInterceptContainer() {
         return exceptionInterceptContainer;
     }
 }

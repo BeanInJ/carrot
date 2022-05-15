@@ -4,56 +4,56 @@ import java.util.ArrayDeque;
 
 /**
  * 执行器
- * Loader 和 Starter 的父类
  */
 public class Actuator {
     /**
      * 是否已经开始（防止重载）
      */
-    private static boolean isUnderway = false;
+    private boolean isUnderway = false;
 
     /**
      * 需要执行的队列
      */
-    private static final ArrayDeque<Step> steps = new ArrayDeque<>();
+    private final ArrayDeque<Element> steps = new ArrayDeque<>();
 
     /**
      * 获取进行状态
      */
-    public static boolean isUnderway() {
+    public boolean isUnderway() {
         return isUnderway;
     }
 
     /**
      * 正在进行中
      */
-    public static void underway() {
+    public void underway() {
         isUnderway = true;
     }
 
     /**
      * 添加到最前面
      */
-    public static void addFirst(Step step) {
+    public void addFirst(Element step) {
         steps.addFirst(step);
     }
 
     /**
      * 添加到最后面
      */
-    public static void add(Step step) {
+    public void add(Element step) {
         steps.add(step);
     }
 
     /**
      * 开始时运行
      */
-    public static void start() {
+    public void start() {
         if (isUnderway()) return;
         underway();
 
+        Object o = null;
         while (!steps.isEmpty()) {
-            steps.poll().execute();
+            o = steps.poll().execute(o);
         }
     }
 }

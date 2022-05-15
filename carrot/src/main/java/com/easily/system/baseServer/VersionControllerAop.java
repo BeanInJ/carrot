@@ -15,7 +15,7 @@ public class VersionControllerAop {
     @AopBefore
     public void getCorrectVersion(MethodBody methodBody){
 
-        Object version = ConfigCenter.getConfig().get(CONFIG.APP_VERSION);
+        Object version = CONFIG.APP_VERSION;
         if(version != null){
             methodBody.setReturnValue(version);
             methodBody.setReturnNow(true);

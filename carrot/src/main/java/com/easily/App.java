@@ -1,17 +1,10 @@
 package com.easily;
 
-import com.easily.core.*;
-import com.easily.core.bootstrap.Loader;
-import com.easily.core.bootstrap.Stater;
-import com.easily.core.bootstrap.Step;
-import com.easily.factory.ClassFactory;
-import com.easily.system.log.LogConfig;
-import com.easily.system.util.MethodUtils;
+import com.easily.core.bootstrap.Enter;
 
 import java.io.IOException;
 
 public class App {
-    private static boolean isReplaceOrder = false;
 
     /**
      * Carrot启动入口
@@ -29,48 +22,7 @@ public class App {
      * @param mainClass main方法所在的类
      */
     public static void start(Class<?> mainClass) {
-
-        // 优先执行beforeStart开头的方法方法
-        MethodUtils.invokeMainMethod(mainClass);
-
-        // 排序
-        order();
-        // 加载
-        Loader.start(mainClass);
-        // 启动
-        Stater.start();
-    }
-
-    /**
-     * 系统加载流程、启动流程默认执行顺序
-     */
-    private static void defaultOrder(){
-        Loader.add(ConfigCenter::load);
-        Loader.add(LogConfig::load);
-        Loader.add(ClassFactory::load);
-        Loader.add(Scanner::load);
-
-        Stater.add(Scanner::start);
-        Stater.add(ClassFactory::start);
-        Stater.add(Container::start);
-        Stater.add(AppSwitch::open);
-        Stater.add(AppCpu::start);
-
-    }
-
-    /**
-     * 排序
-     */
-    private static void order(){
-        if(!isReplaceOrder) defaultOrder();
-    }
-
-    /**
-     * 替换系统默认步骤
-     */
-    public static void reOrder(Step step) {
-        isReplaceOrder = true;
-        step.execute();
+        new Enter().start(mainClass);
     }
 
     public static void main(String[] args) throws IOException {
