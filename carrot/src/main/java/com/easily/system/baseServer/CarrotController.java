@@ -5,6 +5,7 @@ import com.easily.core.http.BaseResponse;
 import com.easily.core.http.GetRequest;
 import com.easily.label.ConfigValue;
 import com.easily.label.Controller;
+import com.easily.label.Service;
 import com.easily.system.dict.CONFIG;
 
 /**
@@ -21,6 +22,9 @@ public class CarrotController {
 
     @ConfigValue(CONFIG.APP_AUTHOR)
     String AppAuthor;
+
+    @Service
+    HelloService service;
 
     // 测试直接访问端口
     @Controller
@@ -41,7 +45,7 @@ public class CarrotController {
             carrotVersion = "1.0.0";
         }
 
-        response.setCookie("name","BeanInJ");
+        response.setCookie("name","CarrotAuthor");
         return "服务注册名：" + carrotName + ", 系统版本：" + carrotVersion;
     }
 
@@ -72,7 +76,7 @@ public class CarrotController {
     public String getAuthor() {
         String author = AppAuthor;
         if(author == null) {
-            author = "Carrot author: BeanInJ";
+            author = "Carrot author: CarrotAuthor";
         }
         return author;
     }
@@ -89,5 +93,10 @@ public class CarrotController {
         GetRequest getRequest = new GetRequest(request);
         response.setBody(getRequest.getParams().toString());
         return null;
+    }
+
+    @Controller("/hello")
+    public String hello(){
+        return service.get();
     }
 }

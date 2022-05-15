@@ -47,7 +47,7 @@ public class Actuator {
     /**
      * 开始时运行
      */
-    public void start() {
+    public void start() throws IllegalAccessException, InstantiationException {
         if (isUnderway()) return;
         underway();
 

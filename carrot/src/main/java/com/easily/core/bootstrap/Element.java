@@ -5,5 +5,5 @@ package com.easily.core.bootstrap;
  */
 @FunctionalInterface
 public interface Element {
-    Object execute(Object o);
+    Object execute(Object o) throws IllegalAccessException, InstantiationException;
 }

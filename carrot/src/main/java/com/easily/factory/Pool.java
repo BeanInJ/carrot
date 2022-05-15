@@ -26,7 +26,7 @@ public interface Pool {
     /**
      * 解析入容器
      */
-    void parseToContainer();
+    void parseToContainer() throws IllegalAccessException, InstantiationException;
 
     /**
      * 获取产品容器

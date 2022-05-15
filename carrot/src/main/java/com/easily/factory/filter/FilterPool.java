@@ -21,7 +21,7 @@ public class FilterPool extends ClassPool {
 
     @Override
     public String getPoolName() {
-        return INNER.FILTER_POOl_NAME;
+        return FilterPool.class.getName();
     }
 
     @Override

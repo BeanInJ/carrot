@@ -48,7 +48,7 @@ public class AopPool extends ClassPool {
 
     @Override
     public String getPoolName() {
-        return INNER.AOP_POOl_NAME;
+        return AopPool.class.getName();
     }
 
     /**

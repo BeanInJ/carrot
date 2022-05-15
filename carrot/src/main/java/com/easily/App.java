@@ -22,10 +22,14 @@ public class App {
      * @param mainClass main方法所在的类
      */
     public static void start(Class<?> mainClass) {
-        new Enter().start(mainClass);
+        try {
+            new Enter().start(mainClass);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         App.start(App.class);
     }
 }

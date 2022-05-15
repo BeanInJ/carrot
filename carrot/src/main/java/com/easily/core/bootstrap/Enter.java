@@ -28,7 +28,7 @@ public class Enter {
     private ConfigCenter configCenter;
 
     private Container container;
-    public void start(Class<?> mainClass){
+    public void start(Class<?> mainClass) throws IllegalAccessException, InstantiationException {
         this.mainClass = mainClass;
         Actuator actuator = new Actuator();
         actuator.add(this::beforeStart);
@@ -63,7 +63,7 @@ public class Enter {
     /**
      * 加载class工厂
      */
-    private Object classFactoryLoad(Object o){
+    private Object classFactoryLoad(Object o) throws IllegalAccessException, InstantiationException {
         Set<String> packageNames = new HashSet<>();
 
         // 内部包

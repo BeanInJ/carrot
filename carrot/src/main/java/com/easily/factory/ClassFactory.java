@@ -5,6 +5,8 @@ import com.easily.factory.aop.AopPool;
 import com.easily.factory.configure.ConfigurePool;
 import com.easily.factory.controller.ControllerPool;
 import com.easily.factory.filter.FilterPool;
+import com.easily.factory.service.ServiceContainer;
+import com.easily.factory.service.ServicePool;
 import com.easily.label.AddPool;
 import com.easily.system.util.AnnotationUtils;
 
@@ -31,9 +33,14 @@ public class ClassFactory {
 
 
     public void load(ConfigCenter configCenter){
+        ServicePool servicePool = new ServicePool(configCenter);
+        ControllerPool controllerPool = new ControllerPool(configCenter);
+        controllerPool.putServiceContainer(servicePool.getProductContainer(ServiceContainer.class));
+
         // 注册内置类池
         addPool(new AopPool());
-        addPool(new ControllerPool(configCenter));
+        addPool(servicePool);
+        addPool(controllerPool);
         addPool(new FilterPool());
         addPool(new ConfigurePool());
     }
@@ -108,14 +115,16 @@ public class ClassFactory {
     /**
      * 解析class入容器
      */
-    private void parseClass(){
-        pools.values().forEach(Pool::parseToContainer);
+    private void parseClass() throws IllegalAccessException, InstantiationException{
+        for (Pool value : pools.values()) {
+            value.parseToContainer();
+        }
     }
 
     /**
      * 工厂开始工作： 注册池、分发类
      */
-    public void start() {
+    public void start() throws IllegalAccessException, InstantiationException {
         // 注册类池的优先级 > 功能类分发
         // 所有类池都注册完毕，功能类分发才能正确进行
 

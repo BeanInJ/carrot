@@ -18,7 +18,7 @@ public class ConfigurePool extends ClassPool {
 
     @Override
     public String getPoolName() {
-        return INNER.CONFIGURE_POOl_NAME;
+        return ConfigurePool.class.getName();
     }
 
     @Override

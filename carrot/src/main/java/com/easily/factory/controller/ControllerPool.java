@@ -2,11 +2,10 @@ package com.easily.factory.controller;
 
 import com.easily.core.ConfigCenter;
 import com.easily.factory.ClassPool;
+import com.easily.factory.service.ServiceContainer;
 import com.easily.label.*;
-import com.easily.system.dict.INNER;
 import com.easily.system.dict.MSG;
 import com.easily.system.util.UrlUtils;
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -15,15 +14,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/**
+ * service容器必须在controller容器之前加载完成，因为controller可能从service容器中取值
+ */
 public class ControllerPool extends ClassPool {
     private static final Logger log = Logger.getGlobal();
 
     // 产品容器
     private final ControllerContainer container = new ControllerContainer();
+    private ServiceContainer serviceContainer;
     private final ConfigCenter configCenter;
 
     public ControllerPool(ConfigCenter configCenter){
         this.configCenter =configCenter;
+    }
+
+    public void putServiceContainer(ServiceContainer container){
+        this.serviceContainer = container;
     }
 
     @Override
@@ -33,11 +40,11 @@ public class ControllerPool extends ClassPool {
 
     @Override
     public String getPoolName() {
-        return INNER.CONTROLLER_POOl_NAME;
+        return ControllerPool.class.getName();
     }
 
     @Override
-    public void parseToContainer() {
+    public void parseToContainer() throws IllegalAccessException, InstantiationException {
         for (Class<?> clazz : classes) {
             if (clazz.isAnnotationPresent(AddUrls.class)) {
                 urlsToContainer(clazz);
@@ -71,6 +78,7 @@ public class ControllerPool extends ClassPool {
                 try {
                     Object o = clazz.newInstance();
                     putFieldsValue(o);
+                    putService(o);
                     Object[] prams = new Object[]{urls};
                     method.invoke(o, prams);
                     Map<String, Object[]> urlsMap = urls.getUrls();
@@ -104,17 +112,15 @@ public class ControllerPool extends ClassPool {
 
     }
 
-    private void controllerToContainer(Class<?> clazz) {
+    private void controllerToContainer(Class<?> clazz) throws IllegalAccessException, InstantiationException {
         Controller controllerInClass = clazz.getAnnotation(Controller.class);
         // 创建对象
         Object newClazz;
-        try {
+
             newClazz = clazz.newInstance();
             putFieldsValue(newClazz);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+            putService(newClazz);
+
         String baseUrl = UrlUtils.correctUri(controllerInClass.value());
         // 获取方法上的url
         Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -163,4 +169,20 @@ public class ControllerPool extends ClassPool {
         }
     }
 
+    private void putService(Object obj) throws IllegalAccessException {
+        for (Field field : obj.getClass().getDeclaredFields()) {
+            if(field.isAnnotationPresent(Service.class)){
+                field.setAccessible(true);
+                Class<?> type = field.getType();
+                Service annotation = field.getAnnotation(Service.class);
+                String value = annotation.value();
+                if("".equals(value)){
+                    // 根据类名获取
+                    value = type.getName();
+                }
+                Object service = this.serviceContainer.get(value, type);
+                field.set(obj, service);
+            }
+        }
+    }
 }
