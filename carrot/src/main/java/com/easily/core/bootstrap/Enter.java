@@ -101,12 +101,18 @@ public class Enter {
         return channelCollector.get();
     }
 
+    /**
+     * 启动线程池处理请求
+     */
     private Object appCpuStart(Object o){
         ArrayBlockingQueue<SocketChannel> channels = (ArrayBlockingQueue<SocketChannel>) o;
         new AppCpu().start(channels,this.container);
         return null;
     }
 
+    /**
+     * 执行beforeStart开头的方法
+     */
     private Object beforeStart(Object o) {
         // 执行beforeStart开头的方法
         Object main;

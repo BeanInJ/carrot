@@ -96,44 +96,44 @@ public class RequestActuator implements Runnable {
      * 通过控制器
      */
     private boolean passController() {
-        if(!this.response.isGoToController()) return true;
+        if(this.response.isGoToController()) {
+            // 获取url对应的方法
+            ControllerContainer controllerContainer = container.getControllerContainer();
+            Object[] classAndMethod = controllerContainer.getMethod(request.getUrl());
 
-        // 获取url对应的方法
-        ControllerContainer controllerContainer = container.getControllerContainer();
-        Object[] classAndMethod = controllerContainer.getMethod(request.getUrl());
-
-        if(classAndMethod == null) {
-            this.response.setStatus("404");
-            return true;
-        }
-
-        // 方法、类型、参数
-        Method method = (Method) classAndMethod[1];
-        Object object = classAndMethod[0];
-        Object[] params = controllerContainer.getParams(method, this.request, this.response);
-
-        // 获取切面信息
-        AopContainer aopContainer = container.getAopContainer();
-        AopMethod aopMethod = null;
-        try {
-            aopMethod = aopContainer.getAopMethod(method,object);
-            Object returnValue;
-            if (aopMethod == null){
-                // 切面信息为空，则直接执行方法
-                returnValue = method.invoke(object, params);
-            }else {
-                // 包切面信息，则执行切面方法
-                returnValue = aopMethod.invoke(params);
+            if (classAndMethod == null) {
+                this.response.setStatus("404");
+                return true;
             }
 
-            // 将返回值设置到response中
-            if (returnValue instanceof BaseResponse) {
-                this.response = (BaseResponse) returnValue;
-            } else if (StringUtils.isNotBlankOrNull(returnValue)) {
-                this.response.setBody(returnValue);
+            // 方法、类型、参数
+            Method method = (Method) classAndMethod[1];
+            Object object = classAndMethod[0];
+            Object[] params = controllerContainer.getParams(method, this.request, this.response);
+
+            // 获取切面信息
+            AopContainer aopContainer = container.getAopContainer();
+            AopMethod aopMethod = null;
+            try {
+                aopMethod = aopContainer.getAopMethod(method, object);
+                Object returnValue;
+                if (aopMethod == null) {
+                    // 切面信息为空，则直接执行方法
+                    returnValue = method.invoke(object, params);
+                } else {
+                    // 包切面信息，则执行切面方法
+                    returnValue = aopMethod.invoke(params);
+                }
+
+                // 将返回值设置到response中
+                if (returnValue instanceof BaseResponse) {
+                    this.response = (BaseResponse) returnValue;
+                } else if (StringUtils.isNotBlankOrNull(returnValue)) {
+                    this.response.setBody(returnValue);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
         return true;
     }

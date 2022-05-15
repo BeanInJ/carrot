@@ -20,9 +20,6 @@ import com.easily.system.util.StringUtils;
 @Filter
 public class BaseFilter {
 
-    /**
-     * 拦截url /？
-     */
     @BeforeController
     public BaseResponse before(FilterBody filterBody){
         // 设置优先级,数字越小优先级越高
