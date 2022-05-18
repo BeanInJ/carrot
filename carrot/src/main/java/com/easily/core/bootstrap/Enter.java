@@ -4,17 +4,20 @@ import com.easily.App;
 import com.easily.core.AppCpu;
 import com.easily.core.ChannelCollector;
 import com.easily.core.ConfigCenter;
-import com.easily.core.Container;
 import com.easily.factory.ClassFactory;
 import com.easily.factory.AnnotationScanner;
+import com.easily.factory.Pool;
+import com.easily.factory.Pools;
 import com.easily.label.Carrot;
 import com.easily.system.dict.CONFIG;
 import com.easily.system.log.LogConfig;
 import com.easily.system.util.StringUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.channels.SocketChannel;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
@@ -27,7 +30,7 @@ public class Enter {
     private Class<?> mainClass;
     private ConfigCenter configCenter;
 
-    private Container container;
+    private Pools pools;
     public void start(Class<?> mainClass) throws IllegalAccessException, InstantiationException {
         this.mainClass = mainClass;
         Actuator actuator = new Actuator();
@@ -79,19 +82,16 @@ public class Enter {
         }
 
         AnnotationScanner scanner = new AnnotationScanner(packageNames,Carrot.class);
-
-        ClassFactory classFactory = new ClassFactory();
-        classFactory.setScanner(scanner);
-        classFactory.load(this.configCenter);
+        ClassFactory classFactory = new ClassFactory(scanner,this.configCenter);
         classFactory.start();
-        return new Container(classFactory);
+        this.pools = classFactory.getPools();
+        return o;
     }
 
     /**
      * 开放socket通道
      */
     private ArrayBlockingQueue<SocketChannel> channelCollectorLoad(Object o){
-        this.container = (Container) o;
         ChannelCollector channelCollector = ElementsSingleton.get(ChannelCollector.class);
         Integer port = this.configCenter.get(CONFIG.APP_PORT,Integer.class);
         Integer queueSize = this.configCenter.get(CONFIG.APP_CHANNEL_SIZE,Integer.class);
@@ -106,7 +106,7 @@ public class Enter {
      */
     private Object appCpuStart(Object o){
         ArrayBlockingQueue<SocketChannel> channels = (ArrayBlockingQueue<SocketChannel>) o;
-        new AppCpu().start(channels,this.container);
+        new AppCpu().start(channels,this.pools);
         return null;
     }
 

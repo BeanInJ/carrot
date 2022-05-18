@@ -1,15 +1,18 @@
 package com.easily.factory.aop;
 
-import com.easily.factory.ClassPool;
-import com.easily.label.*;
-import com.easily.system.dict.INNER;
-import com.easily.system.util.StringUtils;
+import com.easily.factory.ClassMeta;
+import com.easily.factory.Pool;
+import com.easily.label.Aop;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * aop池：生产Map{匹配目标的正则,AopClass}
@@ -27,19 +30,33 @@ import java.util.logging.Logger;
  *
  *
  * aop包下几个类的作用：
- * AopPool ：接收工厂分发下来的原料，解析成“产品”放入AopContainer中，等待被使用
- * AopContainer ： 存放“产品”,提供Aop目标检查与AopMethod封装
+ * AopPool ：接收工厂分发下来的原料，解析成“产品”，等待被使用
  * AopMethodCache： 临时缓存已经封装好的AopMethod，避免每次目标方法被调用都需要重新封装
  * AopMethod：经过aop封装的方法体，其invoke方法可直接调用
  * MethodBody：存储目标方法需要的类、参数、返回、异常等信息，每次AopMethod被调用时，会new一个
  * AopMethodActuator: AopMethod 内置执行器仅aop包内可调用，辅助AopMethod的切面调用、MethodBody的创建
  *
  */
-public class AopPool extends ClassPool {
+public class AopPool implements Pool {
+
     private static final Logger log = Logger.getGlobal();
 
-    // 产品容器
-    private final AopContainer container = new AopContainer();
+    private final Map<String[],Class<?>> aopMp = new LinkedHashMap<>();
+
+
+    @Override
+    public void put(ClassMeta classMeta) {
+        Class<?> clazz = classMeta.getClazz();
+        Aop annotationAop = clazz.getAnnotation(Aop.class);
+        String[] values = annotationAop.value();
+        if (values == null) return;
+
+        List<String> newValues = new ArrayList<>();
+        for (String value:values){
+            newValues.add(parseAopValue(value));
+        }
+        aopMp.put(newValues.toArray(new String[0]), clazz);
+    }
 
     @Override
     public Class<? extends Annotation> getLabel() {
@@ -47,64 +64,10 @@ public class AopPool extends ClassPool {
     }
 
     @Override
-    public String getPoolName() {
-        return AopPool.class.getName();
+    public void end() {
+
     }
 
-    /**
-     * 以AopValue为key，clazz为value，存入aop容器
-     */
-    @Override
-    public void parseToContainer() {
-
-        out:
-        for (Class<?> clazz : this.classes) {
-            // clazz的方法不包含aop方法的，不加入容器
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(AopAfter.class)
-                        || method.isAnnotationPresent(AopAround.class)
-                        || method.isAnnotationPresent(AopBefore.class)
-                        || method.isAnnotationPresent(AopException.class)
-                        || method.isAnnotationPresent(AopFinally.class)) {
-
-                    // 如果有aop方法，则加入容器
-                    break;
-                }else {
-                    // 没有aop方法,检查下一个类
-                    continue out;
-                }
-            }
-
-            // class和正则的关系：
-            // 一个class可以有多个正则
-            // 一个class只能在容器中出现一次
-            // 整个容器中，正则是可以重复的，但是不能在一个类上重复
-
-            List<String> aopValues = new ArrayList<>();
-            for (Annotation annotation : clazz.getAnnotations()) {
-                if (annotation.annotationType().equals(Aop.class)) {
-                    Aop aop = (Aop) annotation;
-                    String value = aop.value();
-                    if (StringUtils.isBlankOrNull(value)) continue;
-                    value = parseAopValue(value);
-                    aopValues.add(value);
-                }
-            }
-            container.put(clazz,aopValues);
-        }
-    }
-
-    /**
-     * 获取产品容器
-     */
-    @Override
-    public <T> T getProductContainer(Class<T> clazz) {
-        return clazz.isAssignableFrom(AopContainer.class)? clazz.cast(this.container):null;
-    }
-
-    /**
-     * 解析aopValue，得到包列表
-     */
     private String parseAopValue(String aopValue) {
         if (aopValue.startsWith("method:")) {
             aopValue = aopValue.replace("method:", "[\\S]*");
@@ -116,5 +79,88 @@ public class AopPool extends ClassPool {
             aopValue = aopValue + "[\\S]*";
         }
         return aopValue;
+    }
+
+    /**
+     * 获取aop类列表
+     */
+    private List<Class<?>> getAop(String targetMethodName){
+        List<Class<?>> aopList = new ArrayList<>();
+        // 循环map
+        for (Map.Entry<String[],Class<?>> entry : aopMp.entrySet()) {
+            // 匹配
+            String[] aopValues = entry.getKey();
+            for (String aopValue:aopValues){
+                Pattern pattern = Pattern.compile(aopValue);
+                Matcher matcher = pattern.matcher(targetMethodName);
+                if (matcher.matches()){
+                    aopList.add(entry.getValue());
+                    break;
+                }
+            }
+        }
+        return aopList;
+    }
+
+    /**
+     * 获取aop方法
+     *
+     * 获取：
+     * 1、先从aop缓存中获取
+     * 2、如果没有，则从aop容器中解析
+     *
+     * 返回结果：
+     * 1、如果返回null表示该目标没有aop方法
+     * 2、如果过有返回该aop方法，并加入缓存
+     */
+    public AopMethod getAopMethod(Method targetMethod, Object targetObject) throws InstantiationException, IllegalAccessException {
+
+        // 目标方法全名
+        String targetMethodId = targetObject.getClass().getName() + "." + targetMethod.getName();
+
+        // 从缓存中获取
+        AopMethod aopMethod = AopMethodCache.get(targetMethodId);
+        if (aopMethod != null) return aopMethod;
+
+        // 缓存中没有,从容器获取
+        List<Class<?>> aopClassList = this.getAop(targetMethodId);
+        if (aopClassList.isEmpty()) return null;
+
+        // 构建aop方法
+        aopMethod = createAopMethod(targetMethod,targetObject,aopClassList);
+
+        // 存入缓存
+        if (aopMethod != null) AopMethodCache.put(aopMethod.getMethodTag(),aopMethod);
+
+        return aopMethod;
+    }
+
+    /**
+     * 构建aop方法
+     * @param targetMethod 目标方法
+     * @param aopClassList aop类列表
+     * @return 构建完成的aop方法体
+     */
+    private AopMethod createAopMethod(Method targetMethod,Object targetObject,List<Class<?>> aopClassList) throws InstantiationException, IllegalAccessException {
+        AopMethod aopMethod = null;
+        for (Class<?> aopClass : aopClassList) {
+            String aopObjectName = aopClass.getName();
+            try {
+                // aopObject aop方法所在的类
+                Object aopObject = aopClass.newInstance();
+                if (aopMethod == null) {
+                    // 根据原始方法创建
+                    aopMethod = new AopMethod(targetMethod, targetObject, aopObject);
+                } else if (!aopObjectName.equals(aopMethod.getAopObject().getClass().getName())) {
+                    // 检查非重复后，根据aop方法创建
+                    aopMethod = new AopMethod(aopMethod, targetObject, aopObject);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.warning("Aop类构建异常,已跳过："+aopObjectName);
+            }
+        }
+
+        return aopMethod;
     }
 }

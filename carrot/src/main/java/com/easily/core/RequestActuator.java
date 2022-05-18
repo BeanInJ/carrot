@@ -2,17 +2,24 @@ package com.easily.core;
 
 import com.easily.core.http.BaseRequest;
 import com.easily.core.http.BaseResponse;
-import com.easily.factory.aop.AopContainer;
+import com.easily.factory.Pool;
+import com.easily.factory.Pools;
 import com.easily.factory.aop.AopMethod;
-import com.easily.factory.controller.ControllerContainer;
-import com.easily.factory.filter.FilterContainer;
+import com.easily.factory.aop.AopPool;
+import com.easily.factory.controller.ControllerPool;
+import com.easily.factory.filter.FilterPool;
+import com.easily.label.Aop;
+import com.easily.label.Controller;
+import com.easily.label.Filter;
 import com.easily.system.util.BufferUtils;
 import com.easily.system.util.StringUtils;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -23,13 +30,13 @@ import java.util.logging.Logger;
 public class RequestActuator implements Runnable {
     private static final Logger log = Logger.getGlobal();
     private final SocketChannel socketChannel;
-    private final Container container;
+    private final Pools pools;
     private BaseRequest request;
     private BaseResponse response;
 
-    public RequestActuator(SocketChannel socketChannel,Container container) {
+    public RequestActuator(SocketChannel socketChannel, Pools pools) {
         this.socketChannel = socketChannel;
-        this.container = container;
+        this.pools = pools;
     }
 
     public void run() {
@@ -82,8 +89,8 @@ public class RequestActuator implements Runnable {
      * 通过前置过略器
      */
     private boolean passBeforeFilter() {
-        FilterContainer filterContainer = container.getFilterContainer();
-        this.response = filterContainer.beforeController(this.request);
+        FilterPool filterPool = pools.get(Filter.class,FilterPool.class);
+        this.response = filterPool.beforeController(this.request);
 
         // 如果经过过略器后，response还未初始化，则在此初始化
         if (this.response == null) {
@@ -98,8 +105,8 @@ public class RequestActuator implements Runnable {
     private boolean passController() {
         if(this.response.isGoToController()) {
             // 获取url对应的方法
-            ControllerContainer controllerContainer = container.getControllerContainer();
-            Object[] classAndMethod = controllerContainer.getMethod(request.getUrl());
+            ControllerPool controllerPool = pools.get(Controller.class,ControllerPool.class);
+            Object[] classAndMethod = controllerPool.getMethod(request.getUrl());
 
             if (classAndMethod == null) {
                 this.response.setStatus("404");
@@ -109,13 +116,13 @@ public class RequestActuator implements Runnable {
             // 方法、类型、参数
             Method method = (Method) classAndMethod[1];
             Object object = classAndMethod[0];
-            Object[] params = controllerContainer.getParams(method, this.request, this.response);
+            Object[] params = controllerPool.assemblyParams(method, this.request, this.response);
 
             // 获取切面信息
-            AopContainer aopContainer = container.getAopContainer();
+            AopPool aopPool = pools.get(Aop.class,AopPool.class);
             AopMethod aopMethod = null;
             try {
-                aopMethod = aopContainer.getAopMethod(method, object);
+                aopMethod = aopPool.getAopMethod(method, object);
                 Object returnValue;
                 if (aopMethod == null) {
                     // 切面信息为空，则直接执行方法
@@ -142,8 +149,8 @@ public class RequestActuator implements Runnable {
      * 通过后置过滤器
      */
     private boolean passAfterFilter() {
-        FilterContainer filterContainer = container.getFilterContainer();
-        filterContainer.afterController(this.request, this.response);
+        FilterPool filterPool = pools.get(Filter.class,FilterPool.class);
+        filterPool.afterController(this.request, this.response);
         return !this.response.isReturnNow();
     }
 

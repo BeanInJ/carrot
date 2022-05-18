@@ -14,6 +14,10 @@ public class AnnotationUtils {
         return false;
     }
 
+    public static boolean isResourceAnnotation(Class<? extends Annotation> subAnnotation){
+        return subAnnotation.isAnnotationPresent(Resource.class);
+    }
+
     // 元注解不判断
     public static boolean isContinue(Annotation annotation){
         return annotation.annotationType() == Deprecated.class ||

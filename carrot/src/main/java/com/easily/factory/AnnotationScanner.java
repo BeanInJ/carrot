@@ -1,5 +1,6 @@
 package com.easily.factory;
 
+import com.easily.core.ConfigCenter;
 import com.easily.system.util.AnnotationUtils;
 import com.easily.system.util.PackageUtil;
 import com.easily.system.util.StringUtils;

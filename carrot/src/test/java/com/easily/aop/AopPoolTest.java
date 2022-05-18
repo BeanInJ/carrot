@@ -9,12 +9,12 @@ import java.lang.reflect.Method;
 
 // 测试aop
 public class AopPoolTest {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws IllegalAccessException, InstantiationException {
         testAop();
     }
 
     // 测试aop方法多层包裹
-    public static void testAop() throws InterruptedException {
+    public static void testAop() throws IllegalAccessException, InstantiationException {
         // 创建池，这个过程在Carrot中由class工厂创建，不需要手动创建
         Pool pool= new AopPool();
 

@@ -8,11 +8,11 @@ import com.easily.cache.LruCache;
 public class AopMethodCache {
     private static final LruCache<String, AopMethod> targetBodyMap = new LruCache<>(1024);
 
-    protected static AopMethod get(String key) {
+    public static AopMethod get(String key) {
         return targetBodyMap.get(key);
     }
 
-    protected static void put(String key, AopMethod aopMethod) {
+    public static void put(String key, AopMethod aopMethod) {
         targetBodyMap.put(key, aopMethod);
     }
 }

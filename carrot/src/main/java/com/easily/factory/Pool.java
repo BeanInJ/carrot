@@ -1,35 +1,17 @@
 package com.easily.factory;
 
+import com.easily.system.util.AnnotationUtils;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 
 public interface Pool {
-    /**
-     * 工厂向池中分配原料
-     */
-    void add(Class<?> clazz);
+    void put(ClassMeta classMeta) throws InvocationTargetException, IllegalAccessException;
 
-    /**
-     * 返回该类池对应的注解
-     */
+    default void filter(ClassMeta classMeta) throws InvocationTargetException, IllegalAccessException {
+        if (AnnotationUtils.hasAnnotation(classMeta.getClazz(),getLabel())) put(classMeta);
+    }
     Class<? extends Annotation> getLabel();
 
-    /**
-     * 返回类池标识符（不可重复）
-     */
-    String getPoolName();
-
-    /**
-     * 清除池中数据
-     */
-    void clear();
-
-    /**
-     * 解析入容器
-     */
-    void parseToContainer() throws IllegalAccessException, InstantiationException;
-
-    /**
-     * 获取产品容器
-     */
-    <T> T getProductContainer(Class<T> clazz);
+    void end();
 }

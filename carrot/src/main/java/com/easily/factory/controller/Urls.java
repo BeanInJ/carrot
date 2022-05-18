@@ -55,7 +55,7 @@ public class Urls {
         }
     }
 
-    protected Map<String, Object[]> getUrls() {
+    public Map<String, Object[]> getUrls() {
         return urls;
     }
 }

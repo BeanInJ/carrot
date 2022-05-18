@@ -1,36 +1,37 @@
 package com.easily.factory.controller;
 
-import com.easily.core.ConfigCenter;
-import com.easily.factory.ClassPool;
-import com.easily.factory.service.ServiceContainer;
-import com.easily.label.*;
+import com.easily.core.http.BaseRequest;
+import com.easily.core.http.BaseResponse;
+import com.easily.factory.ClassMeta;
+import com.easily.factory.Pool;
+import com.easily.factory.controller.Urls;
+import com.easily.label.AddUrls;
+import com.easily.label.Controller;
+import com.easily.label.Prefix;
+import com.easily.label.Suffix;
 import com.easily.system.dict.MSG;
 import com.easily.system.util.UrlUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-/**
- * service容器必须在controller容器之前加载完成，因为controller可能从service容器中取值
- */
-public class ControllerPool extends ClassPool {
+public class ControllerPool implements Pool {
     private static final Logger log = Logger.getGlobal();
+    private final Map<String, Object[]> urlMap = new HashMap<>();
 
-    // 产品容器
-    private final ControllerContainer container = new ControllerContainer();
-    private ServiceContainer serviceContainer;
-    private final ConfigCenter configCenter;
-
-    public ControllerPool(ConfigCenter configCenter){
-        this.configCenter =configCenter;
-    }
-
-    public void putServiceContainer(ServiceContainer container){
-        this.serviceContainer = container;
+    @Override
+    public void put(ClassMeta classMeta) throws InvocationTargetException, IllegalAccessException {
+        if (classMeta.getClazz().isAnnotationPresent(AddUrls.class)) {
+            urlsParse(classMeta);
+        } else {
+            controllerParse(classMeta);
+        }
     }
 
     @Override
@@ -39,31 +40,22 @@ public class ControllerPool extends ClassPool {
     }
 
     @Override
-    public String getPoolName() {
-        return ControllerPool.class.getName();
-    }
+    public void end() {
+        urlMap.forEach((k, v) -> {
+            String methodName = ((Method) v[1]).getName();
+            String className = v[0].getClass().getName();
+            String[] ns = className.split("\\.");
+            String name = ns[ns.length - 1] + "." + methodName;
 
-    @Override
-    public void parseToContainer() throws IllegalAccessException, InstantiationException {
-        for (Class<?> clazz : classes) {
-            if (clazz.isAnnotationPresent(AddUrls.class)) {
-                urlsToContainer(clazz);
-            } else {
-                controllerToContainer(clazz);
-            }
-        }
-        container.urlMapPrint();
+            log.fine("url: " + k + "  映射方法: " + name);
+        });
     }
 
     /**
-     * 获取产品容器
+     * 解析urls
      */
-    @Override
-    public <T> T getProductContainer(Class<T> clazz) {
-        return clazz.isAssignableFrom(ControllerContainer.class) ? clazz.cast(this.container) : null;
-    }
-
-    private void urlsToContainer(Class<?> clazz) {
+    private void urlsParse(ClassMeta classMeta) throws InvocationTargetException, IllegalAccessException {
+        Class<?> clazz = classMeta.getClazz();
         // 识别urls类
         urlsMethods:
         for (Method method : clazz.getDeclaredMethods()) {
@@ -75,51 +67,45 @@ public class ControllerPool extends ClassPool {
                     if (!parameterType.equals(Urls.class)) continue urlsMethods;
                 }
 
-                try {
-                    Object o = clazz.newInstance();
-                    putFieldsValue(o);
-                    putService(o);
-                    Object[] prams = new Object[]{urls};
-                    method.invoke(o, prams);
-                    Map<String, Object[]> urlsMap = urls.getUrls();
-                    Map<String, Object[]> newUrlsMap = new HashMap<>();
+                Object o = classMeta.getNewObject();
+                Object[] prams = new Object[]{urls};
+                method.invoke(o, prams);
+                Map<String, Object[]> oldUrlsMap = urls.getUrls();
+                Map<String, Object[]> newUrlsMap = new HashMap<>();
 
-                    String urlPrefix = "";
-                    String urlSuffix = "";
+                String urlPrefix = "";
+                String urlSuffix = "";
 
-                    if (method.isAnnotationPresent(Prefix.class)) {
-                        Prefix prefix = method.getAnnotation(Prefix.class);
-                        urlPrefix = prefix.value();
-                        urlPrefix = UrlUtils.correctUri(urlPrefix);
-                    }
-                    if (method.isAnnotationPresent(Suffix.class)) {
-                        Suffix suffix = method.getAnnotation(Suffix.class);
-                        urlSuffix = suffix.value();
-                    }
-
-                    // 循环invoke
-                    for (Map.Entry<String, Object[]> entry : urlsMap.entrySet()) {
-                        String url = entry.getKey();
-                        newUrlsMap.put(urlPrefix + url + urlSuffix, entry.getValue());
-                    }
-                    this.container.putAll(newUrlsMap);
-                } catch (ReflectiveOperationException e) {
-                    e.printStackTrace();
+                if (method.isAnnotationPresent(Prefix.class)) {
+                    Prefix prefix = method.getAnnotation(Prefix.class);
+                    urlPrefix = prefix.value();
+                    urlPrefix = UrlUtils.correctUri(urlPrefix);
                 }
+                if (method.isAnnotationPresent(Suffix.class)) {
+                    Suffix suffix = method.getAnnotation(Suffix.class);
+                    urlSuffix = suffix.value();
+                }
+
+                // 循环invoke
+                for (Map.Entry<String, Object[]> entry : oldUrlsMap.entrySet()) {
+                    String url = entry.getKey();
+                    newUrlsMap.put(urlPrefix + url + urlSuffix, entry.getValue());
+                }
+                this.urlMap.putAll(newUrlsMap);
             }
 
         }
 
     }
 
-    private void controllerToContainer(Class<?> clazz) throws IllegalAccessException, InstantiationException {
+    /**
+     * 解析controller
+     */
+    private void controllerParse(ClassMeta classMeta) {
+        Class<?> clazz = classMeta.getClazz();
         Controller controllerInClass = clazz.getAnnotation(Controller.class);
         // 创建对象
-        Object newClazz;
-
-            newClazz = clazz.newInstance();
-            putFieldsValue(newClazz);
-            putService(newClazz);
+        Object newClazz = classMeta.getNewObject();
 
         String baseUrl = UrlUtils.correctUri(controllerInClass.value());
         // 获取方法上的url
@@ -133,11 +119,11 @@ public class ControllerPool extends ClassPool {
                 }
 
                 // 不能放入map条件：map中已有，并且不能覆盖
-                if (container.containsKey(url)) {
+                if (urlMap.containsKey(url)) {
                     if (controllerInMethod.isCover()) {
                         // 覆盖
-                        Object oldClass = container.getMethod(url)[0];
-                        Method oldMethod = (Method) container.getMethod(url)[1];
+                        Object oldClass = urlMap.get(url)[0];
+                        Method oldMethod = (Method) urlMap.get(url)[1];
                         log.fine("url: " + url +
                                 MSG.ERROR_URL_DUPLICATE +
                                 oldClass.getClass().getName() + "." + oldMethod.getName());
@@ -149,40 +135,33 @@ public class ControllerPool extends ClassPool {
                         continue;
                     }
                 }
-                container.put(url, new Object[]{newClazz, method});
+                urlMap.put(url, new Object[]{newClazz, method});
             }
         }
+    }
+
+    public Object[] getMethod(String url) {
+        if (url.contains("?")) {
+            url = url.split("\\?")[0];
+        }
+        return this.urlMap.get(url);
     }
 
     /**
-     * 注入值
+     * 组装Controller方法需要的参数
      */
-    private void putFieldsValue(Object obj) throws IllegalAccessException {
-        for (Field field : obj.getClass().getDeclaredFields()) {
-            if(field.isAnnotationPresent(ConfigValue.class)){
-                field.setAccessible(true);
-                Class<?> type = field.getType();
-                ConfigValue annotation = field.getAnnotation(ConfigValue.class);
-                String value = annotation.value();
-                field.set(obj, this.configCenter.get(value,type));
+    public Object[] assemblyParams(Method method, BaseRequest request, BaseResponse response) {
+        List<Object> params = new ArrayList<>();
+        for (Class<?> parameterType : method.getParameterTypes()) {
+            if (parameterType.equals(BaseRequest.class)) {
+                params.add(request);
+            } else if (parameterType.equals(BaseResponse.class)) {
+                params.add(response);
+            } else {
+                params.add(request.getBody());
             }
         }
+        return params.toArray();
     }
 
-    private void putService(Object obj) throws IllegalAccessException {
-        for (Field field : obj.getClass().getDeclaredFields()) {
-            if(field.isAnnotationPresent(Service.class)){
-                field.setAccessible(true);
-                Class<?> type = field.getType();
-                Service annotation = field.getAnnotation(Service.class);
-                String value = annotation.value();
-                if("".equals(value)){
-                    // 根据类名获取
-                    value = type.getName();
-                }
-                Object service = this.serviceContainer.get(value, type);
-                field.set(obj, service);
-            }
-        }
-    }
 }

@@ -24,6 +24,7 @@ public class CarrotSimpleUrls {
         urls.add("/getById",this::getById);
         urls.add("/getList",this::getList);
         urls.add("/save",this::testControllerMethod);
+        urls.add("/txt",this::txt);
     }
 
     public void add(BaseRequest request,BaseResponse response){
@@ -38,5 +39,10 @@ public class CarrotSimpleUrls {
 
     public void testControllerMethod(BaseRequest request,BaseResponse response){
         response.setBody(request.getHeader());
+    }
+
+    public void txt(BaseRequest request,BaseResponse response){
+        System.out.println("body:");
+        System.out.println(request.getBody());
     }
 }

@@ -1,5 +1,6 @@
 package com.easily.label;
 
+import javax.annotation.Resource;
 import java.lang.annotation.*;
 
 @Documented
@@ -7,6 +8,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Carrot
+@Resource
 public @interface Service {
     String value() default "";
 }
