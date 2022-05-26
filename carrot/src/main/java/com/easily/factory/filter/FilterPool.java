@@ -1,7 +1,7 @@
 package com.easily.factory.filter;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
 import com.easily.factory.ClassMeta;
 import com.easily.factory.Pool;
 import com.easily.factory.aop.MethodBody;
@@ -64,14 +64,19 @@ public class FilterPool implements Pool {
     /**
      * 经过前置过滤器
      */
-    public BaseResponse beforeController(BaseRequest request) {
-        return forList(beforeMethods, request, null);
+//    public BaseResponse beforeController(BaseRequest request) {
+//        return forList(beforeMethods, request, null);
+//    }
+
+    public Response beforeController(Request request) {
+        Response response = forList(beforeMethods, request, null);
+        return response;
     }
 
     /**
      * 经过后置过略器
      */
-    public void afterController(BaseRequest request, BaseResponse response) {
+    public void afterController(Request request, Response response) {
         forList(afterMethods, request, response);
     }
 
@@ -100,7 +105,7 @@ public class FilterPool implements Pool {
     /**
      * 循环执行过略器
      */
-    private static BaseResponse forList(List<FilterBody> list, BaseRequest request, BaseResponse response) {
+    private static Response forList(List<FilterBody> list, Request request, Response response) {
 
         for (FilterBody filterBody : list) {
             // 初始化 filterBody
@@ -113,9 +118,9 @@ public class FilterPool implements Pool {
                 // 获取参数
                 Object[] params = createFilterMethodParams(method, request, response, filterBody);
 
-                // 如果返回类型不是BaseResponse，则不改变原有的response
-                if (method.getReturnType() == BaseResponse.class) {
-                    response = (BaseResponse) method.invoke(object, params);
+                // 如果返回类型不是Response，则不改变原有的response
+                if (method.getReturnType() == Response.class) {
+                    response = (Response) method.invoke(object, params);
                 } else {
                     method.invoke(object, params);
                 }
@@ -133,15 +138,15 @@ public class FilterPool implements Pool {
     /**
      * 过略器方法入参
      */
-    private static Object[] createFilterMethodParams(Method method, BaseRequest request, BaseResponse response, FilterBody filterBody) {
+    private static Object[] createFilterMethodParams(Method method, Request request, Response response, FilterBody filterBody) {
         Class<?>[] parameterType = method.getParameterTypes();
         int parameterCount = method.getParameterCount();
 
         Object[] params = new Object[parameterCount];
         for (int i = 0; i < parameterCount; i++) {
-            if (parameterType[i] == BaseRequest.class) {
+            if (parameterType[i] == Request.class) {
                 params[i] = request;
-            } else if (parameterType[i] == BaseResponse.class) {
+            } else if (parameterType[i] == Response.class) {
                 params[i] = response;
             } else if (parameterType[i] == FilterBody.class) {
                 params[i] = filterBody;

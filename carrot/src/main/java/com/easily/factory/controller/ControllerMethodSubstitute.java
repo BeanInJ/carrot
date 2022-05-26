@@ -1,16 +1,16 @@
 package com.easily.factory.controller;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
 public class ControllerMethodSubstitute {
-    private BaseResponse response;
+    private Response response;
     public ControllerMethod method;
 
-    public BaseResponse get() {
+    public Response get() {
         return response;
     }
 
-    public void get(BaseRequest request,BaseResponse response) {
+    public void get(Request request,Response response) {
         this.method.invoke(request, response);
     }
 
@@ -18,7 +18,7 @@ public class ControllerMethodSubstitute {
         this.method = method;
     }
 
-    protected void put(BaseResponse response) {
+    protected void put(Response response) {
         this.response = response;
     }
 }

@@ -1,25 +1,20 @@
 package com.easily.core.bootstrap;
 
 import com.easily.App;
-import com.easily.core.AppCpu;
-import com.easily.core.ChannelCollector;
+import com.easily.core.CarrotServer;
 import com.easily.core.ConfigCenter;
 import com.easily.factory.ClassFactory;
 import com.easily.factory.AnnotationScanner;
-import com.easily.factory.Pool;
 import com.easily.factory.Pools;
 import com.easily.label.Carrot;
 import com.easily.system.dict.CONFIG;
 import com.easily.system.log.LogConfig;
 import com.easily.system.util.StringUtils;
 
-import java.lang.annotation.Annotation;
+import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.channels.SocketChannel;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 
 /**
@@ -38,8 +33,9 @@ public class Enter {
         actuator.add(this::configCenterLoad);
         actuator.add(this::logLoad);
         actuator.add(this::classFactoryLoad);
-        actuator.add(this::channelCollectorLoad);
-        actuator.add(this::appCpuStart);
+//        actuator.add(this::channelCollectorLoad);
+//        actuator.add(this::appCpuStart);
+        actuator.add(this::carrotServer);
 
         actuator.start();
     }
@@ -91,22 +87,38 @@ public class Enter {
     /**
      * 开放socket通道
      */
-    private ArrayBlockingQueue<SocketChannel> channelCollectorLoad(Object o){
-        ChannelCollector channelCollector = ElementsSingleton.get(ChannelCollector.class);
-        Integer port = this.configCenter.get(CONFIG.APP_PORT,Integer.class);
-        Integer queueSize = this.configCenter.get(CONFIG.APP_CHANNEL_SIZE,Integer.class);
-        port = port == null? CONFIG.APP_PORT_VALUE:port;
-        queueSize = queueSize == null? CONFIG.APP_CHANNEL_SIZE_VALUE:queueSize;
-        channelCollector.init(port,queueSize);
-        return channelCollector.get();
-    }
+//    private ArrayBlockingQueue<SocketChannel> channelCollectorLoad(Object o){
+//        ChannelCollector channelCollector = ElementsSingleton.get(ChannelCollector.class);
+//        Integer port = this.configCenter.get(CONFIG.APP_PORT,Integer.class);
+//        Integer queueSize = this.configCenter.get(CONFIG.APP_CHANNEL_SIZE,Integer.class);
+//        port = port == null? CONFIG.APP_PORT_VALUE:port;
+//        queueSize = queueSize == null? CONFIG.APP_CHANNEL_SIZE_VALUE:queueSize;
+//        channelCollector.init(port,queueSize);
+//        return channelCollector.get();
+//    }
 
     /**
      * 启动线程池处理请求
      */
-    private Object appCpuStart(Object o){
-        ArrayBlockingQueue<SocketChannel> channels = (ArrayBlockingQueue<SocketChannel>) o;
-        new AppCpu().start(channels,this.pools);
+//    private Object appCpuStart(Object o){
+//        ArrayBlockingQueue<SocketChannel> channels = (ArrayBlockingQueue<SocketChannel>) o;
+//        new AppCpu().start(channels,this.pools);
+//        return null;
+//    }
+
+    private Object carrotServer(Object o){
+        CarrotServer carrotServer = new CarrotServer();
+        try {
+            carrotServer.openPort(8080);
+            carrotServer.addPools(this.pools);
+            CarrotServer.service.execute(carrotServer::loopGet);
+            CarrotServer.service.execute(carrotServer::loopDeal);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        ArrayBlockingQueue<SocketChannel> channels = (ArrayBlockingQueue<SocketChannel>) o;
+//        new AppCpu().start(channels,this.pools);
         return null;
     }
 

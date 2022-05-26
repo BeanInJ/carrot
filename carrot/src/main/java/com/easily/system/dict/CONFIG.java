@@ -19,7 +19,7 @@ public class CONFIG {
     public static final String APP_ACTIVE_VALUE = "test";
     public static final String APP_NAME_VALUE = "Carrot";
     public static final String APP_DESC_VALUE = "Carrot";
-    public static final String APP_VERSION_VALUE = "1.0.0";
+    public static final String APP_VERSION_VALUE = "0.0.4";
     public static final String APP_AUTHOR_VALUE = "Carrot";
     public static final String APP_KEY_VALUE = "Q2Fycm90";
     public static final int APP_CHANNEL_SIZE_VALUE = 1024;

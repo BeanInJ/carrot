@@ -1,15 +1,15 @@
 package com.easily.factory.filter;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
 import com.easily.factory.aop.MethodBody;
 
 /**
  * 一个FilterBody一个过略器所需要的所有信息
  */
 public class FilterBody {
-    private BaseRequest request;
-    private BaseResponse response;
+    private Request request;
+    private Response response;
     private int Priority = 1000;
     private MethodBody methodBody;
 
@@ -21,19 +21,19 @@ public class FilterBody {
         this.methodBody = methodBody;
     }
 
-    public BaseRequest getRequest() {
+    public Request getRequest() {
         return request;
     }
 
-    public void setRequest(BaseRequest request) {
+    public void setRequest(Request request) {
         this.request = request;
     }
 
-    public BaseResponse getResponse() {
+    public Response getResponse() {
         return response;
     }
 
-    public void setResponse(BaseResponse response) {
+    public void setResponse(Response response) {
         this.response = response;
     }
 

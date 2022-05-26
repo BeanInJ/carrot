@@ -60,7 +60,6 @@ public class ClassFactory {
      * 分发类
      */
     private void distributeClass() {
-        // 循环临时列表
         this.scanner.getAll().forEach(classMeta ->
 
                 // 循环池列表，找到该clazz属于哪个池

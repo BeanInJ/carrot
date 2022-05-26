@@ -1,8 +1,7 @@
 package com.easily.system.baseServer;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
-import com.easily.core.http.GetRequest;
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
 import com.easily.label.ConfigValue;
 import com.easily.label.Controller;
 import com.easily.label.Service;
@@ -28,13 +27,13 @@ public class CarrotController {
 
     // 测试直接访问端口
     @Controller
-    public String nullUrl(BaseResponse response) {
+    public String nullUrl(Response response) {
         return getCarrot(response)+", "+getAuthor();
     }
 
     // 测试强制覆盖url
     @Controller(value = "/carrot", isCover = true)
-    public String getCarrot(BaseResponse response) {
+    public String getCarrot(Response response) {
         String carrotName = CarrotName;
         if(carrotName == null) {
             carrotName = "carrot";
@@ -89,9 +88,15 @@ public class CarrotController {
 
     // 测试get请求
     @Controller("/user")
-    public String getUrl(BaseRequest request, BaseResponse response){
-        GetRequest getRequest = new GetRequest(request);
-        response.setBody(getRequest.getParams().toString());
+    public String getUrl(Request request, Response response){
+//        response.setBody(request.getParams().toString());
+        response.setBody(request.getUrl());
+        return null;
+    }
+
+    @Controller("/getRequest")
+    public String getRequest(Request request, Response response){
+        response.setBody(request);
         return null;
     }
 

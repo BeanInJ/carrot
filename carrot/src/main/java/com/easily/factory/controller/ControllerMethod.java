@@ -1,8 +1,8 @@
 package com.easily.factory.controller;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
 
 public interface ControllerMethod {
-    void invoke(BaseRequest request, BaseResponse response);
+    void invoke(Request request, Response response);
 }

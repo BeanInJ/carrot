@@ -1,10 +1,9 @@
 package com.easily.factory.controller;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
 import com.easily.factory.ClassMeta;
 import com.easily.factory.Pool;
-import com.easily.factory.controller.Urls;
 import com.easily.label.AddUrls;
 import com.easily.label.Controller;
 import com.easily.label.Prefix;
@@ -150,12 +149,12 @@ public class ControllerPool implements Pool {
     /**
      * 组装Controller方法需要的参数
      */
-    public Object[] assemblyParams(Method method, BaseRequest request, BaseResponse response) {
+    public Object[] assemblyParams(Method method, Request request, Response response) {
         List<Object> params = new ArrayList<>();
         for (Class<?> parameterType : method.getParameterTypes()) {
-            if (parameterType.equals(BaseRequest.class)) {
+            if (parameterType.equals(Request.class)) {
                 params.add(request);
-            } else if (parameterType.equals(BaseResponse.class)) {
+            } else if (parameterType.equals(Response.class)) {
                 params.add(response);
             } else {
                 params.add(request.getBody());

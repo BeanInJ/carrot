@@ -4,6 +4,7 @@ import com.easily.core.ConfigCenter;
 import com.easily.label.ConfigValue;
 import com.easily.label.Service;
 import com.easily.system.common.Getter;
+import com.easily.system.util.AnnotationUtils;
 
 import javax.annotation.Resource;
 import java.lang.annotation.Annotation;
@@ -60,7 +61,7 @@ public class ClassContainer implements Getter<String, ClassMeta> {
         }
 
         repeatThrow(name);
-        return classMetaList.add(new ClassMeta(clazz));
+        return classMetaList.add(new ClassMeta(name,clazz));
     }
 
     /**
@@ -127,9 +128,13 @@ public class ClassContainer implements Getter<String, ClassMeta> {
      */
     private Annotation getResourceAnnotation(Field field) {
         for (Annotation annotation : field.getAnnotations()) {
-            Class<? extends Annotation> annotationClass = annotation.getClass();
-            if (annotation instanceof Resource || annotationClass.isAnnotationPresent(Resource.class)) {
+            if(annotation instanceof Resource){
                 return annotation;
+            }else{
+                Resource resource = annotation.annotationType().getAnnotation(Resource.class);
+                if (resource != null){
+                    return annotation;
+                }
             }
         }
         return null;
@@ -161,7 +166,7 @@ public class ClassContainer implements Getter<String, ClassMeta> {
     private void putContainerValue(Object object,Field field,Annotation resourceAnnotation) throws IllegalAccessException {
         String className = getAnnotationValue(resourceAnnotation);
         Class<?> type = field.getType();
-        if (className == null) {
+        if (className == null || "".equals(className) ) {
             className = type.getName();
         }
 
@@ -169,6 +174,9 @@ public class ClassContainer implements Getter<String, ClassMeta> {
         Object objectValue = getObject(className);
 
         // 注入
+        if(objectValue == null) throw new RuntimeException("类："+object.getClass().getName()
+                +" 中的字段："+field.getName()
+                +" ，找不到注入值：" +className);
         field.set(object, objectValue);
     }
 

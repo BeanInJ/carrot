@@ -1,8 +1,7 @@
 package com.easily.factory.controller;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
-import com.easily.system.util.StringUtils;
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -15,7 +14,7 @@ public class Urls {
      * 仅传入url，返回空
      */
     public void add(String url) {
-        add(url, new BaseResponse());
+        add(url, new Response());
     }
 
     /**
@@ -25,7 +24,7 @@ public class Urls {
         ControllerMethodSubstitute substitute = new ControllerMethodSubstitute();
         substitute.put(method);
         try {
-            Method method1 = substitute.getClass().getMethod("get", BaseRequest.class, BaseResponse.class);
+            Method method1 = substitute.getClass().getMethod("get", Request.class, Response.class);
             Object[] objects = {substitute, method1};
             urls.put(url, objects);
         } catch (NoSuchMethodException e) {
@@ -40,10 +39,10 @@ public class Urls {
         ControllerMethodSubstitute substitute = new ControllerMethodSubstitute();
         Method method;
         try {
-            if (response instanceof BaseResponse) {
-                substitute.put((BaseResponse) response);
+            if (response instanceof Response) {
+                substitute.put((Response) response);
             } else {
-                BaseResponse baseResponse = new BaseResponse();
+                Response baseResponse = new Response();
                 baseResponse.setBody(response);
                 substitute.put(baseResponse);
             }

@@ -1,9 +1,8 @@
 package com.easily.core;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
-import com.easily.factory.Pool;
-import com.easily.factory.Pools;
+import com.easily.core.http.HttpReader;
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
 import com.easily.factory.aop.AopMethod;
 import com.easily.factory.aop.AopPool;
 import com.easily.factory.controller.ControllerPool;
@@ -11,90 +10,70 @@ import com.easily.factory.filter.FilterPool;
 import com.easily.label.Aop;
 import com.easily.label.Controller;
 import com.easily.label.Filter;
-import com.easily.system.util.BufferUtils;
 import com.easily.system.util.StringUtils;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
-/**
- * getRequest、passBeforeFilter、passController、passAfterFilter、passAfterFilter
- * 返回 false 表示直接跳到sendResponse执行
- * 返回 true  表示继续执行
- */
-public class RequestActuator implements Runnable {
+public class RequestActuator{
     private static final Logger log = Logger.getGlobal();
-    private final SocketChannel socketChannel;
-    private final Pools pools;
-    private BaseRequest request;
-    private BaseResponse response;
+    private Request request;
+    private Response response;
 
-    public RequestActuator(SocketChannel socketChannel, Pools pools) {
-        this.socketChannel = socketChannel;
-        this.pools = pools;
-    }
+    private final DataSwap dataSwap;
 
-    public void run() {
-        try {
-            // 执行请求流程
-            this.flow();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            // 关闭当前请求通道
-            try {
-                socketChannel.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public RequestActuator(DataSwap dataSwap) {
+        this.dataSwap = dataSwap;
     }
 
     /**
      * 执行请求处理流程
      */
-    private void flow() throws IOException {
+    public void flow() throws IOException {
         try {
             // 获取请求->前过滤->控制器->后过滤
+
+            // true 继续执行
+            // false 跳出
             boolean flow = this.getRequest() && this.passBeforeFilter() && this.passController() && this.passAfterFilter();
         } catch (Exception e) {
             e.printStackTrace();
             // 异常拦截
             this.ifException();
         }
-        // 返回到前端
-        this.sendResponse();
+        this.putResponse();
     }
 
     /**
      * 获取请求体
      */
-    private boolean getRequest() throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
-        this.socketChannel.read(buffer);
-        if (buffer.position() == 0) {
-            return false;
-        } else {
-            this.request = new BaseRequest(buffer);
-            return true;
+    private boolean getRequest(){
+        HttpReader httpReader = new HttpReader(dataSwap);
+        boolean isHttpRequest = httpReader.initHttp();
+        if (isHttpRequest) {
+            this.request = new Request();
+            this.request.setMethod(httpReader.getMethod());
+            this.request.setUrl(httpReader.getUrl());
+            this.request.setVersion(httpReader.getVersion());
+            this.request.setHeader(httpReader.getHeaders());
+            this.request.setBody(httpReader.getBody());
         }
+        return isHttpRequest;
     }
 
     /**
      * 通过前置过略器
      */
     private boolean passBeforeFilter() {
-        FilterPool filterPool = pools.get(Filter.class,FilterPool.class);
+        FilterPool filterPool = dataSwap.pools.get(Filter.class, FilterPool.class);
         this.response = filterPool.beforeController(this.request);
 
         // 如果经过过略器后，response还未初始化，则在此初始化
         if (this.response == null) {
-            this.response = new BaseResponse();
+            this.response = new Response();
         }
         return !this.response.isReturnNow();
     }
@@ -103,9 +82,9 @@ public class RequestActuator implements Runnable {
      * 通过控制器
      */
     private boolean passController() {
-        if(this.response.isGoToController()) {
+        if (this.response.isGoToController()) {
             // 获取url对应的方法
-            ControllerPool controllerPool = pools.get(Controller.class,ControllerPool.class);
+            ControllerPool controllerPool = dataSwap.pools.get(Controller.class, ControllerPool.class);
             Object[] classAndMethod = controllerPool.getMethod(request.getUrl());
 
             if (classAndMethod == null) {
@@ -119,7 +98,7 @@ public class RequestActuator implements Runnable {
             Object[] params = controllerPool.assemblyParams(method, this.request, this.response);
 
             // 获取切面信息
-            AopPool aopPool = pools.get(Aop.class,AopPool.class);
+            AopPool aopPool = dataSwap.pools.get(Aop.class, AopPool.class);
             AopMethod aopMethod = null;
             try {
                 aopMethod = aopPool.getAopMethod(method, object);
@@ -133,8 +112,8 @@ public class RequestActuator implements Runnable {
                 }
 
                 // 将返回值设置到response中
-                if (returnValue instanceof BaseResponse) {
-                    this.response = (BaseResponse) returnValue;
+                if (returnValue instanceof Response) {
+                    this.response = (Response) returnValue;
                 } else if (StringUtils.isNotBlankOrNull(returnValue)) {
                     this.response.setBody(returnValue);
                 }
@@ -149,22 +128,24 @@ public class RequestActuator implements Runnable {
      * 通过后置过滤器
      */
     private boolean passAfterFilter() {
-        FilterPool filterPool = pools.get(Filter.class,FilterPool.class);
+        FilterPool filterPool = dataSwap.pools.get(Filter.class, FilterPool.class);
         filterPool.afterController(this.request, this.response);
         return !this.response.isReturnNow();
-    }
-
-    /**
-     * 向前端发送数据
-     */
-    private void sendResponse() throws IOException {
-        if (this.response != null)
-            this.socketChannel.write(BufferUtils.getByteBuffer(this.response.toString()));
     }
 
     /**
      * 执行异常拦截器
      */
     private void ifException() {
+    }
+
+    private boolean putResponse(){
+        if(this.response == null){
+            return false;
+        }else  {
+            byte[] bytes = this.response.toString().getBytes(StandardCharsets.UTF_8);
+            dataSwap.Response = ByteBuffer.wrap(bytes);
+            return true;
+        }
     }
 }
