@@ -51,15 +51,15 @@ public class RequestActuator{
      * 获取请求体
      */
     private boolean getRequest(){
-        HttpReader httpReader = new HttpReader(dataSwap);
-        boolean isHttpRequest = httpReader.initHttp();
+//        HttpReader httpReader = new HttpReader(dataSwap);
+        boolean isHttpRequest = dataSwap.httpReader.getHttp();
         if (isHttpRequest) {
             this.request = new Request();
-            this.request.setMethod(httpReader.getMethod());
-            this.request.setUrl(httpReader.getUrl());
-            this.request.setVersion(httpReader.getVersion());
-            this.request.setHeader(httpReader.getHeaders());
-            this.request.setBody(httpReader.getBody());
+            this.request.setMethod(dataSwap.httpReader.getMethod());
+            this.request.setUrl(dataSwap.httpReader.getUrl());
+            this.request.setVersion(dataSwap.httpReader.getVersion());
+            this.request.setHeader(dataSwap.httpReader.getHeaders());
+            this.request.setBody(dataSwap.httpReader.getBody());
         }
         return isHttpRequest;
     }

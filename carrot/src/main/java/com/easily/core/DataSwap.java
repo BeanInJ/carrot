@@ -1,5 +1,6 @@
 package com.easily.core;
 
+import com.easily.core.http.HttpReader;
 import com.easily.factory.Pools;
 
 import java.nio.ByteBuffer;
@@ -17,6 +18,8 @@ public class DataSwap {
     public ByteBuffer Response = null;
     public BlockingDeque<ByteBuffer> moreRequest = new LinkedBlockingDeque<>();
     public SocketChannel socketChannel;
+
+    public HttpReader httpReader;
 
     /**
      * 输入

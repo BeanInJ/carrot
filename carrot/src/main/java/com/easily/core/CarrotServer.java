@@ -1,5 +1,6 @@
 package com.easily.core;
 
+import com.easily.core.http.HttpReader;
 import com.easily.factory.Pools;
 
 import java.io.IOException;
@@ -77,7 +78,10 @@ public class CarrotServer {
                         // 接收到新请求，往队列添加,ServerSocketChannel是非阻塞模式的
                         SocketChannel socketChannel = server.accept();
                         socketChannel.configureBlocking(false);
-                        socketChannels.add(socketChannel);
+                        socketChannel.register(selector,SelectionKey.OP_READ);
+                    } else if (key.isReadable()) {
+                        key.cancel();
+                        socketChannels.add((SocketChannel) key.channel());
                     }
                 }
             } catch (IOException e) {
@@ -105,10 +109,11 @@ public class CarrotServer {
                         else {
                             // 读完，执行请求流程
                             new RequestActuator(dataSwap).flow();
+                            // 写
                             if (dataSwap.Response != null && dataSwap.Response.hasRemaining()){
                                 write(dataSwap);
-                                long timed = dataSwap.Response.position()/1048576;
-                                Thread.sleep(10L * (timed + 1));
+//                                long timed = dataSwap.Response.position()/1048576;
+//                                Thread.sleep(10L * (timed + 1));
                             }
                         }
 
@@ -128,7 +133,7 @@ public class CarrotServer {
         int read = dataSwap.socketChannel.read(buffer);
         int total = read;
         while (read > 0) {
-            Thread.sleep(1);
+//            Thread.sleep(1);
             read = dataSwap.socketChannel.read(buffer);
             total = total + read;
         }
@@ -140,6 +145,25 @@ public class CarrotServer {
             // buffer满了，入新的buffer写
             total += read(dataSwap);
         }
+
+        if(dataSwap.httpReader == null) {
+            dataSwap.httpReader = new HttpReader(dataSwap);
+        }
+            boolean isHttp = dataSwap.httpReader.parseHttp();
+            if (isHttp) {
+                // 判断 Content-Length
+                if (dataSwap.httpReader.checkLength()) {
+                    // 长度相等，返回
+                    return total;
+                } else {
+                    // 长度不够，继续读
+                    total += read(dataSwap);
+                }
+            } else {
+                return -1;
+            }
+
+
         return total;
     }
 
@@ -150,12 +174,4 @@ public class CarrotServer {
     public void addPools(Pools pools){
         this.pools = pools;
     }
-
-//    public byte[] getResponse() {
-//        return ("HTTP/1.1 200 OK\r\n" +
-//                "Content-Length: 38\r\n" +
-//                "Content-Type: text/html\r\n" +
-//                "\r\n" +
-//                "<html><body>Hello World!</body></html>").getBytes(StandardCharsets.UTF_8);
-//    }
 }
