@@ -33,8 +33,6 @@ public class Enter {
         actuator.add(this::configCenterLoad);
         actuator.add(this::logLoad);
         actuator.add(this::classFactoryLoad);
-//        actuator.add(this::channelCollectorLoad);
-//        actuator.add(this::appCpuStart);
         actuator.add(this::carrotServer);
 
         actuator.start();
@@ -68,11 +66,14 @@ public class Enter {
         // 内部包
         packageNames.add(CONFIG.APP_INNER_PACKAGE_VALUE);
 
-        // 外部包
         Object outerPackage = this.configCenter.get(CONFIG.APP_START_PACKAGE);
         if(StringUtils.isNotBlankOrNull(outerPackage)){
-            if(!App.class.getPackage().getName().equals(outerPackage))
+            if(App.class.getPackage().getName().equals(outerPackage)){
+
+            }else {
+                // 外部包
                 packageNames.add(outerPackage.toString());
+            }
         }else {
             log.warning("无法获取main方法所在的包名，您可以在config.yml下手动配置main方法所在的包");
         }
@@ -84,32 +85,11 @@ public class Enter {
         return o;
     }
 
-    /**
-     * 开放socket通道
-     */
-//    private ArrayBlockingQueue<SocketChannel> channelCollectorLoad(Object o){
-//        ChannelCollector channelCollector = ElementsSingleton.get(ChannelCollector.class);
-//        Integer port = this.configCenter.get(CONFIG.APP_PORT,Integer.class);
-//        Integer queueSize = this.configCenter.get(CONFIG.APP_CHANNEL_SIZE,Integer.class);
-//        port = port == null? CONFIG.APP_PORT_VALUE:port;
-//        queueSize = queueSize == null? CONFIG.APP_CHANNEL_SIZE_VALUE:queueSize;
-//        channelCollector.init(port,queueSize);
-//        return channelCollector.get();
-//    }
-
-    /**
-     * 启动线程池处理请求
-     */
-//    private Object appCpuStart(Object o){
-//        ArrayBlockingQueue<SocketChannel> channels = (ArrayBlockingQueue<SocketChannel>) o;
-//        new AppCpu().start(channels,this.pools);
-//        return null;
-//    }
-
     private Object carrotServer(Object o){
         CarrotServer carrotServer = new CarrotServer();
+        Integer port = this.configCenter.get(CONFIG.APP_PORT,Integer.class);
         try {
-            carrotServer.openPort(8080);
+            carrotServer.openPort(port);
             carrotServer.addPools(this.pools);
             CarrotServer.service.execute(carrotServer::loopGet);
             CarrotServer.service.execute(carrotServer::loopDeal);
@@ -117,8 +97,6 @@ public class Enter {
             e.printStackTrace();
         }
 
-//        ArrayBlockingQueue<SocketChannel> channels = (ArrayBlockingQueue<SocketChannel>) o;
-//        new AppCpu().start(channels,this.pools);
         return null;
     }
 

@@ -63,6 +63,9 @@ public class ConfigCenter extends ElementsSingleton implements Getter<String,Obj
             config.put(CONFIG.APP_LOG_PATH, CONFIG.APP_LOG_PATH_VALUE);
         }
 
+        // 初始化端口
+        this.config.putIfAbsent(CONFIG.APP_PORT, CONFIG.APP_PORT_VALUE);
+
         // 配置ServerSocketChannel大小
         Object serverSocketChannelSize = config.get(CONFIG.APP_CHANNEL_SIZE);
         if(StringUtils.isBlankOrNull(serverSocketChannelSize)){

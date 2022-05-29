@@ -7,6 +7,7 @@ import com.easily.system.util.StringUtils;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -24,9 +25,9 @@ public class AnnotationScanner extends ClassContainer implements Scanner{
 
     public void getClassByPackageName(String packageName,Class<? extends Annotation> annotationClazz){
         if(StringUtils.isBlankOrNull(packageName)) return;
-        List<String> classNames;
+        Set<String> classNames;
         try {
-            classNames = PackageUtil.getClassName(packageName);
+            classNames = new HashSet<>(PackageUtil.getClassName(packageName));
         }catch (IOException e){
             e.printStackTrace();
             log.warning("异常包名：" + packageName);
