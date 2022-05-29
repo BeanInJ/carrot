@@ -1,9 +1,7 @@
 package com.easily.system.util;
 
 
-import com.easily.core.http.BaseHttp;
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
+import com.easily.core.http.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,8 +80,8 @@ public class HttpUtils {
         return map;
     }
 
-    public static BaseResponse getTestResponse(){
-        BaseResponse response =  new BaseResponse();
+    public static Response getTestResponse(){
+        Response response =  new Response();
         response.setStatus("200");
         response.setReason("OK");
         response.setVersion("HTTP/1.1");
@@ -91,8 +89,8 @@ public class HttpUtils {
         return response;
     }
 
-    public static BaseRequest getTestRequest(){
-        BaseRequest request = new BaseRequest(new BaseHttp());
+    public static Request getTestRequest(){
+        Request request = new Request();
         request.setBody("{\"id\":\"1\",\"msg\":\"测试BaseRequest\"}");
         request.setUrl("/user/add");
         request.setVersion("HTTP/1.1");

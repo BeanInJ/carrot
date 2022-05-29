@@ -1,6 +1,7 @@
 package com.easily.core;
 
-import com.easily.core.bootstrap.Loader;
+import com.easily.core.bootstrap.ElementsSingleton;
+import com.easily.system.common.Getter;
 import com.easily.system.dict.CONFIG;
 import com.easily.system.util.PackageUtil;
 import com.easily.system.util.StringUtils;
@@ -13,34 +14,45 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
- * 配置中心，这里可以拿到全局配置
+ * 配置中心
  */
-public class ConfigCenter {
-    private static final Logger log = Logger.getGlobal();
+public class ConfigCenter extends ElementsSingleton implements Getter<String,Object> {
+    private final Map<String,Object> config = new HashMap<>();
 
-    // 所有配置内容
-    private static final Map<String,Object> config = new HashMap<>();
+    @Override
+    public Object get(String key) {
+        return config.get(key);
+    }
 
-    public static Map<String, Object> getConfig() {
+    public Map<String, Object> getAll() {
         return config;
     }
 
-    protected static void update(Map<String,Object> newConfig) {
-        config.clear();
-        config.putAll(newConfig);
+    private boolean initConfigByMain(Class<?> main){
+        try{
+            Yaml yaml = new Yaml();
+            Enumeration<URL> resources = main.getClassLoader().getResources(CONFIG.APP_CONFIG_NAME_VALUE);
+            InputStream content = (InputStream) resources.nextElement().getContent();
+            config.putAll(yaml.load(content));
+
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 
-    private ConfigCenter(){}
+    private void initConfigByBootPath(){
+        try{
+            Yaml yaml = new Yaml();
+            File file = new File(CONFIG.APP_CONFIG_NAME_VALUE);
+            FileReader fileReader = new FileReader(file);
+            config.putAll(yaml.load(fileReader));
+        }catch (Exception ignored){}
+    }
 
-    /**
-     * 加载配置中心
-     */
-    public static void load(){
-        Class<?> mainClass = Loader.getMainClass();
-
+    public void load(Class<?> mainClass){
         // 加载配置文件
         boolean isConfigByMain = initConfigByMain(mainClass);
         if(!isConfigByMain) initConfigByBootPath();
@@ -50,6 +62,9 @@ public class ConfigCenter {
         if(StringUtils.isBlankOrNull(logFile)){
             config.put(CONFIG.APP_LOG_PATH, CONFIG.APP_LOG_PATH_VALUE);
         }
+
+        // 初始化端口
+        this.config.putIfAbsent(CONFIG.APP_PORT, CONFIG.APP_PORT_VALUE);
 
         // 配置ServerSocketChannel大小
         Object serverSocketChannelSize = config.get(CONFIG.APP_CHANNEL_SIZE);
@@ -72,44 +87,5 @@ public class ConfigCenter {
             outPackage = PackageUtil.getPackageByClass(mainClass);
             config.put(CONFIG.APP_START_PACKAGE, outPackage);
         }
-    }
-
-    // 获取端口号
-    public static int getAppPort(){
-        Object port = getConfig().get(CONFIG.APP_PORT);
-        if(port == null){
-            return CONFIG.APP_PORT_VALUE;
-        }
-        return (int)port;
-    }
-
-    public static void put(String key,Object value){
-        config.put(key,value);
-    }
-    public static Object get(String key){
-        return config.get(key);
-    }
-
-
-    private static boolean initConfigByMain(Class<?> main){
-        try{
-            Yaml yaml = new Yaml();
-            Enumeration<URL> resources = main.getClassLoader().getResources(CONFIG.APP_CONFIG_NAME_VALUE);
-            InputStream content = (InputStream) resources.nextElement().getContent();
-            config.putAll(yaml.load(content));
-
-            return true;
-        }catch (Exception e){
-            return false;
-        }
-    }
-
-    private static void initConfigByBootPath(){
-        try{
-            Yaml yaml = new Yaml();
-            File file = new File(CONFIG.APP_CONFIG_NAME_VALUE);
-            FileReader fileReader = new FileReader(file);
-            config.putAll(yaml.load(fileReader));
-        }catch (Exception ignored){}
     }
 }

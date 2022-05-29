@@ -1,8 +1,6 @@
 package com.easily.system.baseServer;
 
-import com.easily.core.http.BaseRequest;
-import com.easily.core.http.BaseResponse;
-import com.easily.core.http.GetRequest;
+import com.easily.core.http.*;
 import com.easily.factory.filter.FilterBody;
 import com.easily.label.AfterController;
 import com.easily.label.BeforeController;
@@ -20,22 +18,19 @@ import com.easily.system.util.StringUtils;
 @Filter
 public class BaseFilter {
 
-    /**
-     * 拦截url /？
-     */
     @BeforeController
-    public BaseResponse before(FilterBody filterBody){
+    public Response before(FilterBody filterBody){
         // 设置优先级,数字越小优先级越高
         filterBody.setPriority(50);
-        BaseRequest request = filterBody.getRequest();
-        BaseResponse response = filterBody.getResponse();
+        Request request = filterBody.getRequest();
+        Response response = filterBody.getResponse();
 
         String url = request.getUrl();
         if (url.equals("/?")){
             if(response == null) {
-                response = new BaseResponse();
-                response.setStatus("300");
-                response.setReason("?");
+                response = new Response();
+                response.setStatus("200");
+                response.setReason("OK");
                 response.setBody("想做点什么呢？");
 
                 // 直接返回前端，不再执行控制器或后续拦截器
@@ -45,10 +40,10 @@ public class BaseFilter {
         }
 
         // 识别get请求
-        String type = request.getMethod();
-        if("GET".equals(type) || url.contains("?")){
-            request = new GetRequest(request);
-        }
+//        if(request.getMethod().isCorrect("GET") || url.contains("?"))
+//        if("GET".equals(type) || url.contains("?")){
+//            request = new GetRequest(request);
+//        }
         return response;
     }
 
@@ -57,8 +52,8 @@ public class BaseFilter {
      */
     @AfterController
     public void after(FilterBody filterBody){
-        BaseRequest request = filterBody.getRequest();
-        BaseResponse response = filterBody.getResponse();
+        Request request = filterBody.getRequest();
+        Response response = filterBody.getResponse();
 
         // 拦截404
         if(response.getStatus().equals("404")){

@@ -11,6 +11,7 @@ import java.lang.annotation.*;
 @Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Carrot
 public @interface Aop {
 
     /**
@@ -22,5 +23,5 @@ public @interface Aop {
      * ”class:“ + 正则表达式      匹配目标类名里的所有方法
      * ”package:“ + 正则表达式    匹配目标包名里的所有方法
      */
-    String value();
+    String[] value();
 }

@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 public class LogConfig {
     private static final Logger log = Logger.getGlobal();
 
-    public static void load() {
+    public void load(ConfigCenter configCenter) {
         try {
             // 日志输出文件
-            String filename = (String) ConfigCenter.get(CONFIG.APP_LOG_PATH);
+            String filename = configCenter.get(CONFIG.APP_LOG_PATH,String.class);
             FileHandler fileHandler = new FileHandler(filename);
             fileHandler.setFormatter(new CarrotLogFormatter());
 
@@ -26,9 +26,9 @@ public class LogConfig {
             consoleHandler.setFormatter(new CarrotLogFormatter());
 
             // 如果没有设置日志等级，就根据 系统环境 判断
-            Object logLevel = ConfigCenter.get(CONFIG.APP_LOG_LEVEL);
+            Object logLevel = configCenter.get(CONFIG.APP_LOG_LEVEL);
             if(StringUtils.isBlankOrNull(logLevel)){
-                Object dev = ConfigCenter.get(CONFIG.APP_ACTIVE);
+                Object dev = configCenter.get(CONFIG.APP_ACTIVE);
                 // 测试环境 或 未配置环境，默认打印所有日志
                 if(dev == null || "test".equals(dev)  || "dev".equals(dev)){
                     consoleHandler.setLevel(Level.ALL);

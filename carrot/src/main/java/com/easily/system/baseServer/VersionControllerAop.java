@@ -6,7 +6,7 @@ import com.easily.label.Aop;
 import com.easily.label.AopBefore;
 import com.easily.system.dict.CONFIG;
 
-@Aop("com.carrot.system.baseServer.CarrotController.getCarrotVersion")
+@Aop({"com.carrot.system.baseServer.CarrotController.getCarrotVersion"})
 public class VersionControllerAop {
 
     /**
@@ -15,7 +15,7 @@ public class VersionControllerAop {
     @AopBefore
     public void getCorrectVersion(MethodBody methodBody){
 
-        Object version = ConfigCenter.getConfig().get(CONFIG.APP_VERSION);
+        Object version = CONFIG.APP_VERSION;
         if(version != null){
             methodBody.setReturnValue(version);
             methodBody.setReturnNow(true);
