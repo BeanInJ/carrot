@@ -51,7 +51,6 @@ public class RequestActuator{
      * 获取请求体
      */
     private boolean getRequest(){
-//        HttpReader httpReader = new HttpReader(dataSwap);
         boolean isHttpRequest = dataSwap.httpReader.getHttp();
         if (isHttpRequest) {
             this.request = new Request();
@@ -59,7 +58,7 @@ public class RequestActuator{
             this.request.setUrl(dataSwap.httpReader.getUrl());
             this.request.setVersion(dataSwap.httpReader.getVersion());
             this.request.setHeader(dataSwap.httpReader.getHeaders());
-            this.request.setBody(dataSwap.httpReader.getBody());
+            this.request.setBody(dataSwap.httpReader.getStringBody());
         }
         return isHttpRequest;
     }

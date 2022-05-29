@@ -7,6 +7,8 @@ import com.easily.label.Controller;
 import com.easily.label.Service;
 import com.easily.system.dict.CONFIG;
 
+import java.util.Map;
+
 /**
  * 获取系统初始化的一些信息
  */
@@ -88,9 +90,9 @@ public class CarrotController {
 
     // 测试get请求
     @Controller("/user")
-    public String getUrl(Request request, Response response){
-//        response.setBody(request.getParams().toString());
-        response.setBody(request.getUrl());
+    public String getUrl(Request request, Response response, Map<String,String> map){
+        String name = map.get("name");
+        response.setBody(request.getUrl()+",username = "+name);
         return null;
     }
 

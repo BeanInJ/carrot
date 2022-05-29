@@ -10,6 +10,7 @@ import com.easily.label.Prefix;
 import com.easily.label.Suffix;
 import com.easily.system.dict.MSG;
 import com.easily.system.util.UrlUtils;
+import com.google.gson.Gson;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -156,8 +157,14 @@ public class ControllerPool implements Pool {
                 params.add(request);
             } else if (parameterType.equals(Response.class)) {
                 params.add(response);
-            } else {
+            } else if (parameterType.equals(Map.class)){
+                params.add((new Gson()).fromJson(request.getBody(),Map.class));
+            } else if (parameterType.equals(List.class)){
+                params.add((new Gson()).fromJson(request.getBody(),List.class));
+            } else if (parameterType.equals(String.class)){
                 params.add(request.getBody());
+            } else {
+                params.add((new Gson()).fromJson(request.getBody(),parameterType));
             }
         }
         return params.toArray();
