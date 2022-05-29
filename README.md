@@ -5,7 +5,7 @@
 
 Carrot 的优势：App.start(**.class) 一键启动，如果你想快速构建一个简单的web程序，Carrot 是你的选择。
 #### 快速开始
-> 所在示例在 carrot-example 中均可找到
+> 详细示例在 carrot-example 项目中
 
 添加maven依赖
 ```xml
