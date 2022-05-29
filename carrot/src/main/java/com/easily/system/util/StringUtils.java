@@ -60,5 +60,4 @@ public class StringUtils {
         }
         return (new Gson()).toJson(obj);
     }
-
 }
