@@ -5,6 +5,7 @@ import com.easily.label.ConfigValue;
 import com.easily.label.Service;
 import com.easily.system.common.Getter;
 import com.easily.system.util.AnnotationUtils;
+import com.easily.system.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.lang.annotation.Annotation;
@@ -53,6 +54,9 @@ public class ClassContainer implements Getter<String, ClassMeta> {
                         name = anInterface.getName();
                     }
                 }
+            }
+            if (StringUtils.isBlankOrNull(name)){
+                throw new RuntimeException(clazz.getName()+" service实现类，必须有且仅有一个接口");
             }
         }
 
