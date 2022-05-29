@@ -5,25 +5,116 @@
 
 Carrot 的优势：App.start(**.class) 一键启动，如果你想快速构建一个简单的web程序，Carrot 是你的选择。
 #### 快速开始
+> 所在示例在 carrot-example 中均可找到
 
 添加maven依赖
 ```xml
-<dependency>
-    <groupId>com.vegetables</groupId>
-    <artifactId>Carrot</artifactId>
-    <version>0.0.1</version>
-</dependency>
+        <dependency>
+            <groupId>com.easily</groupId>
+            <artifactId>carrot</artifactId>
+            <version>0.0.4-jar-with-dependencies</version>
+        </dependency>
 ```
 
 创建并启动
 ```java
-public class Test {
-    public static void main(String[] args){
-        App.start(Test.class);
+public class Application {
+    public static void main(String[] args) {
+        App.start(Application.class);
     }
 }
-// App.start(Test.class);   Carrot根据Test所在位置进行包扫描
-// 当然你也可以通过在项目根目录下，添加配置文件 config.yml 配置需要进行扫描的包名。（app.start.package: **.**.**）
+
+// App.start(Application.class);   Carrot根据Application所在位置进行全包扫描
+// 当然你也可以通过在项目根目录下（或resources目录下），添加配置文件 config.yml 配置需要进行扫描的包名。（app.start.package: **.**.**）
+```
+
+main方法中有了 App.start(##.class) ,你就可以开始尝试启动项目。Carrot中内置了很多测试接口，你可以通过项目日志查看，然后测试访问。
+
+接下来添加一个Controller
+```java
+import com.easily.label.Controller;
+
+@Controller("/test")
+public class TestController {
+
+    @Controller("/hello")
+    public String hello(){
+        return "Hello Carrot !";
+    }
+}
+```
+
+如上，我们成功添加了一个接口。
+
+还可以通过下面这种方式可以添加接口：
+```java
+import com.easily.core.http.Request;
+import com.easily.core.http.Response;
+import com.easily.factory.controller.Urls;
+import com.easily.label.AddUrls;
+import com.easily.label.Prefix;
+import com.easily.label.Service;
+import org.example.user.service.UserService;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@AddUrls
+public class UserController {
+
+    @Service
+    UserService userService;
+
+    @Prefix("/user")
+    public void userUrls(Urls urls){
+        urls.add("/getAll",this::getAllUser);
+        urls.add("/getOne",this::getOne);
+    }
+    
+    public void getAllUser(Request request, Response response){
+        Map<String,String> map = new HashMap<>();
+        map.put("zhangsan","123");
+        map.put("lisi","456");
+        map.put("wangwu","789");
+        response.setBody(map);
+    }
+
+    public void getOne(Request request, Response response){
+        response.setBody(userService.getOne());
+    }
+}
+```
+
+在Carrot中，也有类似Spring boot中的IOC一样的功能，我们称它为类工厂，通过类工厂初始化的对象，可以使用@Service、@Controller、@ConfigValue、@Resouce等注解自动注入。
+
+那么什么样的对象会被加入类工厂呢？通过@Service、@Controller、@Carrot、@Aop等注解标注的类，都会加入类工厂。
+
+如下例，是一个service对象加入工厂、自动注入的使用示例：
+```java
+
+public interface UserService {
+    String getOne();
+}
+
+
+@Service
+public class UserServiceImpl implements UserService {
+    public String getOne(){
+        return "zhang:123";
+    }
+}
+
+
+@Controller("/test")
+public class TestController {
+    @Service
+    UserService userService;
+    
+    @Controller("service")
+    public String getUserService(){
+        return userService.getOne();
+    }
+}
 ```
 
 #### 个性化配置
