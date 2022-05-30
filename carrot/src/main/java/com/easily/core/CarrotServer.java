@@ -128,6 +128,12 @@ public class CarrotServer {
         }
     }
 
+    /**
+     * 读                                            ->
+     * 如果 read = -1 关闭                            ->
+     * 如果 buffer.remaining() == 0 满了，进新的buffer  ->
+     * 判断http结构 -> 判断Content-Length长度 -> 长度不够继续 读
+     */
     private int read(DataSwap dataSwap) throws IOException, InterruptedException {
         ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
         int read = dataSwap.socketChannel.read(buffer);

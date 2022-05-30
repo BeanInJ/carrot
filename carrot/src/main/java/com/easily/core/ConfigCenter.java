@@ -30,6 +30,9 @@ public class ConfigCenter extends ElementsSingleton implements Getter<String,Obj
         return config;
     }
 
+    /**
+     * 从resources中获取config.yml
+     */
     private boolean initConfigByMain(Class<?> main){
         try{
             Yaml yaml = new Yaml();
@@ -43,6 +46,9 @@ public class ConfigCenter extends ElementsSingleton implements Getter<String,Obj
         }
     }
 
+    /**
+     * 从根目录获取config.yml
+     */
     private void initConfigByBootPath(){
         try{
             Yaml yaml = new Yaml();
@@ -53,7 +59,7 @@ public class ConfigCenter extends ElementsSingleton implements Getter<String,Obj
     }
 
     public void load(Class<?> mainClass){
-        // 加载配置文件
+        // 加载配置文件 （先从resources中获取，再从根目录获取）
         boolean isConfigByMain = initConfigByMain(mainClass);
         if(!isConfigByMain) initConfigByBootPath();
 
