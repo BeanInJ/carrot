@@ -54,7 +54,7 @@ public class CarrotServer {
         serverSocketChannel.configureBlocking(false);
         ServerSocket serverSocket = serverSocketChannel.socket();
         serverSocket.bind(new InetSocketAddress(port));
-        log.info("开放端口: http://localhost:"+port);
+        log.info("开放端口: http://localhost:" + port);
         // 注册为可接收事件
         return serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
     }
@@ -78,7 +78,7 @@ public class CarrotServer {
                         // 接收到新请求，往队列添加,ServerSocketChannel是非阻塞模式的
                         SocketChannel socketChannel = server.accept();
                         socketChannel.configureBlocking(false);
-                        socketChannel.register(selector,SelectionKey.OP_READ);
+                        socketChannel.register(selector, SelectionKey.OP_READ);
                     } else if (key.isReadable()) {
                         key.cancel();
                         socketChannels.add((SocketChannel) key.channel());
@@ -105,12 +105,12 @@ public class CarrotServer {
                         dataSwap.pools = pools;
                         // 读
                         int read = read(dataSwap);
-                        if(read == -1){}
-                        else {
+                        if (read == -1) {
+                        } else {
                             // 读完，执行请求流程
                             new RequestActuator(dataSwap).flow();
                             // 写
-                            if (dataSwap.Response != null && dataSwap.Response.hasRemaining()){
+                            if (dataSwap.Response != null && dataSwap.Response.hasRemaining()) {
                                 write(dataSwap);
 //                                long timed = dataSwap.Response.position()/1048576;
 //                                Thread.sleep(10L * (timed + 1));
@@ -138,40 +138,40 @@ public class CarrotServer {
             total = total + read;
         }
 
-        if(read == -1) return -1;
+        if (read == -1) return -1;
         dataSwap.in(buffer);
 
-        if (buffer.remaining() == 0){
+        if (buffer.remaining() == 0) {
             // buffer满了，入新的buffer写
             total += read(dataSwap);
         }
 
-        if(dataSwap.httpReader == null) {
+        if (dataSwap.httpReader == null) {
             dataSwap.httpReader = new HttpReader(dataSwap);
         }
-            boolean isHttp = dataSwap.httpReader.parseHttp();
-            if (isHttp) {
-                // 判断 Content-Length
-                if (dataSwap.httpReader.checkLength()) {
-                    // 长度相等，返回
-                    return total;
-                } else {
-                    // 长度不够，继续读
-                    total += read(dataSwap);
-                }
+        boolean isHttp = dataSwap.httpReader.parseHttp();
+        if (isHttp) {
+            // 判断 Content-Length
+            if (dataSwap.httpReader.checkLength()) {
+                // 长度相等，返回
+                return total;
             } else {
-                return -1;
+                // 长度不够，继续读
+                total += read(dataSwap);
             }
+        } else {
+            return -1;
+        }
 
 
         return total;
     }
 
     private void write(DataSwap dataSwap) throws IOException {
-        if(dataSwap.Response != null) dataSwap.socketChannel.write(dataSwap.out());
+        if (dataSwap.Response != null) dataSwap.socketChannel.write(dataSwap.out());
     }
 
-    public void addPools(Pools pools){
+    public void addPools(Pools pools) {
         this.pools = pools;
     }
 }
