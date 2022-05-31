@@ -185,7 +185,13 @@ public class HttpReader {
         // 没有"Content-Length"返回true
         if(contentLengthString == null) return true;
 
-        int contentLength = Integer.parseInt(contentLengthString);
+        int contentLength = 0;
+        try {
+            contentLength = Integer.parseInt(contentLengthString);
+        }catch (NumberFormatException e){
+            e.printStackTrace();
+            throw new RuntimeException("文件长度不能超过一个int");
+        }
         return contentLength == this.residueLength;
     }
 
@@ -194,7 +200,7 @@ public class HttpReader {
         if (buffer == null) return null;
 
         StringBuilder bodyBuilder = new StringBuilder();
-        byte[] bufferRam = new byte[this.residueLength];
+        byte[] bufferRam = new byte[buffer.limit()-buffer.position()];
         buffer.get(bufferRam);
 
         bodyBuilder.append(new String(bufferRam, StandardCharsets.UTF_8));

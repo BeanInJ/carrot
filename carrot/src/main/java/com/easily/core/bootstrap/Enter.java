@@ -1,6 +1,7 @@
 package com.easily.core.bootstrap;
 
 import com.easily.App;
+import com.easily.core.CarrotProvider;
 import com.easily.core.CarrotServer;
 import com.easily.core.ConfigCenter;
 import com.easily.factory.ClassFactory;
@@ -86,11 +87,13 @@ public class Enter {
     }
 
     private Object carrotServer(Object o){
+        CarrotProvider carrotProvider = new CarrotProvider();
+        carrotProvider.addPools(this.pools);
         CarrotServer carrotServer = new CarrotServer();
         Integer port = this.configCenter.get(CONFIG.APP_PORT,Integer.class);
         try {
             carrotServer.openPort(port);
-            carrotServer.addPools(this.pools);
+//            carrotServer.addPools(this.pools);
             CarrotServer.service.execute(carrotServer::loopGet);
             CarrotServer.service.execute(carrotServer::loopDeal);
         } catch (IOException e) {

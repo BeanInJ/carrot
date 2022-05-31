@@ -12,8 +12,6 @@ import java.util.concurrent.LinkedBlockingDeque;
  * 数据交换
  */
 public class DataSwap {
-    public Pools pools;
-
     public ByteBuffer request = null;
     public ByteBuffer Response = null;
     public BlockingDeque<ByteBuffer> moreRequest = new LinkedBlockingDeque<>();

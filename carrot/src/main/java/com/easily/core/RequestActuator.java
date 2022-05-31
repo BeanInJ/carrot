@@ -1,15 +1,8 @@
 package com.easily.core;
 
-import com.easily.core.http.HttpReader;
 import com.easily.core.http.Request;
 import com.easily.core.http.Response;
 import com.easily.factory.aop.AopMethod;
-import com.easily.factory.aop.AopPool;
-import com.easily.factory.controller.ControllerPool;
-import com.easily.factory.filter.FilterPool;
-import com.easily.label.Aop;
-import com.easily.label.Controller;
-import com.easily.label.Filter;
 import com.easily.system.util.StringUtils;
 
 import java.io.IOException;
@@ -18,7 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
-public class RequestActuator{
+public class RequestActuator extends CarrotProvider{
     private static final Logger log = Logger.getGlobal();
     private Request request;
     private Response response;
@@ -67,9 +60,7 @@ public class RequestActuator{
      * 通过前置过略器
      */
     private boolean passBeforeFilter() {
-        FilterPool filterPool = dataSwap.pools.get(Filter.class, FilterPool.class);
         this.response = filterPool.beforeController(this.request);
-
         // 如果经过过略器后，response还未初始化，则在此初始化
         if (this.response == null) {
             this.response = new Response();
@@ -83,7 +74,6 @@ public class RequestActuator{
     private boolean passController() {
         if (this.response.isGoToController()) {
             // 获取url对应的方法
-            ControllerPool controllerPool = dataSwap.pools.get(Controller.class, ControllerPool.class);
             Object[] classAndMethod = controllerPool.getMethod(request.getUrl());
 
             if (classAndMethod == null) {
@@ -97,7 +87,6 @@ public class RequestActuator{
             Object[] params = controllerPool.assemblyParams(method, this.request, this.response);
 
             // 获取切面信息
-            AopPool aopPool = dataSwap.pools.get(Aop.class, AopPool.class);
             AopMethod aopMethod = null;
             try {
                 aopMethod = aopPool.getAopMethod(method, object);
@@ -127,7 +116,6 @@ public class RequestActuator{
      * 通过后置过滤器
      */
     private boolean passAfterFilter() {
-        FilterPool filterPool = dataSwap.pools.get(Filter.class, FilterPool.class);
         filterPool.afterController(this.request, this.response);
         return !this.response.isReturnNow();
     }

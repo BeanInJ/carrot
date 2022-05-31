@@ -14,7 +14,6 @@ public class BufferUtils {
      */
     public static int socketChannelRead(SocketChannel socketChannel, ByteBuffer buffer) throws IOException {
         int readNum = socketChannel.read(buffer);
-        System.out.println("eeeeeeeeeeeeee:"+readNum);
         int total = 0;
         while (readNum > 0) {
             total += readNum;
@@ -28,7 +27,6 @@ public class BufferUtils {
             }
             readNum = socketChannel.read(buffer);
         }
-        System.out.println("vvvvvvvvvv:"+total);
         return total;
     }
 

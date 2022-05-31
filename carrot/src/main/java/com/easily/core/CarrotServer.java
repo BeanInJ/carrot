@@ -1,7 +1,6 @@
 package com.easily.core;
 
 import com.easily.core.http.HttpReader;
-import com.easily.factory.Pools;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -24,8 +23,6 @@ public class CarrotServer {
     private volatile static Selector selector;
     public static ExecutorService service;
     private final BlockingDeque<SocketChannel> socketChannels = new LinkedBlockingDeque<>();
-
-    private Pools pools;
 
     /**
      * 单例创建 Selector、线程池
@@ -102,9 +99,9 @@ public class CarrotServer {
                     try {
                         DataSwap dataSwap = new DataSwap();
                         dataSwap.socketChannel = take;
-                        dataSwap.pools = pools;
                         // 读
-                        int read = read(dataSwap);
+                        long time = System.currentTimeMillis();
+                        int read = read(dataSwap,time);
                         if (read == -1) {
                         } else {
                             // 读完，执行请求流程
@@ -112,8 +109,6 @@ public class CarrotServer {
                             // 写
                             if (dataSwap.Response != null && dataSwap.Response.hasRemaining()) {
                                 write(dataSwap);
-//                                long timed = dataSwap.Response.position()/1048576;
-//                                Thread.sleep(10L * (timed + 1));
                             }
                         }
 
@@ -134,7 +129,7 @@ public class CarrotServer {
      * 如果 buffer.remaining() == 0 满了，进新的buffer  ->
      * 判断http结构 -> 判断Content-Length长度 -> 长度不够继续 读
      */
-    private int read(DataSwap dataSwap) throws IOException, InterruptedException {
+    private int read(DataSwap dataSwap,long time) throws IOException, InterruptedException {
         ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
         int read = dataSwap.socketChannel.read(buffer);
         int total = read;
@@ -149,7 +144,7 @@ public class CarrotServer {
 
         if (buffer.remaining() == 0) {
             // buffer满了，入新的buffer写
-            total += read(dataSwap);
+            total += read(dataSwap,time);
         }
 
         if (dataSwap.httpReader == null) {
@@ -163,7 +158,12 @@ public class CarrotServer {
                 return total;
             } else {
                 // 长度不够，继续读
-                total += read(dataSwap);
+                Thread.sleep(10);
+
+                // 如果循环时间超过10秒，退出
+                long endTime = System.currentTimeMillis();
+                if ((endTime - time)>1000*10) return -1;
+                total += read(dataSwap,time);
             }
         } else {
             return -1;
@@ -177,7 +177,7 @@ public class CarrotServer {
         if (dataSwap.Response != null) dataSwap.socketChannel.write(dataSwap.out());
     }
 
-    public void addPools(Pools pools) {
-        this.pools = pools;
-    }
+//    public void addPools(Pools pools) {
+//        this.pools = pools;
+//    }
 }
