@@ -1,6 +1,7 @@
 package com.easily.core.http;
 
 import com.easily.core.DataSwap;
+import com.easily.system.exception.CarrotException;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -190,7 +191,7 @@ public class HttpReader {
             contentLength = Integer.parseInt(contentLengthString);
         }catch (NumberFormatException e){
             e.printStackTrace();
-            throw new RuntimeException("文件长度不能超过一个int");
+            throw new CarrotException("文件长度不能超过一个int");
         }
         return contentLength == this.residueLength;
     }

@@ -1,6 +1,6 @@
 package com.easily.system.exception;
 
-public class CarrotException extends Exception{
+public class CarrotException extends RuntimeException{
     private static final long serialVersionUID = 1L;
     private String message;
     private String code;

@@ -1,6 +1,8 @@
 package com.easily.core;
 
 import com.easily.core.http.HttpReader;
+import com.easily.core.http.Response;
+import com.easily.system.exception.CarrotException;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -101,16 +103,26 @@ public class CarrotServer {
                         dataSwap.socketChannel = take;
                         // 读
                         long time = System.currentTimeMillis();
-                        int read = read(dataSwap,time);
-                        if (read == -1) {
-                        } else {
-                            // 读完，执行请求流程
-                            new RequestActuator(dataSwap).flow();
-                            // 写
-                            if (dataSwap.Response != null && dataSwap.Response.hasRemaining()) {
-                                write(dataSwap);
-                            }
+                        int read = 0;
+                        try {
+                            read = read(dataSwap, time);
+                        } catch (CarrotException e) {
+                            Response response = new Response();
+                            response.setStatus("500");
+                            response.setReason("Error");
+                            response.setBody("系统异常：" + e.getMessage());
+                            dataSwap.Response = ByteBuffer.wrap(response.toString().getBytes());
                         }
+
+                        if (read != -1 && dataSwap.Response == null) {
+                            // 执行请求流程
+                            new RequestActuator(dataSwap).flow();
+                        }
+
+                        if (dataSwap.Response != null && dataSwap.Response.hasRemaining())
+                            // 写
+                            write(dataSwap);
+
 
                         take.close();
                     } catch (IOException | InterruptedException e) {
@@ -129,7 +141,7 @@ public class CarrotServer {
      * 如果 buffer.remaining() == 0 满了，进新的buffer  ->
      * 判断http结构 -> 判断Content-Length长度 -> 长度不够继续 读
      */
-    private int read(DataSwap dataSwap,long time) throws IOException, InterruptedException {
+    private int read(DataSwap dataSwap, long time) throws IOException, InterruptedException {
         ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
         int read = dataSwap.socketChannel.read(buffer);
         int total = read;
@@ -144,7 +156,7 @@ public class CarrotServer {
 
         if (buffer.remaining() == 0) {
             // buffer满了，入新的buffer写
-            total += read(dataSwap,time);
+            total += read(dataSwap, time);
         }
 
         if (dataSwap.httpReader == null) {
@@ -162,8 +174,11 @@ public class CarrotServer {
 
                 // 如果循环时间超过10秒，退出
                 long endTime = System.currentTimeMillis();
-                if ((endTime - time)>1000*10) return -1;
-                total += read(dataSwap,time);
+                if ((endTime - time) > 1000 * 10) {
+                    log.warning("响应超时");
+                    throw new CarrotException("响应超时");
+                }
+                total += read(dataSwap, time);
             }
         } else {
             return -1;
