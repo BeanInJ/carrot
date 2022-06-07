@@ -3,9 +3,11 @@ package com.easily.core;
 import com.easily.core.http.Request;
 import com.easily.core.http.Response;
 import com.easily.factory.aop.AopMethod;
+import com.easily.system.exception.NullParamException;
 import com.easily.system.util.StringUtils;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -105,7 +107,16 @@ public class RequestActuator extends CarrotProvider{
                 } else if (StringUtils.isNotBlankOrNull(returnValue)) {
                     this.response.setBody(returnValue);
                 }
-            } catch (Exception e) {
+            } catch (InvocationTargetException invocationTargetException){
+                Throwable targetException = invocationTargetException.getTargetException();
+                if (targetException instanceof NullParamException){
+                    Response response1 = new Response();
+                    response1.setStatus("300");
+                    String keys = ((NullParamException)targetException).getNullKeys().toString();
+                    response1.setBody("以下参数不能为空："+keys);
+                    this.response = response1;
+                }
+            }catch (Exception e){
                 e.printStackTrace();
             }
         }

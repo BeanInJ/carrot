@@ -5,6 +5,7 @@ import com.easily.core.http.Response;
 import com.easily.label.ConfigValue;
 import com.easily.label.Controller;
 import com.easily.label.Service;
+import com.easily.system.common.CarrotCheck;
 import com.easily.system.dict.CONFIG;
 
 import java.util.Map;
@@ -105,5 +106,11 @@ public class CarrotController {
     @Controller("/hello")
     public String hello(){
         return service.get();
+    }
+
+    @Controller("/nullTest")
+    public String nullTest(Map<String,String> map){
+        CarrotCheck.cantNull(map,"name","age");
+        return "检查通过";
     }
 }

@@ -158,9 +158,13 @@ public class ControllerPool implements Pool {
             } else if (parameterType.equals(Response.class)) {
                 params.add(response);
             } else if (parameterType.equals(Map.class)){
-                params.add((new Gson()).fromJson(request.getBody(),Map.class));
+                Map<?,?> map = (new Gson()).fromJson(request.getBody(), Map.class);
+                if (map == null) map = new HashMap<>();
+                params.add(map);
             } else if (parameterType.equals(List.class)){
-                params.add((new Gson()).fromJson(request.getBody(),List.class));
+                List<?> list = (new Gson()).fromJson(request.getBody(), List.class);
+                if (list==null) list = new ArrayList<>();
+                params.add(list);
             } else if (parameterType.equals(String.class)){
                 params.add(request.getBody());
             } else {
