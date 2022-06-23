@@ -23,6 +23,6 @@ public class App {
     }
 
     public static void main(String[] args){
-        App.start(App.class);
+        App.start(App.class,args);
     }
 }
