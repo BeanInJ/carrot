@@ -27,7 +27,7 @@ public class Enter {
     private ConfigCenter configCenter;
 
     private Pools pools;
-    public void start(Class<?> mainClass) throws IllegalAccessException, InstantiationException {
+    public void start(Class<?> mainClass,String[] args) throws IllegalAccessException, InstantiationException {
         this.mainClass = mainClass;
         Actuator actuator = new Actuator();
         actuator.add(this::beforeStart);
